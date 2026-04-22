@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="light" lang="nl"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f2f4f0",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e3df",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "secondary-container": "#e5e2e1",
+                    "error-container": "#ffdad6",
+                    "background": "#f8faf6",
+                    "outline": "#707973",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e7e9e5",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#e1e3df",
+                    "secondary": "#5f5e5e",
+                    "on-secondary-container": "#656464",
+                    "primary": "#0f5238",
+                    "on-tertiary-fixed-variant": "#6f3537",
+                    "tertiary-fixed": "#ffdad9",
+                    "on-tertiary-container": "#ffcfce",
+                    "on-secondary-fixed-variant": "#474646",
+                    "inverse-primary": "#95d4b3",
+                    "surface": "#f8faf6",
+                    "surface-bright": "#f8faf6",
+                    "on-tertiary-fixed": "#390b0e",
+                    "outline-variant": "#bfc9c1",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#eff1ed",
+                    "inverse-surface": "#2e312f",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "on-surface": "#191c1a",
+                    "on-primary-fixed": "#002114",
+                    "tertiary-container": "#8d4d4e",
+                    "tertiary-fixed-dim": "#ffb3b3",
+                    "primary-container": "#2d6a4f",
+                    "primary-fixed": "#b1f0ce",
+                    "surface-tint": "#2c694e",
+                    "on-surface-variant": "#404943",
+                    "tertiary": "#713638",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "secondary-fixed": "#e5e2e1",
+                    "surface-container": "#eceeea",
+                    "surface-dim": "#d8dbd7",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#95d4b3",
+                    "on-primary-container": "#a8e7c5",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "on-background": "#191c1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-desktop": "80px",
+                    "container-max": "1280px",
+                    "unit": "8px",
+                    "section-padding": "160px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "display-xl": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "300"}],
+                    "display-xl": ["80px", {"lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "300"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .hairline-b { border-bottom: 1px solid #E5E5E5; }
+        .hairline-r { border-right: 1px solid #E5E5E5; }
+        .hairline-all { border: 1px solid #E5E5E5; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-white text-on-surface">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-white border-b border-[#E5E5E5] flex justify-between items-center px-6 h-20">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#2D6A4F] cursor-pointer" data-icon="grid_view">grid_view</span>
+<span class="text-xl font-black tracking-tighter text-stone-900">SAMENMAKERS</span>
+</div>
+<button class="font-sans uppercase tracking-widest text-[11px] font-bold text-[#2D6A4F] transition-opacity active:opacity-80">
+            INLOGGEN
+        </button>
+</nav>
+<!-- NavigationDrawer (Mobile - Hidden by default in logic, but represented for UI) -->
+<!-- Note: For the purpose of this mobile view, we show the drawer as an overlay state or side-bar representation -->
+<aside class="hidden lg:flex flex-col h-screen fixed left-0 top-0 pt-24 bg-white w-80 border-r border-[#E5E5E5] z-40">
+<div class="px-8 mb-10">
+<h2 class="font-sans uppercase tracking-[0.2em] text-[10px] font-bold text-[#2D6A4F]">MENU</h2>
+</div>
+<nav class="flex flex-col">
+<!-- Active: Dashboard -->
+<a class="flex items-center gap-4 py-4 px-8 bg-stone-50 text-[#2D6A4F] font-bold border-l-4 border-[#2D6A4F] transition-all duration-300 hover:pl-10" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px]">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-8 text-stone-500 hover:bg-stone-50 transition-all duration-300 hover:pl-10" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px]">Connecties</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-8 text-stone-500 hover:bg-stone-50 transition-all duration-300 hover:pl-10" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px]">Events</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-8 text-stone-500 hover:bg-stone-50 transition-all duration-300 hover:pl-10" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-sans uppercase tracking-[0.2em] text-[10px]">Instellingen</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-28 pb-20 px-6 lg:pl-[340px] lg:pr-20 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-16">
+<p class="font-label-caps text-label-caps text-[#2D6A4F] mb-2">WELKOM TERUG</p>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Dashboard</h1>
+<div class="mt-8 flex gap-4">
+<button class="bg-[#2D6A4F] text-white font-bold py-4 px-8 text-[12px] tracking-widest uppercase active:scale-95 transition-transform">
+                    NIEUWE CONNECTIE
+                </button>
+</div>
+</header>
+<!-- Bento Layout: Recommended Matches -->
+<section class="mb-20">
+<div class="flex justify-between items-end mb-8 hairline-b pb-4">
+<h2 class="font-headline-md text-headline-md">Aanbevolen voor jou</h2>
+<a class="font-label-caps text-label-caps underline text-stone-400 hover:text-stone-900" href="#">BEKIJK ALLES</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Match Card 1 -->
+<div class="group relative flex flex-col p-6 bg-white border border-[#E5E5E5] hover:border-stone-900 transition-colors">
+<div class="w-full aspect-square mb-6 overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Portrait of a professional male entrepreneur in a minimalist studio setting with neutral tones and soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBBbCxdY689I8hVS6476970k8shJetYYppeS5opvOYNLTNjGlTLEWO077S8MOm-jdgopo1y223abHSLdAkm6LDvq3SAFBSSEzJ0DppvM-Nz9-U7ir-j0MsE0O4LDBYnAy6XRtS4TmP0ZK9cM6il68Xy6lTz_1eWolGZyTgUYtjj-vBnkoRWSjwq1ptxCFIFMgSN0eOif8xAGPBQxVVIRPt-azSKpcdUTmbgVbFz5x55F_OYt3dh-HWwjoM2eZ1bE4jj3ixhPoxw8g"/>
+</div>
+<span class="font-label-caps text-[10px] text-[#2D6A4F] mb-1">SUSTAINABLE TECH</span>
+<h3 class="font-headline-md text-[20px] mb-2 leading-tight">Pieter de Vries</h3>
+<p class="font-body-sm text-body-sm text-stone-500 mb-6">Missie: De circulaire economie versnellen door AI-gedreven logistiek.</p>
+<button class="mt-auto border border-stone-900 py-3 px-4 font-label-caps text-[10px] tracking-widest uppercase hover:bg-stone-900 hover:text-white transition-colors">
+                        CONNECTEREN
+                    </button>
+</div>
+<!-- Match Card 2 -->
+<div class="group relative flex flex-col p-6 bg-white border border-[#E5E5E5] hover:border-stone-900 transition-colors">
+<div class="w-full aspect-square mb-6 overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Modern businesswoman smiling in a bright architectural office space with clean lines and natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv_DISySBOJ13nWjQkBtyQk3eOODAKtcRmRtbsvDzUGvMTV55BoX-9NvpEtvfpDpcKjQEKmxHdKp0AbPHdmJBnZj-NPsarH3_BZfjgwA1Mw6NelBFCNodmjuYOwckVrnTdTay46g9ESzbC-Ia6YXcmv8IZDoxjrKFMicHivRQ_rRX0Rt-QH5gDsNAAis1uZTQZbnnYG7wlrxDI2Th-zPSGb7_9eHBBj5lkesIZhVY1BBhO9_1W6vteAPKyABwinXMqFz-3smmwfCw"/>
+</div>
+<span class="font-label-caps text-[10px] text-[#2D6A4F] mb-1">SOCIAL IMPACT</span>
+<h3 class="font-headline-md text-[20px] mb-2 leading-tight">Annelies Bakker</h3>
+<p class="font-body-sm text-body-sm text-stone-500 mb-6">Missie: Toegankelijke educatie voor elke startende ondernemer in Nederland.</p>
+<button class="mt-auto border border-stone-900 py-3 px-4 font-label-caps text-[10px] tracking-widest uppercase hover:bg-stone-900 hover:text-white transition-colors">
+                        CONNECTEREN
+                    </button>
+</div>
+<!-- Match Card 3 -->
+<div class="hidden lg:flex group relative flex-col p-6 bg-white border border-[#E5E5E5] hover:border-stone-900 transition-colors">
+<div class="w-full aspect-square mb-6 overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Confident entrepreneur standing in front of a glass building reflecting city life at sunrise" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkfr48JmjmtF0E1bxd5WxEUQL78JqkLPaG1mck2wKYo2fqr5yy0LBmr4KP_w56snYdwHxJJLfkD-Aw4gSJ5TmgzQfwhi3rryj2VVop75Ib1Qei9XjvjhCAQpyzqz3kh5dj1f7abqIVa6GRM9dqPgaDCTeYdx-Fg2885SbTtzP4AxTo1iKzXhCnAkGKH6jkQlT4K5ZgkNFEIjTIKjwLIAB3L8ydAwOzM045O6L3kBprshmF3L02RWMzJGyWP3vxVSu-GgnCEYJStfE"/>
+</div>
+<span class="font-label-caps text-[10px] text-[#2D6A4F] mb-1">CLEAN ENERGY</span>
+<h3 class="font-headline-md text-[20px] mb-2 leading-tight">Mark Janssen</h3>
+<p class="font-body-sm text-body-sm text-stone-500 mb-6">Missie: De transitie naar waterstof-mobiliteit voor MKB-bedrijven.</p>
+<button class="mt-auto border border-stone-900 py-3 px-4 font-label-caps text-[10px] tracking-widest uppercase hover:bg-stone-900 hover:text-white transition-colors">
+                        CONNECTEREN
+                    </button>
+</div>
+</div>
+</section>
+<!-- Two Column Layout: Connections & Events -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+<!-- Mijn Connecties -->
+<section>
+<div class="flex justify-between items-end mb-8 hairline-b pb-4">
+<h2 class="font-headline-md text-[24px]">Mijn Connecties</h2>
+<span class="font-label-caps text-[10px] text-stone-400">12 ACTIEF</span>
+</div>
+<div class="space-y-0">
+<!-- Connection Item -->
+<div class="flex items-center justify-between py-6 hairline-b hover:bg-stone-50 px-2 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a professional woman with a clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUf-prmktt38f6MhM5NMCvy9OIP4DkaJjA0K99Yeh1_vl_BFnAtMCECy9LFrxTpEgU-vSH6KFhDELGov-zD4tXYh5W5wukQo112TGlhDjvGdN4XQZ_jeqE6NQYCGBXggLJzrE3_JAxZpfOB6EpOJTTBB-_yiRaojciwU8IiSWiJ15Qrlfhn05gijELbaHsVHddfjd9LCYl6jkAesiBlIFjy-11_e6qkLEW_exPKJrPpRqJk9lIOQ2Q2yYv_A9JvgX5iBJNmawKDEk"/>
+</div>
+<div>
+<h4 class="font-bold text-sm uppercase">Sophie Hermans</h4>
+<p class="text-[10px] text-stone-500 tracking-wider">CREATIVE DIRECTOR</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-stone-300" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Connection Item -->
+<div class="flex items-center justify-between py-6 hairline-b hover:bg-stone-50 px-2 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young male professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz37F8ADoB3QGP_gowNAjTFNImZjeeP7kBXVpV-I3SleDqv-jJteTA3X1DHnoOW2uQ_PdtL6cu0gntA3CqYlWjNMkLHzSC5dHYwHOszqJ_37YmuzQHha8H7dfmtC7kMpv6xz8heOLysfZwgBaO0FcA0gDduTQt7ow5DI8psHp1RdOO-QpTOowNk6kg8Qrf_6_g6wU-MGfP0gVDGCEfHLQV-ZcxtRNdYuZtBf_A6C9TXHBa0qSL4aE_-JxckD9FGWG6eRJrpco07YQ"/>
+</div>
+<div>
+<h4 class="font-bold text-sm uppercase">Thomas de Boer</h4>
+<p class="text-[10px] text-stone-500 tracking-wider">FOUNDER TECH LAB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-stone-300" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Connection Item -->
+<div class="flex items-center justify-between py-6 hairline-b hover:bg-stone-50 px-2 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="Professional female entrepreneur in high key lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbNOzpqmaiPe5SahGgJmA2oyA6XNodY3LEGkzLgl1KcSUbXLYKxqaLY8CUfey73-sJMHPjI742asx8Jnc2Z63jZ_THyY2Pgtg6wXL6COrmkOQiZgGN1dr5DgrrtTm10sKG7hY0DiTXqnNnHtD7ojOBgMAtLcnz5vRTXK1fjpXg5qlmUmfH9B6fIe2_vi1TtjEdiCZqmoPNCcLk7a2FnMWaBr0FI92PF_770qIltUbIK2A-7J7KC1f2A_F_yQ-iE5tzi1l173tGcNw"/>
+</div>
+<div>
+<h4 class="font-bold text-sm uppercase">Lisa van Dijk</h4>
+<p class="text-[10px] text-stone-500 tracking-wider">ECO STRATEGIST</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-stone-300" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Aankomende Events -->
+<section>
+<div class="flex justify-between items-end mb-8 hairline-b pb-4">
+<h2 class="font-headline-md text-[24px]">Aankomende Events</h2>
+</div>
+<div class="space-y-6">
+<!-- Event Card -->
+<div class="p-6 border border-[#E5E5E5] hover:bg-stone-50 transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-[10px] bg-[#2D6A4F] text-white px-2 py-1">24 APR</span>
+<span class="material-symbols-outlined text-stone-400" data-icon="event">event</span>
+</div>
+<h4 class="font-headline-md text-[18px] mb-2 uppercase tracking-tight">Ondernemers Ontbijt</h4>
+<p class="font-body-sm text-body-sm text-stone-500 mb-4">Locatie: Amsterdam Creative Hub. Focus op netwerken en vroege groei.</p>
+<button class="text-[10px] font-bold underline uppercase tracking-widest">BEKIJK DETAILS</button>
+</div>
+<!-- Event Card -->
+<div class="p-6 border border-[#E5E5E5] hover:bg-stone-50 transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-caps text-[10px] bg-stone-900 text-white px-2 py-1">02 MEI</span>
+<span class="material-symbols-outlined text-stone-400" data-icon="event">event</span>
+</div>
+<h4 class="font-headline-md text-[18px] mb-2 uppercase tracking-tight">Impact Summit 2024</h4>
+<p class="font-body-sm text-body-sm text-stone-500 mb-4">Online webinar met keynote van internationale impact investeerders.</p>
+<button class="text-[10px] font-bold underline uppercase tracking-widest">RESERVEER PLEK</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-20 px-6 md:px-20 border-t border-[#E5E5E5] flex flex-col md:flex-row justify-between items-center gap-8 bg-white">
+<div class="flex flex-col gap-4 text-center md:text-left">
+<span class="text-lg font-black tracking-tighter">SAMENMAKERS</span>
+<p class="font-sans uppercase tracking-widest text-[9px] font-medium text-stone-400">© 2024 SAMENMAKERS. REDUCTIVE FUNCTIONALISM.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-sans uppercase tracking-widest text-[9px] font-medium text-stone-400 hover:text-stone-900 transition-colors" href="#">Privacy</a>
+<a class="font-sans uppercase tracking-widest text-[9px] font-medium text-stone-400 hover:text-stone-900 transition-colors" href="#">Terms</a>
+<a class="font-sans uppercase tracking-widest text-[9px] font-medium text-stone-400 hover:text-stone-900 transition-colors" href="#">Contact</a>
+</div>
+</footer>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-[#E5E5E5] flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center text-[#2D6A4F]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[8px] font-bold uppercase tracking-tighter">Dash</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-[8px] font-bold uppercase tracking-tighter">Connect</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="text-[8px] font-bold uppercase tracking-tighter">Events</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[8px] font-bold uppercase tracking-tighter">Instel</span>
+</a>
+</nav>
+</body></html>

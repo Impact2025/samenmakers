@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="nl"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8faf6;
+            color: #191c1a;
+            -webkit-font-smoothing: antialiased;
+        }
+        .hairline-b { border-bottom: 1px solid #E5E5E5; }
+        .hairline-t { border-top: 1px solid #E5E5E5; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dbd7",
+                        "on-tertiary-fixed-variant": "#6f3537",
+                        "on-tertiary-container": "#ffcfce",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#191c1a",
+                        "background": "#f8faf6",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "outline-variant": "#bfc9c1",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#002114",
+                        "tertiary": "#713638",
+                        "surface-container-low": "#f2f4f0",
+                        "surface-container-high": "#e7e9e5",
+                        "primary-container": "#2d6a4f",
+                        "primary": "#0f5238",
+                        "inverse-primary": "#95d4b3",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#e5e2e1",
+                        "on-primary-container": "#a8e7c5",
+                        "surface": "#f8faf6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#390b0e",
+                        "inverse-on-surface": "#eff1ed",
+                        "on-surface": "#191c1a",
+                        "secondary-fixed": "#e5e2e1",
+                        "inverse-surface": "#2e312f",
+                        "surface-variant": "#e1e3df",
+                        "surface-tint": "#2c694e",
+                        "surface-container-highest": "#e1e3df",
+                        "primary-fixed": "#b1f0ce",
+                        "on-error": "#ffffff",
+                        "outline": "#707973",
+                        "on-surface-variant": "#404943",
+                        "tertiary-container": "#8d4d4e",
+                        "surface-container": "#eceeea",
+                        "tertiary-fixed": "#ffdad9",
+                        "surface-bright": "#f8faf6",
+                        "primary-fixed-dim": "#95d4b3",
+                        "on-secondary-container": "#656464",
+                        "on-secondary-fixed-variant": "#474646",
+                        "tertiary-fixed-dim": "#ffb3b3",
+                        "secondary": "#5f5e5e",
+                        "on-primary": "#ffffff"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "section-padding": "160px",
+                        "margin-desktop": "80px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "display-xl": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-xl": ["80px", {"lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "300"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "300"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#E5E5E5] flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#2D6A4F] hover:opacity-70 transition-opacity cursor-pointer active:scale-95 duration-100" data-icon="arrow_back">arrow_back</span>
+<h1 class="font-sans tracking-tight font-bold uppercase text-xs text-[#2D6A4F]">PROFIEL</h1>
+</div>
+<span class="material-symbols-outlined text-[#2D6A4F] hover:opacity-70 transition-opacity cursor-pointer active:scale-95 duration-100" data-icon="more_vert">more_vert</span>
+</header>
+<main class="pt-[60px] pb-32 max-w-screen-md mx-auto bg-white min-h-screen">
+<!-- Profile Image (Grayscale Hero) -->
+<div class="w-full aspect-[4/5] md:aspect-video overflow-hidden">
+<img alt="Portrait of entrepreneur" class="w-full h-full object-cover grayscale contrast-125" data-alt="High-contrast grayscale studio portrait of a confident male entrepreneur in a minimalist black turtleneck, soft dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnaerts9ut6fGxzeROwYbRVSTYosratdQ8SyG4MGGNa8RStONPMsdyb_BEeRkK1YDxBWNMW1yDCyw7jzeZJYe_cgMjHGUNPyqOkPyNouo-2e9tGKN5JTRM28BdIlgDOOxF8IsNMGDgOw7om8N5JqVkmGyJOL9q4eQm1zP5pmaJWQnqSv-NDLr9s2gdMC2FSHcjZzhcufuVNjx2xIW8TW39vXPvvqEaoIOMGbIQF8yoUJhXe2PjA4GkJjAKU9mbA2c8g6ePMkKt-mY"/>
+</div>
+<!-- Identity Section -->
+<section class="px-gutter pt-12 pb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Pieter de Vries</h2>
+<p class="font-label-caps text-label-caps uppercase text-secondary mb-8 tracking-widest">FOUNDER &amp; STRATEGIC ADVISOR</p>
+<div class="flex flex-wrap gap-x-12 gap-y-4">
+<div>
+<p class="font-label-caps text-[10px] text-outline uppercase mb-1">Locatie</p>
+<p class="font-body-sm text-body-sm text-on-surface">Amsterdam, NL</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-outline uppercase mb-1">Sector</p>
+<p class="font-body-sm text-body-sm text-on-surface">Circulaire Economie</p>
+</div>
+</div>
+</section>
+<!-- Mission Statement -->
+<section class="px-gutter py-20 border-t border-[#E5E5E5]">
+<p class="font-label-caps text-[10px] text-outline uppercase mb-6">Missie</p>
+<blockquote class="font-headline-md text-headline-md text-on-surface leading-tight italic border-l-4 border-primary-container pl-8">
+                "Het transformeren van lineaire afvalstromen naar waardevolle grondstoffen voor de volgende generatie ondernemers."
+            </blockquote>
+</section>
+<!-- About Me Section -->
+<section class="px-gutter py-20 border-t border-[#E5E5E5]">
+<p class="font-label-caps text-[10px] text-outline uppercase mb-8">Over mij</p>
+<div class="space-y-6">
+<p class="font-body-lg text-body-lg text-on-surface">
+                    Na tien jaar in de corporate consultancy besloot ik dat het tijd was voor echte impact. Met een achtergrond in Industrial Design en Supply Chain Management richt ik me nu volledig op schaalbare oplossingen voor de klimaatcrisis.
+                </p>
+<p class="font-body-lg text-body-lg text-on-surface">
+                    Ik zoek partners die niet alleen dromen van een betere wereld, maar ook de pragmatische instelling hebben om systemen daadwerkelijk om te gooien. Mijn expertise ligt op het snijvlak van technologie en operationele uitvoering.
+                </p>
+</div>
+</section>
+<!-- Expertise Tags -->
+<section class="px-gutter py-20 border-t border-[#E5E5E5]">
+<p class="font-label-caps text-[10px] text-outline uppercase mb-8">Expertise</p>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 border border-[#E5E5E5] font-label-caps text-label-caps text-on-surface hover:bg-on-surface hover:text-white transition-colors cursor-default">STRATEGIE</span>
+<span class="px-4 py-2 border border-[#E5E5E5] font-label-caps text-label-caps text-on-surface hover:bg-on-surface hover:text-white transition-colors cursor-default">SUSTAINABILITY</span>
+<span class="px-4 py-2 border border-[#E5E5E5] font-label-caps text-label-caps text-on-surface hover:bg-on-surface hover:text-white transition-colors cursor-default">OPERATIONS</span>
+<span class="px-4 py-2 border border-[#E5E5E5] font-label-caps text-label-caps text-on-surface hover:bg-on-surface hover:text-white transition-colors cursor-default">FUNDRAISING</span>
+</div>
+</section>
+<!-- Connection Button (Contextual) -->
+<section class="px-gutter py-12 flex justify-center">
+<button class="bg-[#2D6A4F] text-white font-bold px-12 py-5 text-sm tracking-widest uppercase hover:bg-[#1b4332] active:scale-95 transition-all w-full max-w-sm">
+                Connectieverzoek sturen
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-white border-t border-[#E5E5E5] flex justify-around items-stretch px-4 h-16">
+<button class="text-zinc-400 flex flex-col items-center justify-center pt-2 pb-4 flex-1 hover:text-black transition-colors">
+<span class="material-symbols-outlined mb-1" data-icon="grid_view">grid_view</span>
+<span class="font-sans font-bold uppercase text-[10px] tracking-widest">OVERZICHT</span>
+</button>
+<button class="text-zinc-400 flex flex-col items-center justify-center pt-2 pb-4 flex-1 hover:text-black transition-colors">
+<span class="material-symbols-outlined mb-1" data-icon="diversity_3">diversity_3</span>
+<span class="font-sans font-bold uppercase text-[10px] tracking-widest">NETWERK</span>
+</button>
+<button class="text-zinc-400 flex flex-col items-center justify-center pt-2 pb-4 flex-1 hover:text-black transition-colors">
+<span class="material-symbols-outlined mb-1" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+<span class="font-sans font-bold uppercase text-[10px] tracking-widest">BERICHTEN</span>
+</button>
+<button class="text-black border-t-2 border-black flex flex-col items-center justify-center pt-2 pb-4 flex-1">
+<span class="material-symbols-outlined mb-1" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-sans font-bold uppercase text-[10px] tracking-widest">PROFIEL</span>
+</button>
+</nav>
+</body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="nl"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f2f4f0",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e1e3df",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "secondary-container": "#e5e2e1",
+                    "error-container": "#ffdad6",
+                    "background": "#f8faf6",
+                    "outline": "#707973",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e7e9e5",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#e1e3df",
+                    "secondary": "#5f5e5e",
+                    "on-secondary-container": "#656464",
+                    "primary": "#0f5238",
+                    "on-tertiary-fixed-variant": "#6f3537",
+                    "tertiary-fixed": "#ffdad9",
+                    "on-tertiary-container": "#ffcfce",
+                    "on-secondary-fixed-variant": "#474646",
+                    "inverse-primary": "#95d4b3",
+                    "surface": "#f8faf6",
+                    "surface-bright": "#f8faf6",
+                    "on-tertiary-fixed": "#390b0e",
+                    "outline-variant": "#bfc9c1",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#eff1ed",
+                    "inverse-surface": "#2e312f",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "on-surface": "#191c1a",
+                    "on-primary-fixed": "#002114",
+                    "tertiary-container": "#8d4d4e",
+                    "tertiary-fixed-dim": "#ffb3b3",
+                    "primary-container": "#2d6a4f",
+                    "primary-fixed": "#b1f0ce",
+                    "surface-tint": "#2c694e",
+                    "on-surface-variant": "#404943",
+                    "tertiary": "#713638",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "secondary-fixed": "#e5e2e1",
+                    "surface-container": "#eceeea",
+                    "surface-dim": "#d8dbd7",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#95d4b3",
+                    "on-primary-container": "#a8e7c5",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "on-background": "#191c1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-desktop": "80px",
+                    "container-max": "1280px",
+                    "unit": "8px",
+                    "section-padding": "160px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "display-xl": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "300"}],
+                    "display-xl": ["80px", {"lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "300"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hairline-b { border-bottom: 1px solid #E5E5E5; }
+        .hairline-r { border-right: 1px solid #E5E5E5; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-white text-on-surface font-body-lg antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white border-b border-[#E5E5E5] flex justify-between items-center px-6 h-20">
+<div class="text-xl font-black tracking-tighter text-stone-900">SAMENMAKERS</div>
+<div class="flex gap-4">
+<button class="font-sans uppercase tracking-widest text-[11px] font-bold text-[#2D6A4F]">INLOGGEN</button>
+<button class="font-sans uppercase tracking-widest text-[11px] font-bold text-stone-900 border border-stone-900 px-3 py-1">AANMELDEN</button>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="px-6 pt-16 pb-20">
+<h1 class="font-headline-lg text-headline-lg text-stone-900 mb-4">Vind je medemissie-ondernemer.</h1>
+<p class="font-body-lg text-body-lg text-stone-500 mb-10 max-w-xs">Het platform waar purpose-driven ondernemers elkaar vinden en versterken.</p>
+<button class="bg-[#2D6A4F] text-white font-label-caps text-label-caps px-8 py-5 w-full uppercase tracking-widest">Maak een profiel</button>
+<!-- Abstract Grid of Profile Cards -->
+<div class="mt-16 grid grid-cols-2 gap-4">
+<div class="p-4 border border-[#E5E5E5] flex flex-col gap-3">
+<img class="w-12 h-12 grayscale" data-alt="professional headshot of a female entrepreneur with a confident smile in a bright minimalist office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4LyBuP9nR20DWZy-e__CGAfDTZceBI32NLavhOOMxWeqL90K3pntxsqB2mu1funVxsypBUquvYx-GFLDzpsbPMRuxuyPMXzXGnVBFQ1qpKdSG-REv982pB28MEqk6y5C7AkxB6c9fFG7e8-D_kk_bOWlgj9uDtxehRa-ocezSvUkmFktM-VC8wF0cgvYxpgNvuwCkYyUO5OqfyAR8BNPuFLN-1WFBaqceZvnqotHl3XP0n3Lr8Tj9OnQHV8FooNI3uZq7bKSrYcY"/>
+<div>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase">Utrecht</p>
+<p class="font-headline-md text-sm">Anna V.</p>
+</div>
+</div>
+<div class="p-4 border border-[#E5E5E5] flex flex-col gap-3 mt-8">
+<img class="w-12 h-12 grayscale" data-alt="portrait of a focused male founder with glasses in a modern architect studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx8BBAYUeJ6iSqmrG-ftHusqo-ddAE7RlwMflx9Fcyg_ObAfxhrU0ik5nwDeO5S2IVEwqQRE6DkYWc94dTyZRzJHM5XvSwNme0oapCtXoeZj77ZOjBHTNHM-4qzoLsMSj4HESNP7gqa45IeN_FOwnom5EaWh0uSDa3PSNycC0m-hgN876ckoFy1YhlAAcVNAziHhaDEEIE4QRmCuGoUqjcrLmBnNIqDerte31kx5cETY-r6JVSSvxUk59OD1Xo5YfAq0c2JuJcaSA"/>
+<div>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase">Rotterdam</p>
+<p class="font-headline-md text-sm">Mark de B.</p>
+</div>
+</div>
+<div class="p-4 border border-[#E5E5E5] flex flex-col gap-3 -mt-4">
+<img class="w-12 h-12 grayscale" data-alt="close-up of a young creative professional woman looking thoughtfully at the camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqdmlCrZwcVs3fsDDRUcfrTkWv1ygheUt-N-7sO3QrBb4bhrkXo16xQAm6oUdOcSYHKW4n_EaLv_uoaIc03a3NeHusEmefkFwutIkhKwQfPBQYgDRtDnvGbbEcHfWmFYzNY7W7BjQF8XDAVdFbtglWr08KXEZ2P7cmKeK1x3OHfLWoYITUyj-n0KUXesEa9LC531bluiTaGSP6ToAqM-xhmjVfAqtI1w1H_DyBjr_7R3OISHSsc_rr4hh0yBm75gj8NkIlnd8zU1s"/>
+<div>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase">Amsterdam</p>
+<p class="font-headline-md text-sm">Sarah L.</p>
+</div>
+</div>
+<div class="p-4 border border-[#E5E5E5] flex flex-col gap-3 mt-4">
+<img class="w-12 h-12 grayscale" data-alt="executive male entrepreneur in a charcoal suit standing against a clean white wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyT10RtuNTaLgRCBdUevZDBmQCvv9vyON_6LHIv0Tk5qbS9qaGGs1xx4lcbkuiqaM6c11KoTorFLwUdkOClMfpZyzxHBi3QQEleVnQfVClWgZQLEAqExlJ3zvHIAlgb2riVviGyCChrtNtckNFmIq6DU3-lrrQ8mUwH4Ld1fMIeTbUXbYgrhlnk7BQS5JnZ-8426ci6AY2uuj_fRm5CTzViuFvHrvl4FzFRSoj9ijdDZ1ObGV9ka7-K14mjqzKlujgL20WoTH3_U0"/>
+<div>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase">Groningen</p>
+<p class="font-headline-md text-sm">Tom H.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Icons Section -->
+<section class="border-t border-[#E5E5E5] py-20 px-6">
+<div class="flex flex-col gap-12">
+<div class="flex items-start gap-6">
+<span class="material-symbols-outlined text-stone-900 text-3xl" data-icon="search">search</span>
+<div>
+<h3 class="font-label-caps text-stone-900 mb-2 uppercase">Vinden</h3>
+<p class="font-body-sm text-stone-500">Filter op missie, sector en regio voor de perfecte match.</p>
+</div>
+</div>
+<div class="flex items-start gap-6">
+<span class="material-symbols-outlined text-stone-900 text-3xl" data-icon="share">share</span>
+<div>
+<h3 class="font-label-caps text-stone-900 mb-2 uppercase">Delen</h3>
+<p class="font-body-sm text-stone-500">Deel kennis, resources en netwerk met gelijkgestemden.</p>
+</div>
+</div>
+<div class="flex items-start gap-6">
+<span class="material-symbols-outlined text-stone-900 text-3xl" data-icon="groups">groups</span>
+<div>
+<h3 class="font-label-caps text-stone-900 mb-2 uppercase">Ontmoeten</h3>
+<p class="font-body-sm text-stone-500">Bezoek exclusieve events en bouw duurzame relaties op.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Profiles -->
+<section class="border-t border-[#E5E5E5] pt-20 pb-12">
+<div class="px-6 mb-8 flex justify-between items-end">
+<h2 class="font-headline-md text-2xl">Nieuwe Makers</h2>
+<a class="font-label-caps text-[10px] border-b border-stone-900" href="#">BEKIJK ALLES</a>
+</div>
+<div class="flex overflow-x-auto no-scrollbar gap-0 pl-6 border-b border-[#E5E5E5]">
+<div class="min-w-[240px] border-r border-[#E5E5E5] pr-6 pb-12">
+<img class="w-full aspect-[4/5] object-cover mb-6 grayscale" data-alt="artistic portrait of a female maker in a bright workshop setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcYov6jITayqKrh19jYc4sd7oqsNKCNtcXYca4k8WbFzQD5lZT_rbFYsZyhHodVCPIuCFzWQH1nveiMha55OlI52YdYSMTpmsSWeBQrl_EfUs6K2NN8vYByPriBBQlwmlGqqRb0_sG8AwxhXLYbTSkWbPwWtHZ1Vnqldi1IzjaCSvt5ZHCugcj8bSx15a-r9UzhMWrF1eYw0OzySvmaPbo0pMGJG2gJGhbSvkK59jgQaQLNo5g9nU1y0D4_n1zrQWrAMCjkHWhqaQ"/>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase mb-1">Circular Economy</p>
+<h4 class="font-headline-md text-lg mb-2">Elena de Vries</h4>
+<p class="font-body-sm text-stone-500 line-clamp-1 italic">"Afval is grondstof voor morgen."</p>
+</div>
+<div class="min-w-[240px] border-r border-[#E5E5E5] px-6 pb-12">
+<img class="w-full aspect-[4/5] object-cover mb-6 grayscale" data-alt="professional male portrait with natural lighting and minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSGcE67MZJtOVPxFIjoCcs4GlH-e0M9KePjPEP4OffeufYQwSIcgYOYCdbHC2razQ_OyyBojNCLFVF2N1qP7b_3FtvOPyXnwBepoGK6JejXhdAeWek5yUpR2Z2aFZZmK0y7G298Q0ZF18MkW9myPbPOkduuZPZap-uNIBwr6Zz9qgm2BPBclgcTBwE4254uz8v_0JhuN6Ighw__DAYx2sqkbLQsMA1-kPguwGoWgHIMib9F9M3sEJp-s3VQFmUMmqn-yO_k1MLZy8"/>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase mb-1">Sustainable Tech</p>
+<h4 class="font-headline-md text-lg mb-2">Joris Bakker</h4>
+<p class="font-body-sm text-stone-500 line-clamp-1 italic">"Data driven impact voor MKB."</p>
+</div>
+<div class="min-w-[240px] border-r border-[#E5E5E5] px-6 pb-12">
+<img class="w-full aspect-[4/5] object-cover mb-6 grayscale" data-alt="confident woman smiling in a minimalist studio environment with clean shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANdp0-BGZS78E9uFwuxoZfb-BAIkvgb8VYVNC2nppLWvV5hmgjZOon5LVBQE-OAa4bvjVxbgMiQ5iXAp30wy6PBrorQkJYqVKwnhzbRg0oXYF8tDQi4qH670oX-7vKs6ccBzApCyyPGs6GirR4A2MizLDp9D-7QtxywzLHtJrg9uRBLfVdJi3vUJ-a0u4P3AcFBx-57biNHf0CXxplD4Dle2Z-YUn_y-NvUNPIkxbJutmb-ZSshurZNsSuTg1Kw7boBxCcNhcEWX0"/>
+<p class="font-label-caps text-[10px] text-stone-400 uppercase mb-1">Social Inclusion</p>
+<h4 class="font-headline-md text-lg mb-2">Laila Amari</h4>
+<p class="font-body-sm text-stone-500 line-clamp-1 italic">"Iedereen een plek op de markt."</p>
+</div>
+</div>
+</section>
+<!-- Events Section -->
+<section class="py-20 px-6">
+<h2 class="font-headline-md text-2xl mb-10">Agenda</h2>
+<div class="flex flex-col border-t border-stone-900">
+<div class="flex py-6 border-b border-[#E5E5E5] gap-8 items-baseline">
+<div class="font-label-caps text-stone-400 w-16">12 APR</div>
+<div class="flex-1 font-headline-md text-lg">Makers Meetup: Utrecht</div>
+</div>
+<div class="flex py-6 border-b border-[#E5E5E5] gap-8 items-baseline">
+<div class="font-label-caps text-stone-400 w-16">24 APR</div>
+<div class="flex-1 font-headline-md text-lg">Circular Design Workshop</div>
+</div>
+<div class="flex py-6 border-b border-[#E5E5E5] gap-8 items-baseline">
+<div class="font-label-caps text-stone-400 w-16">05 MEI</div>
+<div class="flex-1 font-headline-md text-lg">Funding voor Impact Founders</div>
+</div>
+<div class="flex py-6 border-b border-[#E5E5E5] gap-8 items-baseline">
+<div class="font-label-caps text-stone-400 w-16">18 MEI</div>
+<div class="flex-1 font-headline-md text-lg">Netwerk Diner Amsterdam</div>
+</div>
+</div>
+<button class="mt-12 font-label-caps text-xs border border-stone-900 w-full py-4 uppercase tracking-widest">Bekijk alle events</button>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white border-t border-[#E5E5E5] pt-20 pb-10 px-6">
+<div class="grid grid-cols-2 gap-10 mb-20">
+<div class="flex flex-col gap-4">
+<h5 class="font-label-caps text-[10px] text-stone-900 mb-2">NAVIGATIE</h5>
+<a class="font-body-sm text-stone-400" href="#">Dashboard</a>
+<a class="font-body-sm text-stone-400" href="#">Connecties</a>
+<a class="font-body-sm text-stone-400" href="#">Events</a>
+<a class="font-body-sm text-stone-400" href="#">Instellingen</a>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="font-label-caps text-[10px] text-stone-900 mb-2">INFO</h5>
+<a class="font-body-sm text-stone-400" href="#">Privacy</a>
+<a class="font-body-sm text-stone-400" href="#">Terms</a>
+<a class="font-body-sm text-stone-400" href="#">Contact</a>
+<a class="font-body-sm text-stone-400" href="#">Over ons</a>
+</div>
+</div>
+<div class="flex flex-col items-start gap-4">
+<div class="text-sm font-black tracking-tighter text-stone-900">SAMENMAKERS</div>
+<p class="font-sans uppercase tracking-widest text-[9px] font-medium text-stone-400">© 2024 SAMENMAKERS. REDUCTIVE FUNCTIONALISM.</p>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="nl"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f8faf6",
+                        "tertiary": "#713638",
+                        "surface-container-low": "#f2f4f0",
+                        "primary": "#0f5238",
+                        "surface-container-highest": "#e1e3df",
+                        "on-tertiary-fixed-variant": "#6f3537",
+                        "surface-dim": "#d8dbd7",
+                        "inverse-on-surface": "#eff1ed",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdad9",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-primary": "#ffffff",
+                        "surface": "#f8faf6",
+                        "on-tertiary-container": "#ffcfce",
+                        "inverse-surface": "#2e312f",
+                        "primary-fixed": "#b1f0ce",
+                        "tertiary-fixed-dim": "#ffb3b3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#eceeea",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e3df",
+                        "secondary-container": "#e5e2e1",
+                        "on-tertiary-fixed": "#390b0e",
+                        "outline-variant": "#bfc9c1",
+                        "on-secondary-fixed-variant": "#474646",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#5f5e5e",
+                        "on-background": "#191c1a",
+                        "surface-tint": "#2c694e",
+                        "surface-container-high": "#e7e9e5",
+                        "primary-container": "#2d6a4f",
+                        "on-surface-variant": "#404943",
+                        "on-surface": "#191c1a",
+                        "on-primary-fixed": "#002114",
+                        "tertiary-container": "#8d4d4e",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "outline": "#707973",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#656464",
+                        "primary-fixed-dim": "#95d4b3",
+                        "on-primary-container": "#a8e7c5",
+                        "inverse-primary": "#95d4b3",
+                        "background": "#f8faf6",
+                        "error-container": "#ffdad6",
+                        "hairline": "#E5E5E5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-padding": "160px",
+                        "margin-desktop": "80px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "display-xl": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                        "display-xl": ["80px", {"lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "300"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "300"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #ffffff;
+            color: #191c1a;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-lg text-body-lg antialiased">
+<!-- TopAppBar -->
+<nav class="bg-white dark:bg-zinc-950 border-b-[0.5px] border-zinc-200 dark:border-zinc-800 shadow-none fixed top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-8 py-6 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-emerald-900 dark:text-emerald-500 cursor-pointer active:opacity-80 transition-opacity" data-icon="grid_view">grid_view</span>
+<h1 class="text-xl font-black tracking-tighter text-emerald-900 dark:text-emerald-400 font-sans tracking-tight uppercase font-bold text-xs">ENTREPRENEUR_NETWORK</h1>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-900 dark:border-emerald-400 pb-1 font-label-caps text-label-caps uppercase" href="#">Discover</a>
+<a class="text-zinc-400 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors duration-200 font-label-caps text-label-caps uppercase" href="#">Network</a>
+<a class="text-zinc-400 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors duration-200 font-label-caps text-label-caps uppercase" href="#">Messages</a>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-hairline">
+<img class="w-full h-full object-cover" data-alt="professional headshot of a mature entrepreneur with a confident expression, neutral background, grayscale styling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6s6efbyN1ruB3k9A8ZzbB_ytxVS5IJHIOpSZ0wn7H7SW_jWuYnEjMtf5GUxb48pQ8T8iP4Urvk1IbPEI6JKxe62CR8xx_qhUo1gqUkXl1L5YB4dyzymZxKd_dVNm_WEqQFITNvPvgFDaZS0oWKKlRocAIYJwKFXBKgPBloelAGRv59oH46PWGS-I89nO6LIAYycCBpbxkIZP--NLjp6ZLMpqt0Q5wWBv4gISOoPV0XvewglGcZSoBh56fSlcs5jSLujkN6EhTe-U"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-[120px] pb-section-padding px-margin-desktop max-w-screen-2xl mx-auto">
+<!-- Search Section -->
+<header class="mb-16">
+<h2 class="font-headline-lg text-headline-lg mb-8">Samenmakers</h2>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex-1 max-w-2xl">
+<label class="font-label-caps text-label-caps block mb-3 uppercase opacity-60">Zoekopdracht</label>
+<div class="flex items-center border-b border-on-surface focus-within:border-b-2 transition-all pb-2">
+<input class="bg-transparent border-none focus:ring-0 w-full font-headline-md text-headline-md p-0 placeholder:opacity-20" placeholder="Ondernemers" type="text" value="Samenmakers"/>
+<button class="ml-4 p-2 transition-colors duration-200 hover:bg-zinc-50">
+<span class="material-symbols-outlined text-2xl" data-icon="tune">tune</span>
+</button>
+</div>
+</div>
+<div class="text-right">
+<p class="font-body-sm text-body-sm opacity-50">124 resultaten gevonden</p>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex flex-wrap gap-4 mt-12">
+<button class="flex items-center gap-2 border border-hairline px-6 py-2 rounded-full hover:bg-zinc-50 transition-colors">
+<span class="font-label-caps text-label-caps uppercase">Regio</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+<button class="flex items-center gap-2 border border-hairline px-6 py-2 rounded-full hover:bg-zinc-50 transition-colors">
+<span class="font-label-caps text-label-caps uppercase">Sector</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+<button class="flex items-center gap-2 border border-hairline px-6 py-2 rounded-full hover:bg-zinc-50 transition-colors">
+<span class="font-label-caps text-label-caps uppercase">Missie</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</header>
+<!-- Results List -->
+<section class="space-y-0">
+<!-- Result Card 1 -->
+<div class="group border-t border-hairline py-12 flex flex-col md:flex-row gap-12 items-start hover:bg-zinc-50/50 transition-colors">
+<div class="w-32 h-32 md:w-48 md:h-48 grayscale shrink-0 bg-zinc-100">
+<img class="w-full h-full object-cover" data-alt="portrait of a creative professional male in a minimal studio setting, high contrast grayscale lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXEXSTtcT-t_YDDYSIRn_ZZGkBErjM26u2vqckRFarvjmsSPZaJk2oIfmgWjImjSxgEF-BmJObbyqfcSwDGV5bgPswdvuwgpSjtuwPqvHkg-2lKHHoRTQFd46ef_KhMxUCBaREmgiDoH_yK58Wm4q4_nJ9-G18NpufSElXrByqidt-pgiaIlsdq87v0Wmt-4pG877LrR3TS3_m2_EmJWyjMRW4rpGNYSwjVnGtILvkQ0X0PCGNVpBORoJ7NVnjGwDpbFBZD5Wr3t0"/>
+</div>
+<div class="flex-1 flex flex-col justify-between h-full py-2">
+<div>
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-md text-headline-md">Pieter de Vreeze</h3>
+<span class="font-label-caps text-label-caps opacity-40 uppercase">Amsterdam, NL</span>
+</div>
+<p class="font-body-lg text-body-lg max-w-2xl opacity-70">
+                            "Wij bouwen aan een circulaire economie door lokale 'samenmakers' te koppelen aan onbenutte reststromen in de haven van Amsterdam."
+                        </p>
+</div>
+<div class="mt-8">
+<button class="border border-on-surface px-8 py-3 font-label-caps text-label-caps uppercase hover:bg-on-surface hover:text-white transition-all duration-300">Connecteren</button>
+</div>
+</div>
+</div>
+<!-- Result Card 2 -->
+<div class="group border-t border-hairline py-12 flex flex-col md:flex-row gap-12 items-start hover:bg-zinc-50/50 transition-colors">
+<div class="w-32 h-32 md:w-48 md:h-48 grayscale shrink-0 bg-zinc-100">
+<img class="w-full h-full object-cover" data-alt="professional female entrepreneur looking thoughtfully into the distance, black and white photography, minimalist architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2XxJMXQRo6e-gEdvc98HC3ivzHq5RT4xpHA9376NoefEk_AllR5wH3j6w8LaSaA-Tvv_ygV8Dep4pakn5b_2p9Mdg_p_U3xAJBzhKTtA-mL6h3HvC23BaSvV20zLw1QRmqrVqXrsTFeqD4oJS6QjpphbxGmt-aUjW09Sp4P_6Lg1EcfGeuIlH-j7VZ5HYHU8-zTkt8nGbsoj-VSXI5rU9dKL51z22vyK59O51hhV86feoOyY5tpSpxMI3EhwwPhBbV0rRpzHMjbg"/>
+</div>
+<div class="flex-1 flex flex-col justify-between h-full py-2">
+<div>
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-md text-headline-md">Annelies Verhoeven</h3>
+<span class="font-label-caps text-label-caps opacity-40 uppercase">Eindhoven, NL</span>
+</div>
+<p class="font-body-lg text-body-lg max-w-2xl opacity-70">
+                            "Mijn missie is om sociale cohesie te versterken in wijken door co-creatie platformen te faciliteren voor bewoners en ondernemers."
+                        </p>
+</div>
+<div class="mt-8">
+<button class="border border-on-surface px-8 py-3 font-label-caps text-label-caps uppercase hover:bg-on-surface hover:text-white transition-all duration-300">Connecteren</button>
+</div>
+</div>
+</div>
+<!-- Result Card 3 -->
+<div class="group border-t border-hairline py-12 flex flex-col md:flex-row gap-12 items-start hover:bg-zinc-50/50 transition-colors">
+<div class="w-32 h-32 md:w-48 md:h-48 grayscale shrink-0 bg-zinc-100">
+<img class="w-full h-full object-cover" data-alt="man in business casual attire leaning against a clean white wall, sharp shadows, high key black and white portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz8qdVqien-B6lnGZnJwUTlp1dpNxIy13Dr_cOC0v3OWWGFxHvwDpk4G5UMtbgB6wxjiutktbkVAssLQGRKofUpeb3jBw6tjGvbjT3oHVWmcjGxc-DqdoiYqHDl4F-xADgh-lPNS-APAGqeVw18CFuQLThYs74Ql_tVhpB5eCPX41ObYbffPglyU-pnd20DPb5_2mWzjd1XCkc4ec70QfgJaHyvd9xuRl7gkXFdxoGJ5P8lbYcUqP0hwVd0fBiSUOqby-cDtQmAuo"/>
+</div>
+<div class="flex-1 flex flex-col justify-between h-full py-2">
+<div>
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline-md text-headline-md">Markus Twan</h3>
+<span class="font-label-caps text-label-caps opacity-40 uppercase">Rotterdam, NL</span>
+</div>
+<p class="font-body-lg text-body-lg max-w-2xl opacity-70">
+                            "Als strategisch partner voor Samenmakers focus ik op het schalen van maatschappelijke impact door middel van technologie en datagedreven beleid."
+                        </p>
+</div>
+<div class="mt-8">
+<button class="border border-on-surface px-8 py-3 font-label-caps text-label-caps uppercase hover:bg-on-surface hover:text-white transition-all duration-300">Connecteren</button>
+</div>
+</div>
+</div>
+<!-- Last card divider -->
+<div class="border-t border-hairline w-full"></div>
+</section>
+<!-- Pagination / Load More -->
+<footer class="mt-24 text-center">
+<button class="font-label-caps text-label-caps uppercase border-b border-on-surface pb-1 hover:opacity-50 transition-opacity">
+                Toon meer resultaten
+            </button>
+</footer>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-white dark:bg-zinc-950 px-6 border-t-[0.5px] border-zinc-200 dark:border-zinc-800 shadow-none">
+<div class="flex flex-col items-center justify-center text-emerald-900 dark:text-emerald-400 font-bold transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold">Discover</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-emerald-800 dark:hover:text-emerald-300 transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold">Network</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-emerald-800 dark:hover:text-emerald-300 transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold">Messages</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-emerald-800 dark:hover:text-emerald-300 transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-sans uppercase tracking-widest text-[10px] font-bold">Profile</span>
+</div>
+</nav>
+</body></html>
