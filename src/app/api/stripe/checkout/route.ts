@@ -6,9 +6,8 @@ import { users } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { env } from "@/env";
 
-const stripe = new Stripe(env.STRIPE_SECRET_KEY);
-
 export async function POST() {
+  const stripe = new Stripe(env.STRIPE_SECRET_KEY);
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
