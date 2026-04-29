@@ -30,14 +30,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verifyRequest: "/verificeer",
   },
   providers: [
-    Google({
-      clientId: env.AUTH_GOOGLE_ID,
-      clientSecret: env.AUTH_GOOGLE_SECRET,
-    }),
-    LinkedIn({
-      clientId: env.AUTH_LINKEDIN_ID,
-      clientSecret: env.AUTH_LINKEDIN_SECRET,
-    }),
+    ...(env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET
+      ? [Google({ clientId: env.AUTH_GOOGLE_ID, clientSecret: env.AUTH_GOOGLE_SECRET })]
+      : []),
+    ...(env.AUTH_LINKEDIN_ID && env.AUTH_LINKEDIN_SECRET
+      ? [LinkedIn({ clientId: env.AUTH_LINKEDIN_ID, clientSecret: env.AUTH_LINKEDIN_SECRET })]
+      : []),
     Credentials({
       credentials: {
         email: { label: "E-mail", type: "email" },
