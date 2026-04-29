@@ -62,7 +62,7 @@ export function EventsList({ initialItems }: { initialItems: Events }) {
           <p className="text-on-surface-variant">Geen events gevonden</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
@@ -79,45 +79,49 @@ function EventCard({ event }: { event: Event }) {
   const attendeeCount = event.attendees.filter((a) => a.status === "registered").length;
 
   return (
-    <Link href={`/events/${event.id}`}>
-      <Card className="h-full">
-        <CardBody className="p-5 h-full flex flex-col">
-          <div className="flex gap-4 mb-4">
-            <div className="shrink-0 w-12 text-center border border-hairline py-2">
-              <span className="text-[10px] font-bold text-outline uppercase block">
+    <Link href={`/events/${event.id}`} className="block">
+      <Card className="h-full hover:border-on-surface transition-colors">
+        <CardBody className="p-4 sm:p-5 h-full flex flex-col gap-3">
+          {/* Date + title row */}
+          <div className="flex gap-3">
+            <div className="shrink-0 w-11 text-center border border-hairline py-1.5">
+              <span className="text-[9px] font-bold text-outline uppercase block leading-none mb-0.5">
                 {date.toLocaleDateString("nl-NL", { month: "short" })}
               </span>
-              <span className="text-2xl font-black text-on-surface leading-none block">
+              <span className="text-xl font-black text-on-surface leading-none block">
                 {date.getDate()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-black text-on-surface truncate">{event.title}</h3>
+              <h3 className="font-black text-on-surface text-sm sm:text-base leading-snug line-clamp-2">
+                {event.title}
+              </h3>
               <div className="flex items-center gap-1 text-xs text-outline mt-1">
-                <Calendar size={11} />
-                <span>{formatDateTime(event.startAt)}</span>
+                <Calendar size={10} className="shrink-0" />
+                <span className="truncate">{formatDateTime(event.startAt)}</span>
               </div>
             </div>
           </div>
 
+          {/* Description */}
           {event.description && (
-            <p className="text-body-sm text-on-surface-variant line-clamp-2 mb-4 flex-1">
+            <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">
               {event.description}
             </p>
           )}
 
-          <div className="flex items-center justify-between mt-auto">
-            <div className="flex items-center gap-1 text-xs text-outline">
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-auto pt-1 border-t border-hairline">
+            <div className="flex items-center gap-1 text-xs text-outline min-w-0">
               {event.isOnline ? (
-                <><Monitor size={12} /> Online</>
+                <><Monitor size={11} className="shrink-0" /><span className="truncate">Online</span></>
               ) : (
-                <><MapPin size={12} /> {event.location ?? "Locatie TBD"}</>
+                <><MapPin size={11} className="shrink-0" /><span className="truncate">{event.location ?? "Locatie TBD"}</span></>
               )}
             </div>
-            <div className="flex items-center gap-1 text-xs text-outline">
-              <Users size={12} />
-              {attendeeCount}
-              {event.maxAttendees && ` / ${event.maxAttendees}`}
+            <div className="flex items-center gap-1 text-xs text-outline shrink-0 ml-2">
+              <Users size={11} />
+              <span>{attendeeCount}{event.maxAttendees ? ` / ${event.maxAttendees}` : ""}</span>
             </div>
           </div>
         </CardBody>
