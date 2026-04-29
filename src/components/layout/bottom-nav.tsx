@@ -20,7 +20,7 @@ export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-white hairline-t z-50 flex justify-around items-stretch h-16">
+    <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-white hairline-t z-50 flex justify-around items-stretch h-bottom-nav">
       {navItems.map(({ href, label, icon: Icon }) => {
         const isActive =
           pathname === href || pathname.startsWith(href + "/");
@@ -31,7 +31,7 @@ export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
             key={href}
             href={href}
             className={cn(
-              "flex flex-col items-center justify-center flex-1 gap-1 pt-2 pb-3 transition-colors relative",
+              "flex flex-col items-center justify-start flex-1 gap-1 pt-2 transition-colors relative",
               isActive
                 ? "text-primary border-t-2 border-primary"
                 : "text-outline",
@@ -45,7 +45,7 @@ export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
                 </span>
               )}
             </div>
-            <span className="text-[9px] font-bold tracking-widest uppercase leading-none">
+            <span className="text-[10px] font-bold tracking-widest uppercase leading-none">
               {label}
             </span>
           </Link>

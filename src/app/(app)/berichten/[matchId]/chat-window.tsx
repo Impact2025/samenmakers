@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Send, ArrowLeft } from "lucide-react";
+import { Send, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
+import { ZOEKT_NAAR_OPTIONS } from "@/lib/constants";
 import PusherClient from "pusher-js";
 import { trpc } from "@/trpc/client";
 import { Avatar } from "@/components/ui/avatar";
@@ -16,7 +17,14 @@ type Messages = inferRouterOutputs<AppRouter>["messages"]["history"]["items"];
 interface Props {
   matchId: string;
   myId: string;
-  other: { id: string; naam: string; avatarUrl: string | null | undefined };
+  other: {
+    id: string;
+    naam: string;
+    avatarUrl: string | null | undefined;
+    missie?: string | null;
+    ikZoek?: string | null;
+    zoektNaar?: string[];
+  };
   initialMessages: Messages;
 }
 
@@ -33,7 +41,9 @@ function getPusher() {
 
 export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
   const [content, setContent] = useState("");
+  const [contextOpen, setContextOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hasContext = !!(other.missie ?? other.ikZoek ?? (other.zoektNaar && other.zoektNaar.length > 0));
   const utils = trpc.useUtils();
 
   const { data } = trpc.messages.history.useQuery(
@@ -86,16 +96,50 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
     <>
       {/* Header */}
       <div className="flex items-center gap-4 py-4 hairline-b shrink-0">
-        <Link href="/berichten" className="text-outline hover:text-on-surface lg:hidden">
+        <Link href="/berichten" className="p-2 -ml-2 text-outline hover:text-on-surface lg:hidden">
           <ArrowLeft size={20} />
         </Link>
-        <Link href={`/makers/${other.id}`} className="flex items-center gap-3 group">
+        <Link href={`/makers/${other.id}`} className="flex items-center gap-3 group flex-1 min-w-0">
           <Avatar src={other.avatarUrl} naam={other.naam} size="sm" grayscale={false} />
-          <span className="font-semibold text-on-surface group-hover:text-primary transition-colors">
+          <span className="font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
             {other.naam}
           </span>
         </Link>
+        {hasContext && (
+          <button
+            onClick={() => setContextOpen((v) => !v)}
+            className="p-2 -mr-2 text-outline hover:text-on-surface transition-colors shrink-0"
+            aria-label={contextOpen ? "Context verbergen" : "Context tonen"}
+          >
+            {contextOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
+        )}
       </div>
+
+      {/* Context panel */}
+      {hasContext && contextOpen && (
+        <div className="bg-surface-container-low hairline-b px-4 py-3 text-xs space-y-2 shrink-0">
+          <p className="text-label-caps text-outline mb-1">{other.naam.toUpperCase()}</p>
+          {other.missie && (
+            <p className="text-on-surface-variant">
+              <span className="font-semibold text-on-surface">Missie: </span>{other.missie}
+            </p>
+          )}
+          {other.zoektNaar && other.zoektNaar.length > 0 && (
+            <p className="text-on-surface-variant">
+              <span className="font-semibold text-on-surface">Op zoek naar: </span>
+              {other.zoektNaar
+                .map((z) => ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z)
+                .join(", ")}
+            </p>
+          )}
+          {other.ikZoek && !other.zoektNaar?.length && (
+            <p className="text-on-surface-variant">
+              <span className="font-semibold text-on-surface">Zoekt: </span>{other.ikZoek}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto py-6 space-y-4">
@@ -115,7 +159,7 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
                 <Avatar src={other.avatarUrl} naam={other.naam} size="xs" grayscale={false} />
               )}
               <div
-                className={`max-w-xs lg:max-w-md group flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                className={`max-w-[80vw] lg:max-w-md group flex flex-col ${isMe ? "items-end" : "items-start"}`}
               >
                 <div
                   className={`px-4 py-3 text-sm ${
@@ -137,12 +181,12 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSend} className="flex gap-3 hairline-t pt-4 shrink-0">
+      <form onSubmit={handleSend} className="flex gap-3 hairline-t pt-4 pb-safe shrink-0">
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Typ een bericht…"
-          className="flex-1 border border-hairline bg-white px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface"
+          className="flex-1 border border-hairline bg-white px-4 py-3 text-base text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface"
           disabled={send.isPending}
         />
         <button

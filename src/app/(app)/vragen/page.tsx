@@ -15,13 +15,13 @@ export default async function VragenPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <p className="text-label-caps text-outline mb-1">COMMUNITY</p>
           <h1 className="text-headline-md text-on-surface">Vragen & Antwoorden</h1>
         </div>
-        <Link href="/vragen/nieuw">
-          <Button variant="primary">+ Stel vraag</Button>
+        <Link href="/vragen/nieuw" className="shrink-0 mt-1">
+          <Button size="sm" variant="primary">+ Vraag</Button>
         </Link>
       </div>
 

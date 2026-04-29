@@ -140,6 +140,11 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, [role="button"] {
+  touch-action: manipulation;
 }
 
 html {
@@ -164,3 +169,20 @@ body {
 /* ===== SCROLLBAR UTILITIES ===== */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===== SAFE AREA UTILITIES ===== */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
+/* Bottom nav: fixed height + safe area so it covers the home indicator */
+.h-bottom-nav { height: calc(4rem + env(safe-area-inset-bottom)); }
+/* Main content offset: nav height + safe area */
+.pb-bottom-nav { padding-bottom: calc(4rem + env(safe-area-inset-bottom)); }
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

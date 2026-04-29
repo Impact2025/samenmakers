@@ -24,12 +24,12 @@ export default async function NotificatiesPage() {
 
   return (
     <div className="max-w-xl">
-      <div className="flex items-center justify-between mb-8">
-        <div>
+      <div className="flex items-center justify-between gap-4 mb-8">
+        <div className="min-w-0">
           <p className="text-label-caps text-outline mb-1">ACCOUNT</p>
           <h1 className="text-headline-md text-on-surface">Notificaties</h1>
         </div>
-        {unreadCount > 0 && <MarkAllReadButton />}
+        {unreadCount > 0 && <div className="shrink-0"><MarkAllReadButton /></div>}
       </div>
 
       {notifications.length === 0 ? (

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
-import { SECTOREN, REGIO_S, FASEN, MENTORSHIP_ROLES } from "@/lib/constants";
+import { SECTOREN, REGIO_S, FASEN, MENTORSHIP_ROLES, ZOEKT_NAAR_OPTIONS } from "@/lib/constants";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
@@ -28,6 +28,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl ?? "");
   const [uploading, setUploading] = useState(false);
   const [expertise, setExpertise] = useState<string[]>(user.expertise ?? []);
+  const [zoektNaar, setZoektNaar] = useState<string[]>((user as { zoektNaar?: string[] }).zoektNaar ?? []);
 
   const [form, setForm] = useState({
     naam: user.naam ?? "",
@@ -72,6 +73,12 @@ export function ProfileEditForm({ user }: { user: Me }) {
     );
   }
 
+  function toggleZoektNaar(value: string) {
+    setZoektNaar((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    );
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     startTransition(() => {
@@ -87,6 +94,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
         linkedin: form.linkedin || undefined,
         mentorshipRole: form.mentorshipRole as "mentor" | "mentee" | "both" | "none",
         expertise,
+        zoektNaar,
       });
     });
   }
@@ -177,7 +185,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       {/* Context */}
       <section className="space-y-4">
         <h2 className="text-label-caps text-outline hairline-b pb-3">CONTEXT</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-label-caps text-outline block mb-2">SECTOR</label>
             <select
@@ -223,6 +231,34 @@ export function ProfileEditForm({ user }: { user: Me }) {
               </button>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Zoekt naar */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-label-caps text-outline hairline-b pb-3">WAT ZOEK JE?</h2>
+          <p className="text-body-sm text-outline mt-2">Selecteer wat je zoekt in een samenwerking. Dit helpt ons je betere matches te tonen.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {ZOEKT_NAAR_OPTIONS.map(({ value, label }) => {
+            const selected = zoektNaar.includes(value);
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => toggleZoektNaar(value)}
+                className={`px-3 py-1.5 text-xs font-semibold tracking-wide border transition-colors ${
+                  selected
+                    ? "bg-primary text-on-primary border-primary"
+                    : "border-hairline text-outline hover:border-on-surface"
+                }`}
+              >
+                {selected && <X size={10} className="inline mr-1" />}
+                {label}
+              </button>
+            );
+          })}
         </div>
       </section>
 

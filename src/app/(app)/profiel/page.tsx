@@ -24,14 +24,14 @@ export default async function MyProfilePage() {
   return (
     <div className="max-w-2xl space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <p className="text-label-caps text-outline mb-1">JOUW PROFIEL</p>
-          <h1 className="text-headline-md text-on-surface">{me.naam ?? me.name}</h1>
+          <h1 className="text-headline-md text-on-surface truncate">{me.naam ?? me.name}</h1>
         </div>
-        <Link href="/profiel/bewerken">
-          <Button variant="secondary">
-            <Pencil size={14} className="mr-2" />
+        <Link href="/profiel/bewerken" className="shrink-0 mt-1">
+          <Button size="sm" variant="secondary">
+            <Pencil size={13} className="mr-1.5" />
             Bewerken
           </Button>
         </Link>

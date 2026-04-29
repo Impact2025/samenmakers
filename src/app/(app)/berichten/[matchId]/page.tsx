@@ -31,7 +31,14 @@ export default async function ChatPage({ params }: Props) {
       <ChatWindow
         matchId={matchId}
         myId={session.user.id}
-        other={{ id: other.id, naam: other.naam ?? other.name ?? "Maker", avatarUrl: other.avatarUrl }}
+        other={{
+          id: other.id,
+          naam: other.naam ?? other.name ?? "Maker",
+          avatarUrl: other.avatarUrl,
+          missie: other.missie ?? null,
+          ikZoek: other.ikZoek ?? null,
+          zoektNaar: (other as { zoektNaar?: string[] }).zoektNaar ?? [],
+        }}
         initialMessages={history.items}
       />
     </div>

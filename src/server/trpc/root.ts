@@ -9,9 +9,11 @@ import { connectionsRouter } from "@/server/trpc/routers/connections";
 import { reportsRouter } from "@/server/trpc/routers/reports";
 import { questionsRouter } from "@/server/trpc/routers/questions";
 import { adminRouter } from "@/server/trpc/routers/admin";
+import { endorsementsRouter } from "@/server/trpc/routers/endorsements";
 
 export const appRouter = createTRPCRouter({
   users: usersRouter,
+  endorsements: endorsementsRouter,
   matches: matchesRouter,
   messages: messagesRouter,
   notifications: notificationsRouter,

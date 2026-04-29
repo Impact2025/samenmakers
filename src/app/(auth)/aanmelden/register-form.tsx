@@ -91,6 +91,7 @@ export function RegisterForm({ referralCode }: { referralCode?: string }) {
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             placeholder="Jouw volledige naam"
+            autoComplete="name"
             required
             minLength={2}
           />
@@ -102,6 +103,8 @@ export function RegisterForm({ referralCode }: { referralCode?: string }) {
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             placeholder="jij@bedrijf.nl"
+            autoComplete="email"
+            inputMode="email"
             required
           />
         </div>
@@ -112,6 +115,7 @@ export function RegisterForm({ referralCode }: { referralCode?: string }) {
             value={form.password}
             onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
             placeholder="Minimaal 8 tekens"
+            autoComplete="new-password"
             required
             minLength={8}
           />

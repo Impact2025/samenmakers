@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and, ne, notInArray, ilike, or, sql } from "drizzle-orm";
+import { eq, and, ne, notInArray, inArray, ilike, or, sql } from "drizzle-orm";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -109,6 +109,7 @@ export const usersRouter = createTRPCRouter({
         bio: z.string().max(500).optional(),
         missie: z.string().max(300).optional(),
         ikZoek: z.string().max(300).optional(),
+        zoektNaar: z.array(z.string().max(30)).max(8).optional(),
         sector: z.enum(SECTOREN).optional(),
         regio: z.enum(REGIO_S).optional(),
         fase: z.enum(["starter", "groei", "scale"]).optional(),
@@ -140,59 +141,48 @@ export const usersRouter = createTRPCRouter({
     return user?.profileCompleteness ?? 0;
   }),
 
-  // Mutual connections count
+  // Mutual connections count (people matched with BOTH me and target)
   mutualCount: protectedProcedure
     .input(z.object({ targetId: z.string() }))
     .query(async ({ ctx, input }) => {
-      // Users who are matched with BOTH ctx.userId and targetId
-      const myMatches = await ctx.db
-        .select({ otherId: matches.targetId })
-        .from(matches)
-        .where(
-          and(
-            eq(matches.userId, ctx.userId),
-            eq(matches.status, "matched"),
-          ),
-        );
+      // Collect all my match partner IDs (both as initiator and receiver)
+      const [asUser, asTarget] = await Promise.all([
+        ctx.db.select({ id: matches.targetId }).from(matches).where(and(eq(matches.userId, ctx.userId), eq(matches.status, "matched"))),
+        ctx.db.select({ id: matches.userId }).from(matches).where(and(eq(matches.targetId, ctx.userId), eq(matches.status, "matched"))),
+      ]);
+      const myPartnerIds = [...asUser.map((r) => r.id), ...asTarget.map((r) => r.id)];
+      if (myPartnerIds.length === 0) return 0;
 
-      if (myMatches.length === 0) return 0;
-
-      const myMatchIds = myMatches.map((m) => m.otherId);
-
-      const mutual = await ctx.db
-        .select({ count: sql<number>`count(*)` })
-        .from(matches)
-        .where(
-          and(
-            eq(matches.userId, input.targetId),
-            eq(matches.status, "matched"),
-            notInArray(matches.targetId, myMatchIds),
-          ),
-        );
-
-      return Number(mutual[0]?.count ?? 0);
+      // Count target's match partners that overlap with mine
+      const [targetAsUser, targetAsTarget] = await Promise.all([
+        ctx.db.select({ id: matches.targetId }).from(matches).where(and(eq(matches.userId, input.targetId), eq(matches.status, "matched"), inArray(matches.targetId, myPartnerIds))),
+        ctx.db.select({ id: matches.userId }).from(matches).where(and(eq(matches.targetId, input.targetId), eq(matches.status, "matched"), inArray(matches.userId, myPartnerIds))),
+      ]);
+      const mutualIds = new Set([...targetAsUser.map((r) => r.id), ...targetAsTarget.map((r) => r.id)]);
+      mutualIds.delete(ctx.userId);
+      mutualIds.delete(input.targetId);
+      return mutualIds.size;
     }),
 });
 
-function calculateCompleteness(
-  profile: Record<string, unknown>,
-): number {
-  const fields = [
-    "naam",
-    "bio",
-    "missie",
-    "ikZoek",
-    "sector",
-    "regio",
-    "fase",
-    "avatarUrl",
-    "expertise",
-    "linkedin",
+function calculateCompleteness(profile: Record<string, unknown>): number {
+  const weightedFields = [
+    { field: "naam",       weight: 15 },
+    { field: "avatarUrl",  weight: 15 },
+    { field: "missie",     weight: 15 },
+    { field: "zoektNaar",  weight: 12 },
+    { field: "expertise",  weight: 10 },
+    { field: "bio",        weight: 10 },
+    { field: "sector",     weight: 8  },
+    { field: "ikZoek",     weight: 7  },
+    { field: "regio",      weight: 5  },
+    { field: "fase",       weight: 3  },
   ];
-  const filled = fields.filter((f) => {
-    const v = profile[f];
-    if (Array.isArray(v)) return v.length > 0;
-    return v !== undefined && v !== null && v !== "";
-  });
-  return Math.round((filled.length / fields.length) * 100);
+  let score = 0;
+  for (const { field, weight } of weightedFields) {
+    const v = profile[field];
+    const filled = Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && v !== "";
+    if (filled) score += weight;
+  }
+  return Math.min(score, 100);
 }

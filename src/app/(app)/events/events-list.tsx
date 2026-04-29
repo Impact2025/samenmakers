@@ -27,29 +27,31 @@ export function EventsList({ initialItems }: { initialItems: Events }) {
   return (
     <div className="space-y-6">
       {/* Toggle */}
-      <div className="flex gap-3">
-        <button
-          onClick={() => setUpcoming(true)}
-          className={`px-5 py-2 text-label-caps border transition-colors ${
-            upcoming
-              ? "bg-on-surface text-on-primary border-on-surface"
-              : "border-hairline text-outline hover:border-on-surface"
-          }`}
-        >
-          Komend
-        </button>
-        <button
-          onClick={() => setUpcoming(false)}
-          className={`px-5 py-2 text-label-caps border transition-colors ${
-            !upcoming
-              ? "bg-on-surface text-on-primary border-on-surface"
-              : "border-hairline text-outline hover:border-on-surface"
-          }`}
-        >
-          Afgelopen
-        </button>
-        <Link href="/events/nieuw" className="ml-auto">
-          <Button variant="primary">+ Nieuw event</Button>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setUpcoming(true)}
+            className={`px-5 py-2 text-label-caps border transition-colors ${
+              upcoming
+                ? "bg-on-surface text-on-primary border-on-surface"
+                : "border-hairline text-outline hover:border-on-surface"
+            }`}
+          >
+            Komend
+          </button>
+          <button
+            onClick={() => setUpcoming(false)}
+            className={`px-5 py-2 text-label-caps border transition-colors ${
+              !upcoming
+                ? "bg-on-surface text-on-primary border-on-surface"
+                : "border-hairline text-outline hover:border-on-surface"
+            }`}
+          >
+            Afgelopen
+          </button>
+        </div>
+        <Link href="/events/nieuw" className="shrink-0">
+          <Button size="sm" variant="primary">+ Nieuw</Button>
         </Link>
       </div>
 

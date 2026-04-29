@@ -27,7 +27,7 @@ export default async function AppLayout({
     <div className="min-h-screen bg-surface">
       <AppTopBar user={topBarUser} unreadNotifications={unreadNotifications} />
       <Sidebar />
-      <main className="lg:pl-72 pt-20 pb-16 lg:pb-0 min-h-screen">
+      <main className="lg:pl-72 pt-20 pb-bottom-nav lg:pb-0 min-h-screen">
         <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8">
           {children}
         </div>

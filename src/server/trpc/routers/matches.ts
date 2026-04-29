@@ -11,20 +11,15 @@ import { sendMatchEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notify";
 
 export const matchesRouter = createTRPCRouter({
-  // Get next N profiles to swipe
+  // Get next N profiles to swipe, scored by relevance
   swipeDeck: protectedProcedure
     .input(z.object({ limit: z.number().min(1).max(20).default(10) }))
     .query(async ({ ctx, input }) => {
-      // Already swiped IDs
-      const swiped = await ctx.db
-        .select({ targetId: matches.targetId })
-        .from(matches)
-        .where(eq(matches.userId, ctx.userId));
-
-      const blocked = await ctx.db
-        .select({ blockedId: blockedUsers.blockedId })
-        .from(blockedUsers)
-        .where(eq(blockedUsers.blockerId, ctx.userId));
+      const [me, swiped, blocked] = await Promise.all([
+        ctx.db.query.users.findFirst({ where: eq(users.id, ctx.userId) }),
+        ctx.db.select({ targetId: matches.targetId }).from(matches).where(eq(matches.userId, ctx.userId)),
+        ctx.db.select({ blockedId: blockedUsers.blockedId }).from(blockedUsers).where(eq(blockedUsers.blockerId, ctx.userId)),
+      ]);
 
       const excludeIds = [
         ctx.userId,
@@ -32,17 +27,35 @@ export const matchesRouter = createTRPCRouter({
         ...blocked.map((b) => b.blockedId),
       ];
 
+      // Relevance score: sector match (+3), regio match (+2), featured (+2),
+      // complementary mentorship (+2), has avatar (+1), has missie (+1), random noise
+      const sectorScore = me?.sector
+        ? sql`CASE WHEN ${users.sector} = ${me.sector} THEN 3 ELSE 0 END`
+        : sql`0`;
+      const regioScore = me?.regio
+        ? sql`CASE WHEN ${users.regio} = ${me.regio} THEN 2 ELSE 0 END`
+        : sql`0`;
+      const mentorshipScore = me?.mentorshipRole && me.mentorshipRole !== "none"
+        ? sql`CASE WHEN (
+            (${me.mentorshipRole} = 'mentor' AND (${users.mentorshipRole} = 'mentee' OR ${users.mentorshipRole} = 'both')) OR
+            (${me.mentorshipRole} = 'mentee' AND (${users.mentorshipRole} = 'mentor' OR ${users.mentorshipRole} = 'both')) OR
+            ${users.mentorshipRole} = 'both'
+          ) THEN 2 ELSE 0 END`
+        : sql`0`;
+
       return ctx.db
         .select()
         .from(users)
-        .where(
-          and(
-            notInArray(users.id, excludeIds),
-            eq(users.status, "active"),
-          ),
-        )
+        .where(and(notInArray(users.id, excludeIds), eq(users.status, "active")))
         .orderBy(
-          sql`${users.isFeatured} DESC, RANDOM()`,
+          sql`(
+            ${sectorScore} +
+            ${regioScore} +
+            ${mentorshipScore} +
+            CASE WHEN ${users.isFeatured} THEN 2 ELSE 0 END +
+            CASE WHEN ${users.avatarUrl} IS NOT NULL THEN 1 ELSE 0 END +
+            CASE WHEN ${users.missie} IS NOT NULL THEN 1 ELSE 0 END
+          ) DESC, RANDOM()`
         )
         .limit(input.limit);
     }),
@@ -146,12 +159,40 @@ export const matchesRouter = createTRPCRouter({
         }).catch(console.error);
       }
 
+      // Compute match reasons
+      const reasons: string[] = [];
+      if (me?.sector && target?.sector && me.sector === target.sector) {
+        reasons.push(`Beiden actief in ${me.sector}`);
+      }
+      if (me?.regio && target?.regio && me.regio === target.regio) {
+        reasons.push(`Beiden gevestigd in ${me.regio}`);
+      }
+      if (
+        (me?.mentorshipRole === "mentor" && (target?.mentorshipRole === "mentee" || target?.mentorshipRole === "both")) ||
+        (me?.mentorshipRole === "mentee" && (target?.mentorshipRole === "mentor" || target?.mentorshipRole === "both"))
+      ) {
+        reasons.push("Mentorship match");
+      }
+      const sharedExpertise = (me?.expertise ?? []).filter((e) =>
+        (target?.expertise ?? []).includes(e)
+      );
+      if (sharedExpertise.length > 0) {
+        reasons.push(`Gedeelde expertise: ${sharedExpertise.slice(0, 2).join(", ")}`);
+      }
+      if (me?.fase && target?.fase && me.fase === target.fase && reasons.length === 0) {
+        const faseLabel = me.fase === "starter" ? "startfase" : me.fase === "groei" ? "groeifase" : "scale-up fase";
+        reasons.push(`Beiden in de ${faseLabel}`);
+      }
+
       return {
         matched: true,
         matchId,
+        reasons,
         target: {
           naam: target?.naam,
           avatarUrl: target?.avatarUrl,
+          sector: target?.sector,
+          regio: target?.regio,
         },
       };
     }),

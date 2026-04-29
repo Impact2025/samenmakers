@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { SECTOREN, REGIO_S, FASEN, MENTORSHIP_ROLES } from "@/lib/constants";
+import { SECTOREN, REGIO_S, FASEN, MENTORSHIP_ROLES, ZOEKT_NAAR_OPTIONS } from "@/lib/constants";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
@@ -24,6 +24,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
     bio: user?.bio ?? "",
     missie: user?.missie ?? "",
     ikZoek: user?.ikZoek ?? "",
+    zoektNaar: (user as { zoektNaar?: string[] })?.zoektNaar ?? [] as string[],
     sector: user?.sector ?? "",
     regio: user?.regio ?? "",
     fase: user?.fase ?? "",
@@ -57,6 +58,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
       update.mutate({
         missie: form.missie || undefined,
         ikZoek: form.ikZoek || undefined,
+        zoektNaar: form.zoektNaar,
       });
     } else {
       update.mutate({
@@ -160,11 +162,41 @@ export function OnboardingFlow({ user }: { user: Me }) {
               />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">IK ZOEK</label>
+              <label className="text-label-caps text-outline block mb-2">WAT ZOEK JE? *</label>
+              <p className="text-body-sm text-outline mb-3">Dit bepaalt wie je te zien krijgt.</p>
+              <div className="flex flex-wrap gap-2">
+                {ZOEKT_NAAR_OPTIONS.map(({ value, label }) => {
+                  const selected = form.zoektNaar.includes(value);
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          zoektNaar: f.zoektNaar.includes(value)
+                            ? f.zoektNaar.filter((v) => v !== value)
+                            : [...f.zoektNaar, value],
+                        }))
+                      }
+                      className={`px-3 py-2 text-xs font-bold tracking-wide border transition-colors ${
+                        selected
+                          ? "bg-primary text-on-primary border-primary"
+                          : "border-hairline text-outline hover:border-on-surface"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div>
+              <label className="text-label-caps text-outline block mb-2">TOELICHTING (OPTIONEEL)</label>
               <Textarea
                 value={form.ikZoek}
                 onChange={(e) => setForm((f) => ({ ...f, ikZoek: e.target.value }))}
-                placeholder="Wat zoek jij in een samenwerking?"
+                placeholder="Vertel meer over wat je zoekt in een samenwerking"
                 rows={2}
               />
             </div>

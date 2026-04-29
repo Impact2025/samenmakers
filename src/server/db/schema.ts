@@ -125,6 +125,7 @@ export const users = pgTable(
     website: text("website"),
     linkedin: text("linkedin"),
     expertise: text("expertise").array().default([]).notNull(),
+    zoektNaar: text("zoekt_naar").array().default([]).notNull(),
     mentorshipRole: mentorshipRoleEnum("mentorship_role")
       .default("none")
       .notNull(),
@@ -591,6 +592,30 @@ export const connectionNotes = pgTable(
   ],
 );
 
+export const endorsements = pgTable(
+  "endorsements",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    endorserId: text("endorser_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    targetId: text("target_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    skill: text("skill").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("endorsements_unique_idx").on(t.endorserId, t.targetId, t.skill),
+    index("endorsements_target_idx").on(t.targetId),
+    index("endorsements_endorser_idx").on(t.endorserId),
+  ],
+);
+
 export const milestones = pgTable(
   "milestones",
   {
@@ -831,6 +856,13 @@ export const usersRelations = relations(users, ({ many }) => ({
   cohortMemberships: many(cohortMembers),
   referralsMade: many(referrals, { relationName: "referrer" }),
   pushSubscriptions: many(pushSubscriptions),
+  endorsementsGiven: many(endorsements, { relationName: "endorser" }),
+  endorsementsReceived: many(endorsements, { relationName: "target" }),
+}));
+
+export const endorsementsRelations = relations(endorsements, ({ one }) => ({
+  endorser: one(users, { fields: [endorsements.endorserId], references: [users.id], relationName: "endorser" }),
+  target: one(users, { fields: [endorsements.targetId], references: [users.id], relationName: "target" }),
 }));
 
 export const matchesRelations = relations(matches, ({ one, many }) => ({

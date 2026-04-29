@@ -19,7 +19,7 @@ export function AppTopBar({ user, unreadNotifications = 0, onMenuToggle }: AppTo
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuToggle}
-          className="lg:hidden text-on-surface p-1"
+          className="lg:hidden text-on-surface p-3 -ml-3"
           aria-label="Menu openen"
         >
           <Menu size={20} />
@@ -34,7 +34,7 @@ export function AppTopBar({ user, unreadNotifications = 0, onMenuToggle }: AppTo
 
       <div className="flex items-center gap-4">
         {/* Notification bell */}
-        <Link href="/notificaties" className="relative p-1 text-outline hover:text-on-surface transition-colors">
+        <Link href="/notificaties" className="relative p-3 -mr-1 text-outline hover:text-on-surface transition-colors">
           <Bell size={20} />
           {unreadNotifications > 0 && (
             <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-primary text-on-primary text-[9px] font-bold flex items-center justify-center px-0.5 leading-none">

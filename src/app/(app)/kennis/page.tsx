@@ -26,13 +26,13 @@ export default async function KennisPage({ searchParams }: Props) {
 
   return (
     <div>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <p className="text-label-caps text-outline mb-1">PLATFORM</p>
           <h1 className="text-headline-md text-on-surface">Kennisbank</h1>
         </div>
-        <Link href="/kennis/nieuw">
-          <Button variant="primary">+ Nieuw artikel</Button>
+        <Link href="/kennis/nieuw" className="shrink-0 mt-1">
+          <Button size="sm" variant="primary">+ Artikel</Button>
         </Link>
       </div>
 

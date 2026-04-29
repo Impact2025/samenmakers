@@ -59,6 +59,19 @@ export const MENTORSHIP_ROLES = [
   { value: "none", label: "Geen voorkeur" },
 ] as const;
 
+export const ZOEKT_NAAR_OPTIONS = [
+  { value: "co-founder", label: "Co-founder" },
+  { value: "mentor", label: "Mentor" },
+  { value: "mentee", label: "Mentee (coaching geven)" },
+  { value: "investeerder", label: "Investeerder" },
+  { value: "klant", label: "Klanten / gebruikers" },
+  { value: "leverancier", label: "Leverancier / partner" },
+  { value: "team-lid", label: "Team lid" },
+  { value: "leerpartner", label: "Leerpartner" },
+] as const;
+
+export type ZoektNaar = (typeof ZOEKT_NAAR_OPTIONS)[number]["value"];
+
 export const PRO_FEATURES = [
   "Onbeperkt swipen",
   "Wie bekeek mijn profiel",

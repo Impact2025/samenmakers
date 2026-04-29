@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and, or, asc, lt, desc, sql } from "drizzle-orm";
+import { eq, and, or, asc, lt, desc, sql, inArray, isNull } from "drizzle-orm";
 import Pusher from "pusher";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc/init";
 import { messages, matches } from "@/server/db/schema";
@@ -157,9 +157,9 @@ export const messagesRouter = createTRPCRouter({
       .from(messages)
       .where(
         and(
-          sql`${messages.matchId} = ANY(${myMatchIds.map((m) => m.id)})`,
+          inArray(messages.matchId, myMatchIds.map((m) => m.id)),
           sql`${messages.senderId} != ${ctx.userId}`,
-          sql`${messages.readAt} IS NULL`,
+          isNull(messages.readAt),
         ),
       );
 
