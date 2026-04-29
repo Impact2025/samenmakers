@@ -16,10 +16,10 @@ export default async function DashboardPage() {
 
 async function DashboardData() {
   const [me, matches, notifications, events] = await Promise.all([
-    api.users.me(),
-    api.matches.myMatches(),
-    api.notifications.list({ limit: 5 }),
-    api.events.list({ upcoming: true, limit: 3 }),
+    api.users.me().catch((e: unknown) => { console.error("[dashboard] users.me failed:", e); throw e; }),
+    api.matches.myMatches().catch((e: unknown) => { console.error("[dashboard] matches.myMatches failed:", e); throw e; }),
+    api.notifications.list({ limit: 5 }).catch((e: unknown) => { console.error("[dashboard] notifications.list failed:", e); throw e; }),
+    api.events.list({ upcoming: true, limit: 3 }).catch((e: unknown) => { console.error("[dashboard] events.list failed:", e); throw e; }),
   ]);
 
   return (
