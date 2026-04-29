@@ -38,7 +38,7 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
             Goedemorgen, {firstName}
           </h1>
         </div>
-        <Link href="/instellingen/notifications" className="relative">
+        <Link href="/notificaties" className="relative">
           <Bell size={22} className="text-outline" />
           {unreadNotifications > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center">
