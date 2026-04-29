@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
 const FROM = process.env.RESEND_FROM_EMAIL ?? "noreply@samenmakers.nl";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 
@@ -10,7 +14,7 @@ export async function sendWelcomeEmail(user: {
   name?: string | null;
 }) {
   const naam = user.naam ?? user.name ?? "Maker";
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: user.email,
     subject: "Welkom bij Samenmakers!",
@@ -39,7 +43,7 @@ export async function sendMatchEmail(opts: {
   matchNaam: string;
   matchId: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: opts.to,
     subject: `Nieuwe match: ${opts.matchNaam}`,
@@ -83,7 +87,7 @@ export async function sendWeeklyDigest(opts: {
     )
     .join("");
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: opts.to,
     subject: "Jouw wekelijkse Samenmakers update",
