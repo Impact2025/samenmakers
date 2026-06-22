@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
 import { PRO_FEATURES } from "@/lib/constants";
 import { StripeButton } from "./stripe-button";
+import { CheckoutWithCoupon } from "./checkout-with-coupon";
+import { SubscriptionRefresh } from "./subscription-refresh";
 
 export const metadata: Metadata = { title: "Abonnement" };
 
@@ -28,6 +30,8 @@ export default async function AbonnementPage({ searchParams }: Props) {
         <p className="text-label-caps text-outline mb-1">INSTELLINGEN</p>
         <h1 className="text-headline-md text-on-surface">Abonnement</h1>
       </div>
+
+      {justUpgraded && <SubscriptionRefresh />}
 
       {justUpgraded && (
         <div className="border border-primary/30 bg-primary/5 px-5 py-4">
@@ -70,7 +74,7 @@ export default async function AbonnementPage({ searchParams }: Props) {
                   </li>
                 ))}
               </ul>
-              <StripeButton action="checkout" />
+              <CheckoutWithCoupon />
             </CardBody>
           </Card>
 

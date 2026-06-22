@@ -32,6 +32,8 @@ export const adminRouter = createTRPCRouter({
       totalPosts,
       totalEvents,
       proUsers,
+      totalCohorts,
+      totalCohortMembers,
     ] = await Promise.all([
       ctx.db.select({ count: count() }).from(users),
       ctx.db.select({ count: count() }).from(users).where(gte(users.createdAt, thirtyDaysAgo)),
@@ -42,6 +44,8 @@ export const adminRouter = createTRPCRouter({
       ctx.db.select({ count: count() }).from(posts).where(eq(posts.isPublished, true)),
       ctx.db.select({ count: count() }).from(events).where(eq(events.isPublished, true)),
       ctx.db.select({ count: count() }).from(users).where(eq(users.subscriptionStatus, "active")),
+      ctx.db.select({ count: count() }).from(cohorts),
+      ctx.db.select({ count: count() }).from(cohortMembers),
     ]);
 
     const totalMatchCount = Number(totalMatches[0]?.count ?? 0);
@@ -59,6 +63,8 @@ export const adminRouter = createTRPCRouter({
       totalEvents: Number(totalEvents[0]?.count ?? 0),
       proUsers: Number(proUsers[0]?.count ?? 0),
       mrr: Number(proUsers[0]?.count ?? 0) * 9,
+      totalCohorts: Number(totalCohorts[0]?.count ?? 0),
+      totalCohortMembers: Number(totalCohortMembers[0]?.count ?? 0),
     };
   }),
 

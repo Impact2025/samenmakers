@@ -6,7 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardBody } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-utils";
 import { POST_CATEGORIES } from "@/lib/constants";
+import { renderMarkdown } from "@/lib/markdown";
 import { PostInteractions } from "./post-interactions";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -16,10 +19,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await api.posts.bySlug({ slug });
   if (!post) return { title: "Niet gevonden" };
+
+  const title = post.metaTitle ?? post.title;
+  const description = post.metaDescription ?? post.excerpt ?? undefined;
+  const image = post.ogImageUrl ?? post.coverImageUrl ?? undefined;
+  const canonical = post.canonicalUrl ?? `${APP_URL}/kennis/${post.slug}`;
+
   return {
-    title: post.title,
-    description: post.excerpt ?? undefined,
-    openGraph: { images: post.coverImageUrl ? [post.coverImageUrl] : [] },
+    title,
+    description,
+    keywords: post.keywords.length ? post.keywords : undefined,
+    alternates: { canonical },
+    openGraph: {
+      type: "article",
+      title,
+      description,
+      url: canonical,
+      images: image ? [image] : [],
+      publishedTime: post.publishedAt?.toISOString(),
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
@@ -28,8 +52,27 @@ export default async function PostPage({ params }: Props) {
   const post = await api.posts.bySlug({ slug });
   if (!post) notFound();
 
+  const canonical = post.canonicalUrl ?? `${APP_URL}/kennis/${post.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.metaDescription ?? post.excerpt ?? undefined,
+    image: post.ogImageUrl ?? post.coverImageUrl ?? undefined,
+    datePublished: post.publishedAt?.toISOString(),
+    dateModified: post.updatedAt?.toISOString(),
+    author: { "@type": "Person", name: post.author.naam ?? post.author.name ?? "Samenmakers" },
+    publisher: { "@type": "Organization", name: "Samenmakers" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+    keywords: post.keywords.join(", ") || undefined,
+  };
+
   return (
     <article className="max-w-2xl space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {post.coverImageUrl && (
         <div className="aspect-video w-full overflow-hidden border border-hairline">
           <img src={post.coverImageUrl} alt={post.title} className="w-full h-full object-cover" />
@@ -61,9 +104,10 @@ export default async function PostPage({ params }: Props) {
       </div>
 
       {/* Content */}
-      <div className="prose prose-sm max-w-none text-on-surface-variant">
-        <p className="whitespace-pre-line">{post.content}</p>
-      </div>
+      <div
+        className="prose prose-sm max-w-none text-on-surface-variant prose-headings:text-on-surface prose-a:text-primary prose-strong:text-on-surface"
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
+      />
 
       {/* Interactions */}
       <PostInteractions

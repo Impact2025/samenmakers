@@ -15,6 +15,14 @@
     {
       "path": "/api/jobs/gdpr-cleanup",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/jobs/management-daily",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/jobs/management-weekly",
+      "schedule": "30 7 * * 1"
     }
   ]
 }

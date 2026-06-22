@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { users, matches, events, posts } from "@/server/db/schema";
-import { eq, gte, and, desc, or, sql } from "drizzle-orm";
+import { eq, gte, and, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { subDays } from "@/lib/date-utils";
 import { sendWeeklyDigest } from "@/lib/email";
@@ -36,24 +36,25 @@ export async function GET(request: Request) {
     .orderBy(events.startAt)
     .limit(3);
 
+  // Fetch all matches made in the past week in one query, then tally per user.
+  // Avoids an N+1 (one count query per subscriber).
+  const recentMatched = await db
+    .select({ userId: matches.userId, targetId: matches.targetId })
+    .from(matches)
+    .where(and(eq(matches.status, "matched"), gte(matches.updatedAt, since)));
+
+  const matchCountByUser = new Map<string, number>();
+  for (const m of recentMatched) {
+    matchCountByUser.set(m.userId, (matchCountByUser.get(m.userId) ?? 0) + 1);
+    matchCountByUser.set(m.targetId, (matchCountByUser.get(m.targetId) ?? 0) + 1);
+  }
+
   let sent = 0;
   let failed = 0;
 
   for (const user of subscribers) {
     const naam = user.naam ?? user.name ?? "Maker";
-
-    // Count new matches in the past week
-    const newMatchesResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(matches)
-      .where(
-        and(
-          or(eq(matches.userId, user.id), eq(matches.targetId, user.id)),
-          eq(matches.status, "matched"),
-          gte(matches.updatedAt, since),
-        ),
-      );
-    const newMatches = Number(newMatchesResult[0]?.count ?? 0);
+    const newMatches = matchCountByUser.get(user.id) ?? 0;
 
     await sendWeeklyDigest({
       to: user.email ?? "",

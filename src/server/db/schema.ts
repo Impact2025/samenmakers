@@ -8,8 +8,9 @@ import {
   uniqueIndex,
   index,
   primaryKey,
+  check,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import type { AdapterAccountType } from "next-auth/adapters";
 
 // =============================================
@@ -96,6 +97,45 @@ export const scheduledContentTypeEnum = pgEnum("scheduled_content_type", [
   "event",
 ]);
 
+export const couponDiscountTypeEnum = pgEnum("coupon_discount_type", [
+  "percent",
+  "amount",
+]);
+
+export const couponDurationEnum = pgEnum("coupon_duration", [
+  "once",
+  "repeating",
+  "forever",
+]);
+
+export const crmStageEnum = pgEnum("crm_stage", [
+  "lead",
+  "engaged",
+  "customer",
+  "churned",
+]);
+
+export const crmActivityTypeEnum = pgEnum("crm_activity_type", [
+  "note",
+  "email",
+  "stage_change",
+  "tag",
+  "system",
+]);
+
+export const emailCampaignStatusEnum = pgEnum("email_campaign_status", [
+  "draft",
+  "sending",
+  "sent",
+  "failed",
+]);
+
+export const emailRecipientStatusEnum = pgEnum("email_recipient_status", [
+  "pending",
+  "sent",
+  "failed",
+]);
+
 // =============================================
 // AUTH TABLES (Auth.js v5 + DrizzleAdapter)
 // =============================================
@@ -158,6 +198,13 @@ export const users = pgTable(
       .default(true)
       .notNull(),
 
+    // CRM
+    crmStage: crmStageEnum("crm_stage").default("lead").notNull(),
+    crmTags: text("crm_tags").array().default([]).notNull(),
+    crmLastContactedAt: timestamp("crm_last_contacted_at", {
+      withTimezone: true,
+    }),
+
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -175,6 +222,7 @@ export const users = pgTable(
     index("users_featured_idx").on(t.isFeatured),
     index("users_mentorship_idx").on(t.mentorshipRole),
     index("users_status_idx").on(t.status),
+    index("users_crm_stage_idx").on(t.crmStage),
   ],
 );
 
@@ -304,6 +352,18 @@ export const posts = pgTable(
     content: text("content").notNull(),
     coverImageUrl: text("cover_image_url"),
     category: postCategoryEnum("category").notNull(),
+
+    // SEO
+    metaTitle: text("meta_title"),
+    metaDescription: text("meta_description"),
+    focusKeyword: text("focus_keyword"),
+    keywords: text("keywords").array().default([]).notNull(),
+    canonicalUrl: text("canonical_url"),
+    ogImageUrl: text("og_image_url"),
+    seoScore: integer("seo_score").default(0).notNull(),
+    readingTime: integer("reading_time").default(0).notNull(),
+    aiGenerated: boolean("ai_generated").default(false).notNull(),
+
     isPublished: boolean("is_published").default(false).notNull(),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -544,6 +604,11 @@ export const bookmarks = pgTable(
   (t) => [
     index("bookmarks_user_id_idx").on(t.userId),
     index("bookmarks_target_user_idx").on(t.targetUserId),
+    // A bookmark must point at either a user or a post — never neither.
+    check(
+      "bookmarks_target_present",
+      sql`${t.targetUserId} IS NOT NULL OR ${t.postId} IS NOT NULL`,
+    ),
   ],
 );
 
@@ -811,6 +876,148 @@ export const scheduledContent = pgTable(
   ],
 );
 
+// =============================================
+// CRM
+// =============================================
+
+export const crmActivities = pgTable(
+  "crm_activities",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    // The contact (platform user) this activity is about.
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // The admin who logged it (null for system-generated).
+    adminId: text("admin_id").references(() => users.id),
+    type: crmActivityTypeEnum("type").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("crm_activities_contact_id_idx").on(t.contactId),
+    index("crm_activities_created_at_idx").on(t.createdAt),
+  ],
+);
+
+export const emailCampaigns = pgTable(
+  "email_campaigns",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    subject: text("subject").notNull(),
+    // Markdown body; rendered to HTML at send time.
+    body: text("body").notNull(),
+    // Serialised segment filter (JSON).
+    segment: text("segment"),
+    status: emailCampaignStatusEnum("status").default("draft").notNull(),
+    recipientCount: integer("recipient_count").default(0).notNull(),
+    sentCount: integer("sent_count").default(0).notNull(),
+    failedCount: integer("failed_count").default(0).notNull(),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("email_campaigns_status_idx").on(t.status),
+    index("email_campaigns_created_at_idx").on(t.createdAt),
+  ],
+);
+
+export const emailCampaignRecipients = pgTable(
+  "email_campaign_recipients",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    campaignId: text("campaign_id")
+      .notNull()
+      .references(() => emailCampaigns.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    email: text("email").notNull(),
+    status: emailRecipientStatusEnum("status").default("pending").notNull(),
+    error: text("error"),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("email_recipients_campaign_id_idx").on(t.campaignId),
+    index("email_recipients_status_idx").on(t.status),
+  ],
+);
+
+// =============================================
+// COUPONS (mirror of Stripe coupons/promotion codes)
+// =============================================
+
+export const coupons = pgTable(
+  "coupons",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    code: text("code").notNull().unique(),
+    stripeCouponId: text("stripe_coupon_id"),
+    stripePromotionCodeId: text("stripe_promotion_code_id"),
+    description: text("description"),
+    discountType: couponDiscountTypeEnum("discount_type").notNull(),
+    // percent → 1–100, amount → cents
+    discountValue: integer("discount_value").notNull(),
+    currency: text("currency").default("eur").notNull(),
+    duration: couponDurationEnum("duration").default("once").notNull(),
+    durationInMonths: integer("duration_in_months"),
+    maxRedemptions: integer("max_redemptions"),
+    timesRedeemed: integer("times_redeemed").default(0).notNull(),
+    active: boolean("active").default(true).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("coupons_code_idx").on(t.code),
+    index("coupons_active_idx").on(t.active),
+  ],
+);
+
+export const couponRedemptions = pgTable(
+  "coupon_redemptions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    couponId: text("coupon_id")
+      .notNull()
+      .references(() => coupons.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    stripeSessionId: text("stripe_session_id"),
+    amountDiscounted: integer("amount_discounted"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("coupon_redemptions_coupon_id_idx").on(t.couponId),
+    index("coupon_redemptions_user_id_idx").on(t.userId),
+  ],
+);
+
 export const pushSubscriptions = pgTable(
   "push_subscriptions",
   {
@@ -957,4 +1164,26 @@ export const auditLogRelations = relations(auditLog, ({ one }) => ({
 export const referralsRelations = relations(referrals, ({ one }) => ({
   referrer: one(users, { fields: [referrals.referrerId], references: [users.id], relationName: "referrer" }),
   referred: one(users, { fields: [referrals.referredId], references: [users.id], relationName: "referred" }),
+}));
+
+export const couponsRelations = relations(coupons, ({ many }) => ({
+  redemptions: many(couponRedemptions),
+}));
+
+export const couponRedemptionsRelations = relations(couponRedemptions, ({ one }) => ({
+  coupon: one(coupons, { fields: [couponRedemptions.couponId], references: [coupons.id] }),
+  user: one(users, { fields: [couponRedemptions.userId], references: [users.id] }),
+}));
+
+export const crmActivitiesRelations = relations(crmActivities, ({ one }) => ({
+  contact: one(users, { fields: [crmActivities.contactId], references: [users.id], relationName: "crmContact" }),
+  admin: one(users, { fields: [crmActivities.adminId], references: [users.id], relationName: "crmAdmin" }),
+}));
+
+export const emailCampaignsRelations = relations(emailCampaigns, ({ many }) => ({
+  recipients: many(emailCampaignRecipients),
+}));
+
+export const emailCampaignRecipientsRelations = relations(emailCampaignRecipients, ({ one }) => ({
+  campaign: one(emailCampaigns, { fields: [emailCampaignRecipients.campaignId], references: [emailCampaigns.id] }),
 }));

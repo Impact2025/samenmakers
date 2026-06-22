@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { users, coupons, couponRedemptions } from "@/server/db/schema";
+import { eq, sql } from "drizzle-orm";
 import { env } from "@/env";
 
 export const runtime = "nodejs";
@@ -22,6 +22,37 @@ export async function POST(req: Request) {
   }
 
   switch (event.type) {
+    case "checkout.session.completed": {
+      const s = event.data.object as Stripe.Checkout.Session;
+      const userId = s.metadata?.userId;
+      const applied = s.discounts?.[0];
+      const promoId =
+        typeof applied?.promotion_code === "string" ? applied.promotion_code : null;
+      const couponStripeId =
+        typeof applied?.coupon === "string" ? applied.coupon : null;
+
+      if (userId && (promoId ?? couponStripeId)) {
+        const ours = await db.query.coupons.findFirst({
+          where: promoId
+            ? eq(coupons.stripePromotionCodeId, promoId)
+            : eq(coupons.stripeCouponId, couponStripeId!),
+        });
+        if (ours) {
+          await db.insert(couponRedemptions).values({
+            couponId: ours.id,
+            userId,
+            stripeSessionId: s.id,
+            amountDiscounted: s.total_details?.amount_discount ?? null,
+          });
+          await db
+            .update(coupons)
+            .set({ timesRedeemed: sql`${coupons.timesRedeemed} + 1` })
+            .where(eq(coupons.id, ours.id));
+        }
+      }
+      break;
+    }
+
     case "customer.subscription.created":
     case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;

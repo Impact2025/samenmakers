@@ -1,13 +1,17 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/server/auth/config";
 import Link from "next/link";
-import { LayoutGrid, Users, FileText, Calendar, BarChart3, Shield, Settings, ClipboardList } from "lucide-react";
+import { LayoutGrid, Users, FileText, Calendar, BarChart3, Shield, Settings, ClipboardList, Sparkles, Ticket, Contact, Mail } from "lucide-react";
 
 const adminNav = [
   { href: "/admin", label: "Dashboard", icon: LayoutGrid },
+  { href: "/admin/crm", label: "CRM", icon: Contact },
+  { href: "/admin/mail", label: "Mailings", icon: Mail },
   { href: "/admin/gebruikers", label: "Gebruikers", icon: Users },
+  { href: "/admin/blog", label: "Blog (AI)", icon: Sparkles },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/events", label: "Events", icon: Calendar },
+  { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/cohorten", label: "Cohorten", icon: Settings },
   { href: "/admin/gdpr", label: "GDPR", icon: Shield },

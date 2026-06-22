@@ -34,6 +34,13 @@ export const env = createEnv({
     // Cron
     CRON_SECRET: z.string().min(32),
 
+    // AI (OpenRouter — OpenAI-compatible gateway)
+    OPENROUTER_API_KEY: z.string().optional(),
+    OPENROUTER_MODEL: z.string().optional(),
+
+    // Management reporting
+    MANAGEMENT_EMAIL: z.string().email().optional(),
+
     // Node
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
@@ -62,6 +69,9 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     CRON_SECRET: process.env.CRON_SECRET,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    OPENROUTER_MODEL: process.env.OPENROUTER_MODEL,
+    MANAGEMENT_EMAIL: process.env.MANAGEMENT_EMAIL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,

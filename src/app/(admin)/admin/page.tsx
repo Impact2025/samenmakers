@@ -16,6 +16,8 @@ export default async function AdminDashboardPage() {
     { label: "EVENTS", value: stats.totalEvents, sub: "gepubliceerde events" },
     { label: "PRO GEBRUIKERS", value: stats.proUsers, sub: "actieve abonnementen" },
     { label: "MRR", value: `€${stats.mrr}`, sub: "maandelijkse omzet" },
+    { label: "CLUBS", value: stats.totalCohorts, sub: "cohorten" },
+    { label: "CLUBLEDEN", value: stats.totalCohortMembers, sub: `gem. ${stats.totalCohorts > 0 ? Math.round((stats.totalCohortMembers / stats.totalCohorts) * 10) / 10 : 0} per club` },
   ];
 
   return (
