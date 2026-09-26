@@ -7,7 +7,6 @@ import {
   messages,
   posts,
   events,
-  eventAttendees,
   auditLog,
   reportedContent,
   cohorts,
