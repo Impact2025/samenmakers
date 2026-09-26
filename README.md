@@ -1,143 +1,148 @@
 # Samenmakers
 
-Platform voor sociaal ondernemers — vinden, delen, ontmoeten.
+Het platform waar purpose-driven ondernemers elkaar vinden en versterken.
 
-**Stack:** Next.js 15 · Neon PostgreSQL · Drizzle ORM · Auth.js v5 · Pusher · Stripe · Resend · Upstash Redis · Vercel Blob
+**Stack:** Next.js 16 · React 19 · TypeScript · tRPC v11 · Drizzle ORM · Neon · Tailwind 4 · Stripe · Pusher · Resend
 
 ---
 
-## Lokaal ontwikkelen
+## 🚀 Snel starten
 
 ```bash
-cp .env.local.example .env.local
-# Vul .env.local in met je credentials (zie stappen hieronder)
-
+# 1. Clone & installeer
+git clone https://github.com/Impact2025/samenmakers.git
+cd samenmakers
 npm install
+
+# 2. Kopieer env en vul in
+cp .env.example .env.local
+# — vul alle variabelen in (zie .env.example voor documentatie)
+
+# 3. Push database schema
+npm run db:push
+
+# 4. Start dev server
 npm run dev
 ```
 
-Open http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Deployment checklist
+## 📋 Beschikbare scripts
 
-Doorloop deze stappen éénmalig voor je live gaat.
+| Commando                | Doel                                    |
+| ----------------------- | --------------------------------------- |
+| `npm run dev`           | Dev server (turbopack, 4 GB heap)       |
+| `npm run build`         | Productiebuild                          |
+| `npm start`             | Start productieserver                   |
+| `npm run type-check`    | TypeScript controleren (`tsc --noEmit`) |
+| `npm run lint`          | ESLint                                  |
+| `npm test`              | Unit tests (Vitest)                     |
+| `npm run test:watch`    | Tests in watch-modus                    |
+| `npm run test:coverage` | Tests met coverage-rapport              |
+| `npm run db:push`       | Schema naar database pushen             |
+| `npm run db:studio`     | Drizzle Studio openen                   |
+| `npm run db:generate`   | Migratie genereren                      |
+| `npm run db:migrate`    | Migratie uitvoeren                      |
 
-### 1. GitHub repo aanmaken
+---
+
+## 🏛️ Projectstructuur
+
+```
+src/
+├── app/
+│   ├── (admin)/admin/    — Admin suite
+│   ├── (app)/            — Gebruikersapp (dashboard, makers, matching, etc.)
+│   ├── (auth)/           — Login/registratie
+│   └── api/              — API routes (Stripe, cron, auth, push)
+├── components/
+│   ├── layout/           — Sidebar, TopBar, BottomNav
+│   ├── providers/        — TRPCProvider, SW-register
+│   └── ui/               — Herbruikbare componenten + ErrorBoundary
+├── hooks/                — React hooks
+├── lib/                  — Utility's (SEO, markdown, ratelimit, AI, email, push)
+└── server/
+    ├── admin/            — Metrics, segment-resolver
+    ├── auth/             — NextAuth config
+    ├── db/               — Drizzle schema + client
+    └── trpc/             — tRPC routers (15x), root, init
+```
+
+---
+
+## 🔐 Omgevingsvariabelen
+
+Zie [`.env.example`](.env.example) voor de volledige lijst met documentatie per variabele.
+
+Benodigde externe services:
+
+- **Neon** — PostgreSQL (DATABASE_URL)
+- **Google Cloud** — OAuth client (inloggen met Google)
+- **LinkedIn** — OAuth client (inloggen met LinkedIn)
+- **Pusher** — Real-time chat
+- **Stripe** — Abonnementen + coupons
+- **Resend** — E-mail (transacties + campagnes)
+- **Upstash** — Redis rate limiting
+- **OpenRouter** — AI blog- en e-mailgeneratie
+- **Vercel Blob** — Bestandsuploads
+- **Web Push** — Browser notificaties (VAPID)
+
+---
+
+## 🧪 Tests
 
 ```bash
-gh repo create samenmakers --private --source=. --push
-# of via github.com → New repository → push existing
+npm test                  # Alle tests
+npm run test:watch        # Watch-modus
+npm run test:coverage     # Coverage rapport
 ```
 
-### 2. Neon database
+Tests staan naast de bronbestanden (`*.test.ts`). Zie `vitest.config.mts` voor configuratie.
 
-1. Ga naar console.neon.tech → New project → regio `eu-central-1`
-2. Kopieer **Connection string** (pooled) → `DATABASE_URL`
-3. Kopieer **Direct connection** (unpooled) → `DATABASE_URL_UNPOOLED`
-4. Push het schema:
-   ```bash
-   npx drizzle-kit push
-   ```
+---
 
-### 3. Auth.js — OAuth providers
+## 🔄 CI/CD
 
-**Google:**
-1. console.cloud.google.com → APIs & Services → Credentials → Create OAuth 2.0 Client
-2. Authorized redirect URI: `https://jouwdomein.nl/api/auth/callback/google`
-3. Kopieer Client ID → `AUTH_GOOGLE_ID`, Client Secret → `AUTH_GOOGLE_SECRET`
+Bij elke push/PR naar `master` of `feat/*` draait GitHub Actions:
 
-**LinkedIn:**
-1. developer.linkedin.com → Create app → Auth tab
-2. Redirect URL: `https://jouwdomein.nl/api/auth/callback/linkedin`
-3. Kopieer Client ID → `AUTH_LINKEDIN_ID`, Client Secret → `AUTH_LINKEDIN_SECRET`
+1. `npm ci`
+2. TypeScript check (`tsc --noEmit`)
+3. ESLint
+4. Unit tests (Vitest)
+5. Build (`next build`)
 
-### 4. Pusher
+Zie [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
-1. dashboard.pusher.com → New app → regio `eu`, cluster `eu`
-2. App Keys tab → kopieer naar `.env.local`:
-   - `PUSHER_APP_ID`, `PUSHER_SECRET`
-   - `NEXT_PUBLIC_PUSHER_KEY`, `NEXT_PUBLIC_PUSHER_CLUSTER=eu`
+---
 
-### 5. Stripe
+## 🪝 Pre-commit hooks (Husky + lint-staged)
 
-1. dashboard.stripe.com → Developers → API keys
-   - `STRIPE_SECRET_KEY` (sk_live_... of sk_test_...)
-   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (pk_live_... of pk_test_...)
-2. Products → Add product: "Pro" → €9/maand → kopieer Price ID → `STRIPE_PRO_PRICE_ID`
-3. Webhooks → Add endpoint: `https://jouwdomein.nl/api/webhooks/stripe`
-   - Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
-   - Kopieer Signing secret → `STRIPE_WEBHOOK_SECRET`
+Bij elke commit worden automatisch:
 
-### 6. Resend (email)
+- TS/TSX bestanden: ESLint gefixt + Prettier formatted
+- JSON/CSS/MD: Prettier formatted
 
-1. resend.com → API Keys → Create → kopieer → `RESEND_API_KEY`
-2. Domains → Add domain: `samenmakers.nl` → voeg DNS records toe
-3. Zet `RESEND_FROM_EMAIL=noreply@samenmakers.nl`
+Dit wordt afgedwongen via `.husky/pre-commit`.
 
-### 7. Upstash Redis
+---
 
-1. console.upstash.com → Create database → regio `eu-west-1`, type `Regional`
-2. REST API tab → kopieer `UPSTASH_REDIS_REST_URL` en `UPSTASH_REDIS_REST_TOKEN`
+## 🏗️ Database
 
-### 8. Vercel deployment
+Gebruikt **Drizzle ORM** met **Neon PostgreSQL**.
+
+Belangrijkste tabellen: `users`, `matches`, `messages`, `posts`, `events`, `notifications`, `cohorts`, `coupons`, `crm_activities`, `email_campaigns`, `audit_log`.
 
 ```bash
-npm i -g vercel
-vercel login
-vercel link          # koppel aan Vercel project
-vercel env pull      # download env vars van Vercel (na instellen)
-```
-
-Of via vercel.com → New Project → Import Git Repository.
-
-Voeg alle env vars toe via **Project Settings → Environment Variables**.
-
-**Vercel Blob** (uploads):
-- Vercel dashboard → Storage → Connect Store → Blob → selecteer je project
-- `VERCEL_BLOB_READ_WRITE_TOKEN` wordt automatisch toegevoegd
-
-### 9. Eerste admin aanmaken
-
-Na eerste registratie — zet handmatig `role = 'admin'` in de database:
-
-```sql
-UPDATE users SET role = 'admin' WHERE email = 'jouw@email.nl';
+npm run db:push          # Push schema direct naar DB
+npm run db:generate      # Genereer migraties
+npm run db:migrate       # Voer migraties uit
+npm run db:studio        # Drizzle Studio (GUI)
 ```
 
 ---
 
-## Cron jobs
+## 📄 License
 
-Geconfigureerd in `vercel.json`. Vercel voert ze automatisch uit op het opgegeven schema. Authenticatie via `CRON_SECRET` header.
-
-| Job | Schema | Functie |
-|-----|--------|---------|
-| weekly-digest | maandag 08:00 | E-mail digest naar actieve users |
-| event-reminders | dagelijks 09:00 | Reminders 24u voor events |
-| publish-scheduled | elk uur | Posts publiceren die >7 dagen oud zijn |
-| gdpr-cleanup | dagelijks 02:00 | Accounts verwijderen na deletion request |
-
----
-
-## Database migraties
-
-```bash
-# Schema inspecteren (geen DB nodig)
-npx drizzle-kit generate
-
-# Schema pushen naar Neon
-npx drizzle-kit push
-
-# Drizzle Studio (lokale DB browser)
-npx drizzle-kit studio
-```
-
----
-
-## Gegenereerde secrets (al ingevuld in .env.local)
-
-- `AUTH_SECRET` — gegenereerd
-- `CRON_SECRET` — gegenereerd
-- `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` — gegenereerd
+Private — Impact2025

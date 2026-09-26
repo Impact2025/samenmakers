@@ -1,10 +1,10 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { auth } from "@/server/auth/config";
 import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { users, cohortMembers } from "@/server/db/schema";
+import { and, eq } from "drizzle-orm";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 export async function createTRPCContext(opts: { req: Request }) {
   const session = await auth();
   return { db, session, req: opts.req };
@@ -94,4 +94,34 @@ export async function getCurrentUser(userId: string) {
   return db.query.users.findFirst({
     where: eq(users.id, userId),
   });
+}
+
+// Cohort role — must be a (non-unsubscribed) member of the edition with one of
+// the given roles. Platform admins always pass. Roles live on the membership,
+// so a docent in one edition can be a cursist in another.
+type CohortRole = (typeof cohortMembers.$inferSelect)["role"];
+
+export function cohortRoleProcedure(roles: readonly CohortRole[]) {
+  return protectedProcedure
+    .input(z.object({ cohortId: z.string().min(1) }))
+    .use(async ({ ctx, input, next }) => {
+      const membership = await ctx.db.query.cohortMembers.findFirst({
+        where: and(
+          eq(cohortMembers.cohortId, input.cohortId),
+          eq(cohortMembers.userId, ctx.userId),
+        ),
+      });
+      const isAdmin = ctx.session.user.role === "admin";
+      const allowed =
+        membership &&
+        membership.status !== "uitgeschreven" &&
+        roles.includes(membership.role);
+      if (!allowed && !isAdmin) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Je hebt geen toegang tot deze editie",
+        });
+      }
+      return next({ ctx: { ...ctx, membership: membership ?? null, isAdmin } });
+    });
 }

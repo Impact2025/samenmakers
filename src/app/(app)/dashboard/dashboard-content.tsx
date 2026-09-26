@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Users, MessageSquare, Zap, Calendar, Bell } from "lucide-react";
+import {
+  ArrowRight,
+  Users,
+  MessageSquare,
+  Zap,
+  Calendar,
+  Bell,
+} from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardBody } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatRelative, formatDate } from "@/lib/date-utils";
+import { formatRelative } from "@/lib/date-utils";
+import { eventWhere } from "@/lib/event-format";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
@@ -23,7 +30,12 @@ interface Props {
   events: EventItems;
 }
 
-export function DashboardContent({ me, matches, notifications, events }: Props) {
+export function DashboardContent({
+  me,
+  matches,
+  notifications,
+  events,
+}: Props) {
   const firstName = me?.naam?.split(" ")[0] ?? "Maker";
   const completeness = me?.profileCompleteness ?? 0;
   const unreadNotifications = notifications.filter((n) => !n.readAt).length;
@@ -41,7 +53,7 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
         <Link href="/notificaties" className="relative">
           <Bell size={22} className="text-outline" />
           {unreadNotifications > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center">
+            <span className="bg-primary text-on-primary absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
               {unreadNotifications > 9 ? "9+" : unreadNotifications}
             </span>
           )}
@@ -52,24 +64,28 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
       {completeness < 100 && (
         <Card className="border-primary/20 bg-surface-container-low">
           <CardBody className="p-5">
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3 flex items-center justify-between">
               <div>
-                <p className="text-label-caps text-outline">PROFIEL COMPLEETHEID</p>
+                <p className="text-label-caps text-outline">
+                  PROFIEL COMPLEETHEID
+                </p>
                 <p className="text-body-sm text-on-surface-variant mt-0.5">
                   Maak je profiel compleet voor meer matches
                 </p>
               </div>
-              <span className="text-headline-sm text-primary font-black">{completeness}%</span>
+              <span className="text-headline-sm text-primary font-black">
+                {completeness}%
+              </span>
             </div>
-            <div className="w-full bg-hairline h-1.5">
+            <div className="bg-hairline h-1.5 w-full">
               <div
-                className="h-1.5 bg-primary transition-all duration-500"
+                className="bg-primary h-1.5 transition-all duration-500"
                 style={{ width: `${completeness}%` }}
               />
             </div>
             <div className="mt-4">
               <Link href="/profiel/bewerken">
-                <Button variant="secondary" className="text-sm py-2 px-4">
+                <Button variant="secondary" className="px-4 py-2 text-sm">
                   Profiel aanvullen
                 </Button>
               </Link>
@@ -79,7 +95,7 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
       )}
 
       {/* Quick stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           icon={<Users size={18} />}
           label="Matches"
@@ -107,13 +123,15 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
         />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent matches */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <h2 className="text-label-caps text-on-surface">MIJN MATCHES</h2>
+                <h2 className="text-label-caps text-on-surface">
+                  MIJN MATCHES
+                </h2>
                 <Link
                   href="/matching"
                   className="text-label-caps text-primary flex items-center gap-1"
@@ -124,7 +142,7 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
             </CardHeader>
             <CardBody className="p-0">
               {matches.length === 0 ? (
-                <div className="py-12 text-center px-6">
+                <div className="px-6 py-12 text-center">
                   <p className="text-body-sm text-outline mb-4">
                     Nog geen matches. Ga ontdekken!
                   </p>
@@ -133,15 +151,16 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
                   </Link>
                 </div>
               ) : (
-                <ul className="divide-y divide-hairline">
+                <ul className="divide-hairline divide-y">
                   {matches.slice(0, 5).map((match) => {
-                    const other = match.userId === me?.id ? match.target : match.user;
+                    const other =
+                      match.userId === me?.id ? match.target : match.user;
                     const lastMsg = match.messages[0];
                     return (
                       <li key={match.id}>
                         <Link
                           href={`/berichten/${match.id}`}
-                          className="flex items-center gap-4 px-6 py-4 hover:bg-surface-container-low transition-colors"
+                          className="hover:bg-surface-container-low flex items-center gap-4 px-6 py-4 transition-colors"
                         >
                           <Avatar
                             src={other.avatarUrl}
@@ -149,16 +168,16 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
                             size="md"
                             grayscale={false}
                           />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-on-surface text-sm truncate">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-on-surface truncate text-sm font-semibold">
                               {other.naam ?? other.name}
                             </p>
-                            <p className="text-outline text-xs truncate mt-0.5">
+                            <p className="text-outline mt-0.5 truncate text-xs">
                               {lastMsg?.content ?? "Stuur een bericht"}
                             </p>
                           </div>
                           {lastMsg && (
-                            <span className="text-[10px] text-outline shrink-0">
+                            <span className="text-outline shrink-0 text-[10px]">
                               {formatRelative(new Date(lastMsg.createdAt))}
                             </span>
                           )}
@@ -178,8 +197,13 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <h2 className="text-label-caps text-on-surface">KOMENDE EVENTS</h2>
-                <Link href="/events" className="text-label-caps text-primary flex items-center gap-1">
+                <h2 className="text-label-caps text-on-surface">
+                  KOMENDE EVENTS
+                </h2>
+                <Link
+                  href="/events"
+                  className="text-label-caps text-primary flex items-center gap-1"
+                >
                   ALLE <ArrowRight size={12} />
                 </Link>
               </div>
@@ -190,25 +214,30 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
                   Geen events gepland
                 </p>
               ) : (
-                <ul className="divide-y divide-hairline">
+                <ul className="divide-hairline divide-y">
                   {events.map((event) => (
                     <li key={event.id}>
                       <Link
-                        href={`/events/${event.id}`}
-                        className="flex gap-3 px-5 py-4 hover:bg-surface-container-low transition-colors"
+                        href={`/events/${event.slug}`}
+                        className="hover:bg-surface-container-low flex gap-3 px-5 py-4 transition-colors"
                       >
-                        <div className="shrink-0 w-10 text-center">
-                          <span className="text-[10px] font-bold text-outline uppercase block">
-                            {new Date(event.startAt).toLocaleDateString("nl-NL", { month: "short" })}
+                        <div className="w-10 shrink-0 text-center">
+                          <span className="text-outline block text-[10px] font-bold uppercase">
+                            {new Date(event.startAt).toLocaleDateString(
+                              "nl-NL",
+                              { month: "short" },
+                            )}
                           </span>
-                          <span className="text-lg font-black text-on-surface leading-none">
+                          <span className="text-on-surface text-lg leading-none font-black">
                             {new Date(event.startAt).getDate()}
                           </span>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-on-surface truncate">{event.title}</p>
-                          <p className="text-xs text-outline mt-0.5">
-                            {event.isOnline ? "Online" : event.location ?? "Locatie TBD"}
+                          <p className="text-on-surface truncate text-sm font-semibold">
+                            {event.title}
+                          </p>
+                          <p className="text-outline mt-0.5 text-xs">
+                            {eventWhere(event)}
                           </p>
                         </div>
                       </Link>
@@ -230,21 +259,25 @@ export function DashboardContent({ me, matches, notifications, events }: Props) 
                   Geen meldingen
                 </p>
               ) : (
-                <ul className="divide-y divide-hairline">
+                <ul className="divide-hairline divide-y">
                   {notifications.slice(0, 4).map((n) => (
                     <li key={n.id}>
                       <Link
                         href={n.url ?? "/dashboard"}
-                        className="flex gap-3 px-5 py-4 hover:bg-surface-container-low transition-colors"
+                        className="hover:bg-surface-container-low flex gap-3 px-5 py-4 transition-colors"
                       >
                         <div
-                          className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                          className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
                             n.readAt ? "bg-transparent" : "bg-primary"
                           }`}
                         />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-on-surface">{n.title}</p>
-                          <p className="text-xs text-outline mt-0.5 line-clamp-2">{n.body}</p>
+                          <p className="text-on-surface text-sm font-medium">
+                            {n.title}
+                          </p>
+                          <p className="text-outline mt-0.5 line-clamp-2 text-xs">
+                            {n.body}
+                          </p>
                         </div>
                       </Link>
                     </li>
@@ -270,12 +303,14 @@ interface StatCardProps {
 function StatCard({ icon, label, value, href, isText = false }: StatCardProps) {
   return (
     <Link href={href}>
-      <Card className="p-5 group hover:border-primary transition-colors">
-        <div className="flex items-center gap-2 text-outline mb-3 group-hover:text-primary transition-colors">
+      <Card className="group hover:border-primary p-5 transition-colors">
+        <div className="text-outline group-hover:text-primary mb-3 flex items-center gap-2 transition-colors">
           {icon}
           <span className="text-label-caps">{label}</span>
         </div>
-        <p className={`font-black text-on-surface ${isText ? "text-xl" : "text-3xl"}`}>
+        <p
+          className={`text-on-surface font-black ${isText ? "text-xl" : "text-3xl"}`}
+        >
           {value}
         </p>
       </Card>

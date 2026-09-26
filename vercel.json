@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/jobs/event-reminders",
-      "schedule": "0 9 * * *"
+      "schedule": "15 * * * *"
     },
     {
       "path": "/api/jobs/publish-scheduled",

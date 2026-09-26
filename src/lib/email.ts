@@ -73,7 +73,11 @@ export async function sendWeeklyDigest(opts: {
   recentPosts: Array<{ title: string; slug: string }>;
   upcomingEvents: Array<{ title: string; id: string; startAt: Date }>;
 }) {
-  if (opts.newMatches === 0 && opts.recentPosts.length === 0 && opts.upcomingEvents.length === 0) {
+  if (
+    opts.newMatches === 0 &&
+    opts.recentPosts.length === 0 &&
+    opts.upcomingEvents.length === 0
+  ) {
     return;
   }
 
@@ -139,7 +143,11 @@ export async function sendCampaignBatch(opts: {
   html: string;
   recipients: Array<{ email: string }>;
 }): Promise<Array<{ email: string; ok: boolean; error?: string | undefined }>> {
-  const results: Array<{ email: string; ok: boolean; error?: string | undefined }> = [];
+  const results: Array<{
+    email: string;
+    ok: boolean;
+    error?: string | undefined;
+  }> = [];
   const chunkSize = 100;
 
   for (let i = 0; i < opts.recipients.length; i += chunkSize) {
@@ -159,7 +167,8 @@ export async function sendCampaignBatch(opts: {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "send failed";
-      for (const r of chunk) results.push({ email: r.email, ok: false, error: message });
+      for (const r of chunk)
+        results.push({ email: r.email, ok: false, error: message });
     }
   }
 
@@ -257,5 +266,83 @@ export async function sendManagementDigest(opts: {
         </p>
       </div>
     `,
+  });
+}
+
+// =============================================
+// EVENTS (bevestiging, wachtlijst, herinnering, wijziging, annulering)
+// =============================================
+
+function escapeHtml(s: string) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+export interface EventEmailInput {
+  to: string;
+  subject: string;
+  heading: string;
+  /** Platte tekst; wordt ge-escaped. */
+  intro: string;
+  event: { title: string; when: string; where: string };
+  cta: { label: string; url: string };
+  /** Extra regels onder het event, bijv. tickets met eigen link of een bedrag. */
+  lines?: { text: string; url?: string }[];
+  /** Optionele .ics-bijlage (bevestiging en wijziging). */
+  ics?: string;
+}
+
+export async function sendEventEmail(opts: EventEmailInput) {
+  const html = `
+    <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">SAMENMAKERS EVENTS</p>
+      <h1 style="font-size: 26px; font-weight: 900; margin-bottom: 12px;">${escapeHtml(opts.heading)}</h1>
+      <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px;">${escapeHtml(opts.intro)}</p>
+      <table style="width:100%;border:1px solid #eee;margin-bottom:24px;border-collapse:collapse;">
+        <tr><td style="padding:14px 16px;">
+          <p style="margin:0 0 6px;font-size:16px;font-weight:800;">${escapeHtml(opts.event.title)}</p>
+          <p style="margin:0;font-size:13px;color:#555;">${escapeHtml(opts.event.when)}</p>
+          <p style="margin:4px 0 0;font-size:13px;color:#555;">${escapeHtml(opts.event.where)}</p>
+        </td></tr>
+      </table>
+      ${
+        opts.lines?.length
+          ? `<ul style="padding-left:18px;margin:0 0 24px;font-size:14px;color:#333;line-height:1.7;">${opts.lines
+              .map((l) =>
+                l.url
+                  ? `<li><a href="${l.url}" style="color:#2D6A4F;">${escapeHtml(l.text)}</a></li>`
+                  : `<li>${escapeHtml(l.text)}</li>`,
+              )
+              .join("")}</ul>`
+          : ""
+      }
+      <a href="${opts.cta.url}" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+        ${escapeHtml(opts.cta.label)} &rarr;
+      </a>
+      <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
+        Je ontvangt deze e-mail omdat je je hebt aangemeld voor dit event.
+        <a href="${APP_URL}/instellingen/notificaties" style="color: #555;">Notificaties beheren</a>
+      </p>
+    </div>`;
+
+  await getResend().emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: opts.subject,
+    html,
+    ...(opts.ics
+      ? {
+          attachments: [
+            {
+              filename: "event.ics",
+              content: Buffer.from(opts.ics).toString("base64"),
+              contentType: "text/calendar; charset=utf-8; method=PUBLISH",
+            },
+          ],
+        }
+      : {}),
   });
 }

@@ -7,7 +7,15 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/over", "/privacy", "/voorwaarden", "/sector/", "/profiel/"],
+        allow: [
+          "/",
+          "/over",
+          "/privacy",
+          "/voorwaarden",
+          "/sector/",
+          "/profiel/",
+          "/events",
+        ],
         disallow: [
           "/dashboard",
           "/berichten",
@@ -15,6 +23,10 @@ export default function robots(): MetadataRoute.Robots {
           "/ontdekken",
           "/kennis/nieuw",
           "/events/nieuw",
+          "/events/mijn",
+          "/events/*/beheer",
+          "/events/*/bestelling",
+          "/tickets/",
           "/vragen/nieuw",
           "/instellingen",
           "/onboarding",

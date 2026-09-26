@@ -1,11 +1,25 @@
 import { db } from "@/server/db";
-import { events, eventAttendees, users, notifications } from "@/server/db/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
+import {
+  events,
+  eventAttendees,
+  eventIssuedTickets,
+  eventOrders,
+  users,
+} from "@/server/db/schema";
+import { eq, and, gt, lte, inArray, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { dueReminder } from "@/server/events/status";
+import { fillOpenSpots } from "@/server/events/booking";
+import { notifyFillResult, sendReminder } from "@/server/events/notify";
 
-// Called by Vercel Cron: every day at 09:00
+// Vercel Cron: elk uur (vercel.json).
+// 1. Wachtlijst 2.0: verlopen aanbiedingen vervallen, vrije plekken worden aangeboden.
+// 2. Herinneringen 1 week, 1 dag en 1 uur vooraf — idempotent via reminders_sent.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
+
+const HOUR = 60 * 60 * 1000;
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -14,36 +28,139 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  const dayAfter = new Date(now.getTime() + 48 * 60 * 60 * 1000);
 
-  // Events starting in ~24 hours
-  const upcomingEvents = await db
-    .select({ id: events.id, title: events.title })
+  // ── 1. Wachtlijst ──────────────────────────────────────────────────────────
+  const waitlistEvents = await db
+    .selectDistinct({ event: events })
     .from(events)
-    .where(and(gte(events.startAt, tomorrow), lte(events.startAt, dayAfter)));
+    .innerJoin(eventAttendees, eq(eventAttendees.eventId, events.id))
+    .where(
+      and(
+        eq(events.status, "published"),
+        gt(events.startAt, now),
+        inArray(eventAttendees.status, ["waitlisted", "offered"]),
+      ),
+    );
 
-  let notificationCount = 0;
+  let offered = 0;
+  let expired = 0;
+  for (const { event } of waitlistEvents) {
+    const result = await fillOpenSpots(db, event, now);
+    offered += result.offered.length + result.promoted.length;
+    expired += result.expired.length;
+    await notifyFillResult(db, event, result);
+  }
 
-  for (const event of upcomingEvents) {
+  // ── 2. Herinneringen ──────────────────────────────────────────────────────
+  const upcoming = await db
+    .select()
+    .from(events)
+    .where(
+      and(
+        eq(events.status, "published"),
+        gt(events.startAt, now),
+        lte(events.startAt, new Date(now.getTime() + 7 * 24 * HOUR)),
+      ),
+    );
+
+  let reminders = 0;
+  for (const event of upcoming) {
     const attendees = await db
-      .select({ userId: eventAttendees.userId })
+      .select({
+        id: eventAttendees.id,
+        userId: eventAttendees.userId,
+        remindersSent: eventAttendees.remindersSent,
+        email: users.email,
+        naam: users.naam,
+        name: users.name,
+      })
       .from(eventAttendees)
-      .where(eq(eventAttendees.eventId, event.id));
+      .innerJoin(users, eq(users.id, eventAttendees.userId))
+      .where(
+        and(
+          eq(eventAttendees.eventId, event.id),
+          inArray(eventAttendees.status, ["registered", "checked_in"]),
+        ),
+      );
 
-    for (const { userId } of attendees) {
-      await db.insert(notifications).values({
-        userId,
-        type: "event_reminder",
-        title: "Herinnering: event morgen",
-        body: `"${event.title}" begint morgen. Vergeet het niet!`,
-        url: `/events/${event.id}`,
+    for (const a of attendees) {
+      const key = dueReminder(now, event.startAt, a.remindersSent);
+      if (!key) continue;
+      // Eerst claimen, dan versturen: overlappende runs sturen nooit dubbel.
+      const claimed = await db
+        .update(eventAttendees)
+        .set({
+          remindersSent: sql`array_append(${eventAttendees.remindersSent}, ${key})`,
+        })
+        .where(
+          and(
+            eq(eventAttendees.id, a.id),
+            sql`NOT (${key} = ANY(${eventAttendees.remindersSent}))`,
+          ),
+        )
+        .returning({ id: eventAttendees.id });
+      if (claimed.length === 0) continue;
+      await sendReminder(db, event, a.userId, key, {
+        email: a.email,
+        naam: a.naam ?? a.name ?? "Maker",
       });
-      notificationCount++;
+      reminders++;
+    }
+
+    // Tickethouders (ook gasten), per ticket geclaimd.
+    const tickets = await db
+      .select({
+        id: eventIssuedTickets.id,
+        userId: eventIssuedTickets.userId,
+        email: eventIssuedTickets.holderEmail,
+        naam: eventIssuedTickets.holderName,
+        remindersSent: eventIssuedTickets.remindersSent,
+      })
+      .from(eventIssuedTickets)
+      .where(
+        and(
+          eq(eventIssuedTickets.eventId, event.id),
+          eq(eventIssuedTickets.status, "valid"),
+        ),
+      );
+    const mailed = new Set<string>();
+    for (const t of tickets) {
+      const key = dueReminder(now, event.startAt, t.remindersSent);
+      if (!key) continue;
+      const claimed = await db
+        .update(eventIssuedTickets)
+        .set({
+          remindersSent: sql`array_append(${eventIssuedTickets.remindersSent}, ${key})`,
+        })
+        .where(
+          and(
+            eq(eventIssuedTickets.id, t.id),
+            sql`NOT (${key} = ANY(${eventIssuedTickets.remindersSent}))`,
+          ),
+        )
+        .returning({ id: eventIssuedTickets.id });
+      // Meerdere tickets op één adres: één mail.
+      const dedupe = `${t.email.toLowerCase()}:${key}`;
+      if (claimed.length === 0 || mailed.has(dedupe)) continue;
+      mailed.add(dedupe);
+      await sendReminder(db, event, t.userId, key, {
+        email: t.email,
+        naam: t.naam.split(" ")[0] ?? t.naam,
+      });
+      reminders++;
     }
   }
 
-  console.log(`[event-reminders] ${upcomingEvents.length} events, ${notificationCount} notifications sent`);
+  // Verlopen reserveringen opruimen (ze tellen al niet meer mee; dit houdt de data schoon).
+  await db
+    .update(eventOrders)
+    .set({ status: "expired", updatedAt: now })
+    .where(
+      and(eq(eventOrders.status, "pending"), lte(eventOrders.expiresAt, now)),
+    );
 
-  return NextResponse.json({ ok: true, events: upcomingEvents.length, notifications: notificationCount });
+  console.log(
+    `[event-reminders] wachtlijst: ${waitlistEvents.length} events, ${offered} aangeboden, ${expired} verlopen; ${reminders} herinneringen`,
+  );
+  return NextResponse.json({ ok: true, offered, expired, reminders });
 }

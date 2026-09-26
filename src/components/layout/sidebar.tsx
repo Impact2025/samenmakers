@@ -13,10 +13,15 @@ import {
   Heart,
   GraduationCap,
   Settings,
+  Library,
 } from "lucide-react";
+import { features } from "@/lib/features";
 
 const navItems = [
   { href: "/dashboard", label: "DASHBOARD", icon: LayoutGrid },
+  ...(features.leren
+    ? [{ href: "/leren", label: "LEREN", icon: Library }]
+    : []),
   { href: "/ontdekken", label: "ONTDEKKEN", icon: Search },
   { href: "/matching", label: "MATCHING", icon: Heart },
   { href: "/berichten", label: "BERICHTEN", icon: MessageSquare },
@@ -31,22 +36,21 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col h-screen fixed left-0 top-0 pt-20 bg-white w-72 hairline-r z-40">
+    <aside className="hairline-r fixed top-0 left-0 z-40 hidden h-screen w-72 flex-col bg-white pt-20 lg:flex">
       <div className="px-8 py-6">
         <p className="text-label-caps text-outline">MENU</p>
       </div>
-      <nav className="flex flex-col flex-1">
+      <nav className="flex flex-1 flex-col">
         {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive =
-            pathname === href || pathname.startsWith(href + "/");
+          const isActive = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-4 py-4 px-8 transition-all duration-150 hover:pl-10",
+                "flex items-center gap-4 px-8 py-4 transition-all duration-150 hover:pl-10",
                 isActive
-                  ? "bg-surface-container-low text-primary border-l-2 border-primary"
+                  ? "bg-surface-container-low text-primary border-primary border-l-2"
                   : "text-outline hover:bg-surface-container-low hover:text-on-surface",
               )}
             >

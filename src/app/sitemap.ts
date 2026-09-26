@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { eq, desc } from "drizzle-orm";
+import { and, eq, desc, gte } from "drizzle-orm";
 import { SECTOREN } from "@/lib/constants";
 import { db } from "@/server/db";
-import { posts } from "@/server/db/schema";
+import { events, posts } from "@/server/db/schema";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 
@@ -28,13 +28,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Publieke, gepubliceerde events (ook recent afgelopen: die pagina's blijven waardevol).
+  const publicEvents = await db
+    .select({ slug: events.slug, updatedAt: events.updatedAt })
+    .from(events)
+    .where(
+      and(
+        eq(events.status, "published"),
+        eq(events.visibility, "public"),
+        gte(events.startAt, new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)),
+      ),
+    )
+    .orderBy(desc(events.startAt))
+    .limit(1000);
+
+  const eventUrls = publicEvents.map((e) => ({
+    url: `${APP_URL}/events/${e.slug}`,
+    lastModified: e.updatedAt,
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }));
+
   return [
+    {
+      url: `${APP_URL}/events`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
     {
       url: APP_URL,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1.0,
     },
+    {
+      url: `https://samenmakers.nl/faq`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+
     {
       url: `${APP_URL}/over`,
       lastModified: new Date(),
@@ -67,5 +100,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...sectorUrls,
     ...postUrls,
+    ...eventUrls,
   ];
 }
