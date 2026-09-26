@@ -5,8 +5,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/trpc/init";
-import { users, matches, blockedUsers, bookmarks } from "@/server/db/schema";
-import { SECTOREN, REGIO_S, FASEN } from "@/lib/constants";
+import { users, matches, blockedUsers } from "@/server/db/schema";
+import { SECTOREN, REGIO_S } from "@/lib/constants";
 
 export const usersRouter = createTRPCRouter({
   // Get own profile

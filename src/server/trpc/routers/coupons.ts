@@ -7,7 +7,7 @@ import {
   adminProcedure,
   protectedProcedure,
 } from "@/server/trpc/init";
-import { coupons, couponRedemptions, auditLog } from "@/server/db/schema";
+import { coupons, auditLog } from "@/server/db/schema";
 import { getStripe } from "@/server/stripe";
 
 const createInput = z

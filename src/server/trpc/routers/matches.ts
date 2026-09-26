@@ -71,7 +71,7 @@ export const matchesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const isPro = ctx.session.user.isPro || ctx.session.user.role === "admin";
-      const { allowed, remaining } = await checkSwipeLimit(ctx.userId, isPro);
+      const { allowed } = await checkSwipeLimit(ctx.userId, isPro);
 
       if (!allowed) {
         throw new TRPCError({

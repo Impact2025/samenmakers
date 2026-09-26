@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and, or, asc, lt, desc, sql, inArray, isNull } from "drizzle-orm";
+import { eq, and, or, lt, desc, sql, inArray, isNull } from "drizzle-orm";
 import Pusher from "pusher";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc/init";
 import { messages, matches } from "@/server/db/schema";
