@@ -17,6 +17,7 @@ import { campaignsRouter } from "@/server/trpc/routers/campaigns";
 import { endorsementsRouter } from "@/server/trpc/routers/endorsements";
 import { learningRouter } from "@/server/trpc/routers/learning";
 import { programsRouter } from "@/server/trpc/routers/programs";
+import { teachingRouter } from "@/server/trpc/routers/teaching";
 
 export const appRouter = createTRPCRouter({
   users: usersRouter,
@@ -37,6 +38,7 @@ export const appRouter = createTRPCRouter({
   campaigns: campaignsRouter,
   learning: learningRouter,
   programs: programsRouter,
+  teaching: teachingRouter,
 });
 
 export type AppRouter = typeof appRouter;
