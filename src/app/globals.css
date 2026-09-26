@@ -280,6 +280,7 @@ h4 {
 .lesson-content > * + * {
   margin-top: 1em;
 }
+.lesson-content h1,
 .lesson-content h2,
 .lesson-content h3,
 .lesson-content h4 {
@@ -288,6 +289,11 @@ h4 {
   font-weight: 700;
   letter-spacing: -0.01em;
   margin-top: 1.6em;
+}
+.lesson-content h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin-top: 0;
 }
 .lesson-content h2 {
   font-size: 22px;
