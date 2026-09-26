@@ -52,8 +52,8 @@ export function CreateCohortForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
-            NAAM *
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Naam *
           </label>
           <Input
             value={form.name}
@@ -63,7 +63,7 @@ export function CreateCohortForm() {
           />
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Omschrijving
           </label>
           <Textarea

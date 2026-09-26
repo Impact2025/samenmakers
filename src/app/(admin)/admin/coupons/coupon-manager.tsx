@@ -98,8 +98,8 @@ export function CouponManager() {
             className="grid grid-cols-1 gap-4 md:grid-cols-2"
           >
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
-                CODE *
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Code *
               </label>
               <Input
                 value={form.code}
@@ -108,7 +108,7 @@ export function CouponManager() {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Omschrijving
               </label>
               <Input
@@ -119,7 +119,7 @@ export function CouponManager() {
             </div>
 
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Type
               </label>
               <div className="flex gap-2">
@@ -128,10 +128,10 @@ export function CouponManager() {
                     key={t}
                     type="button"
                     onClick={() => set("discountType", t)}
-                    className={`border px-4 py-2 text-sm font-medium transition-colors ${
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                       form.discountType === t
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-hairline text-on-surface-variant"
+                        ? "bg-primary-container text-on-primary border-transparent shadow-sm"
+                        : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                     }`}
                   >
                     {t === "percent" ? "Percentage" : "Vast bedrag"}
@@ -140,7 +140,7 @@ export function CouponManager() {
               </div>
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 WAARDE * {form.discountType === "percent" ? "(%)" : "(€)"}
               </label>
               <Input
@@ -153,7 +153,7 @@ export function CouponManager() {
             </div>
 
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Duur
               </label>
               <div className="flex flex-wrap gap-2">
@@ -162,10 +162,10 @@ export function CouponManager() {
                     key={d}
                     type="button"
                     onClick={() => set("duration", d)}
-                    className={`border px-3 py-2 text-xs font-medium transition-colors ${
+                    className={`rounded-full border px-3 py-2 text-xs font-medium transition-colors ${
                       form.duration === d
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-hairline text-on-surface-variant"
+                        ? "bg-primary-container text-on-primary border-transparent shadow-sm"
+                        : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                     }`}
                   >
                     {DURATION_LABEL[d]}
@@ -175,8 +175,8 @@ export function CouponManager() {
             </div>
             {form.duration === "repeating" && (
               <div>
-                <label className="text-label-md text-secondary mb-2 block">
-                  AANTAL MAANDEN *
+                <label className="text-label-lg text-on-surface mb-1.5 block">
+                  Aantal maanden *
                 </label>
                 <Input
                   type="number"
@@ -188,7 +188,7 @@ export function CouponManager() {
             )}
 
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Max. gebruik
               </label>
               <Input
@@ -199,7 +199,7 @@ export function CouponManager() {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Verloopt op
               </label>
               <Input

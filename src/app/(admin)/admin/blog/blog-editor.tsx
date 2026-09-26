@@ -191,10 +191,10 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
                   key={c.value}
                   type="button"
                   onClick={() => set("category", c.value)}
-                  className={`border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     form.category === c.value
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-hairline text-on-surface-variant"
+                      ? "bg-primary-container text-on-primary border-transparent shadow-sm"
+                      : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                   }`}
                 >
                   {c.label}
@@ -227,8 +227,8 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         </Card>
 
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
-            TITEL *
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Titel *
           </label>
           <Input
             value={form.title}
@@ -238,7 +238,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         </div>
 
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Slug (URL)
           </label>
           <Input
@@ -249,7 +249,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         </div>
 
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Samenvatting
           </label>
           <Textarea
@@ -261,7 +261,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         </div>
 
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             INHOUD (Markdown) *
           </label>
           <Textarea
@@ -281,7 +281,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               SEO-meta
             </h2>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 META-TITLE ({form.metaTitle.length})
               </label>
               <Input
@@ -291,7 +291,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 META-DESCRIPTION ({form.metaDescription.length})
               </label>
               <Textarea
@@ -302,7 +302,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 KEYWORDS (komma-gescheiden)
               </label>
               <Input
@@ -311,7 +311,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Omslag / og-image URL
               </label>
               <Input
@@ -321,7 +321,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 CANONICAL URL (optioneel)
               </label>
               <Input

@@ -11,13 +11,29 @@ export default function WachtwoordResetPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setSent(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/auth/password-reset/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(data.error ?? "Er is iets misgegaan. Probeer het opnieuw.");
+        return;
+      }
+      setSent(true);
+    } catch {
+      setError("Geen verbinding. Probeer het opnieuw.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (sent) {
@@ -73,6 +89,11 @@ export default function WachtwoordResetPage() {
           autoComplete="email"
           required
         />
+        {error && (
+          <p className="text-body-sm text-error" role="alert">
+            {error}
+          </p>
+        )}
         <Button type="submit" size="lg" className="w-full" disabled={loading}>
           {loading ? <Spinner size="sm" /> : "Resetlink versturen"}
         </Button>

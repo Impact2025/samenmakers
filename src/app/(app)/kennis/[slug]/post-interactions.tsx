@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, MessageSquare } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
+import { fieldClasses } from "@/components/ui/field-styles";
+import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -40,29 +42,34 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Reactions */}
-      <div className="hairline-t flex items-center gap-4 pt-4">
+    <section className="flex flex-col gap-4">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => react.mutate({ postId })}
           disabled={react.isPending}
-          className="text-secondary hover:text-primary flex items-center gap-2 transition-colors"
+          aria-pressed={!!react.data?.liked}
+          className={
+            react.data?.liked
+              ? "bg-primary-fixed text-primary-container flex h-10 items-center gap-2 rounded-full px-4 transition-colors"
+              : "bg-surface-container-low text-secondary hover:text-primary-container flex h-10 items-center gap-2 rounded-full px-4 transition-colors"
+          }
         >
           <Heart
             size={18}
-            className={react.data?.liked ? "fill-primary text-primary" : ""}
+            className={react.data?.liked ? "fill-current" : ""}
           />
           <span className="text-label-md">{reactionCount}</span>
         </button>
-        <div className="text-secondary flex items-center gap-2">
-          <MessageSquare size={18} />
-          <span className="text-label-md">{comments.length}</span>
-        </div>
+        <span className="bg-surface-container-low text-secondary flex h-10 items-center gap-2 rounded-full px-4">
+          <MessageCircle size={18} />
+          <span className="text-label-md">
+            {comments.length} {comments.length === 1 ? "reactie" : "reacties"}
+          </span>
+        </span>
       </div>
 
-      {/* Comments */}
-      <div className="space-y-4">
-        <h3 className="text-label-md text-on-surface">Reacties</h3>
+      <div className="bg-surface-container-lowest shadow-card flex flex-col gap-3 rounded-2xl p-5">
+        <h2 className="text-headline-sm text-on-surface">Reacties</h2>
 
         {comments.length === 0 && (
           <p className="text-body-md text-secondary">
@@ -76,14 +83,13 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
               src={comment.author.avatarUrl}
               naam={comment.author.naam ?? comment.author.name ?? "?"}
               size="xs"
-              grayscale={false}
             />
-            <div className="bg-surface-container-low flex-1 p-3">
-              <div className="mb-1 flex items-baseline gap-2">
-                <span className="text-on-surface text-xs font-semibold">
+            <div className="bg-surface-container-low flex-1 rounded-2xl rounded-tl-md p-3">
+              <div className="mb-0.5 flex items-baseline gap-2">
+                <span className="text-label-md text-on-surface">
                   {comment.author.naam ?? comment.author.name}
                 </span>
-                <span className="text-secondary text-[10px]">
+                <span className="text-body-sm text-secondary">
                   {formatRelative(new Date(comment.createdAt))}
                 </span>
               </div>
@@ -94,30 +100,32 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
           </div>
         ))}
 
-        {/* Comment form */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             if (!commentText.trim()) return;
             addComment.mutate({ postId, content: commentText.trim() });
           }}
-          className="flex gap-3"
+          className="flex gap-2 pt-1"
         >
           <input
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Schrijf een reactie…"
-            className="text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 flex-1 rounded-xl border border-transparent px-4 py-3 text-sm outline-none focus:ring-[3px]"
+            aria-label="Schrijf een reactie"
+            className={cn(fieldClasses, "flex-1")}
           />
           <Button
             type="submit"
-            variant="primary"
+            size="icon"
+            className="h-[50px] w-[50px]"
+            aria-label="Plaatsen"
             disabled={!commentText.trim() || addComment.isPending}
           >
-            {addComment.isPending ? <Spinner /> : "Plaatsen"}
+            {addComment.isPending ? <Spinner size="sm" /> : <Send size={18} />}
           </Button>
         </form>
       </div>
-    </div>
+    </section>
   );
 }

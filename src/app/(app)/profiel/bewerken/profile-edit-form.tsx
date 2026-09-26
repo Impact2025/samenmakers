@@ -175,8 +175,8 @@ export function ProfileEditForm({ user }: { user: Me }) {
           Basisgegevens
         </h2>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
-            NAAM *
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Naam *
           </label>
           <Input
             value={form.naam}
@@ -186,7 +186,9 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">Bio</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Bio
+          </label>
           <Textarea
             value={form.bio}
             onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
@@ -195,7 +197,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Missie
           </label>
           <Textarea
@@ -206,7 +208,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Ik zoek
           </label>
           <Textarea
@@ -225,7 +227,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="text-label-md text-secondary mb-2 block">
+            <label className="text-label-lg text-on-surface mb-1.5 block">
               Sector
             </label>
             <select
@@ -244,7 +246,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
             </select>
           </div>
           <div>
-            <label className="text-label-md text-secondary mb-2 block">
+            <label className="text-label-lg text-on-surface mb-1.5 block">
               Regio
             </label>
             <select
@@ -264,7 +266,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
           </div>
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Fase
           </label>
           <div className="flex gap-3">
@@ -273,10 +275,10 @@ export function ProfileEditForm({ user }: { user: Me }) {
                 key={value}
                 type="button"
                 onClick={() => setForm((f) => ({ ...f, fase: value }))}
-                className={`flex-1 border px-3 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors ${
+                className={`text-label-md flex-1 rounded-full border px-3 py-2.5 transition-colors ${
                   form.fase === value
-                    ? "bg-on-surface text-on-primary border-on-surface"
-                    : "border-hairline text-secondary hover:border-on-surface"
+                    ? "bg-on-surface text-surface-container-lowest border-transparent"
+                    : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                 }`}
               >
                 {label}
@@ -305,10 +307,10 @@ export function ProfileEditForm({ user }: { user: Me }) {
                 key={value}
                 type="button"
                 onClick={() => toggleZoektNaar(value)}
-                className={`border px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+                className={`text-label-md rounded-full border px-3 py-1.5 transition-colors ${
                   selected
                     ? "bg-primary text-on-primary border-primary"
-                    : "border-hairline text-secondary hover:border-on-surface"
+                    : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                 }`}
               >
                 {selected && <X size={10} className="mr-1 inline" />}
@@ -332,10 +334,10 @@ export function ProfileEditForm({ user }: { user: Me }) {
                 key={item}
                 type="button"
                 onClick={() => toggleExpertise(item)}
-                className={`border px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+                className={`text-label-md rounded-full border px-3 py-1.5 transition-colors ${
                   selected
                     ? "bg-primary text-on-primary border-primary"
-                    : "border-hairline text-secondary hover:border-on-surface"
+                    : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                 }`}
               >
                 {selected && <X size={10} className="mr-1 inline" />}
@@ -357,10 +359,10 @@ export function ProfileEditForm({ user }: { user: Me }) {
               key={value}
               type="button"
               onClick={() => setForm((f) => ({ ...f, mentorshipRole: value }))}
-              className={`border px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors ${
+              className={`text-label-md rounded-full border px-4 py-2.5 transition-colors ${
                 form.mentorshipRole === value
-                  ? "bg-on-surface text-on-primary border-on-surface"
-                  : "border-hairline text-secondary hover:border-on-surface"
+                  ? "bg-on-surface text-surface-container-lowest border-transparent"
+                  : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
               }`}
             >
               {label}
@@ -373,7 +375,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       <section className="space-y-4">
         <h2 className="text-label-md text-secondary hairline-b pb-3">Links</h2>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Website
           </label>
           <Input
@@ -386,7 +388,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">
+          <label className="text-label-lg text-on-surface mb-1.5 block">
             Linkedin
           </label>
           <Input

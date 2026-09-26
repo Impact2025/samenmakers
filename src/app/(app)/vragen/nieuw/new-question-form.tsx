@@ -31,8 +31,8 @@ export function NewQuestionForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
-          VRAAG *
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Vraag *
         </label>
         <Input
           value={form.title}
@@ -44,7 +44,7 @@ export function NewQuestionForm() {
         />
       </div>
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
+        <label className="text-label-lg text-on-surface mb-1.5 block">
           Toelichting
         </label>
         <Textarea
@@ -55,7 +55,7 @@ export function NewQuestionForm() {
         />
       </div>
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
+        <label className="text-label-lg text-on-surface mb-1.5 block">
           Sector (optioneel)
         </label>
         <select

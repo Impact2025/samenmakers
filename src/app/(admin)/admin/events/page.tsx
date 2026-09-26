@@ -48,7 +48,7 @@ export default async function AdminEventsPage({
           <Link
             key={t.label}
             href={t.key ? `/admin/events?status=${t.key}` : "/admin/events"}
-            className={`text-label-md border px-4 py-1.5 ${status === t.key ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-secondary hover:border-on-surface"}`}
+            className={`text-label-md rounded-full border px-4 py-1.5 ${status === t.key ? "bg-on-surface text-surface-container-lowest border-transparent" : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"}`}
           >
             {t.label}
           </Link>

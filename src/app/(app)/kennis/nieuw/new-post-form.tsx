@@ -66,8 +66,8 @@ export function NewPostForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
-          CATEGORIE *
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Categorie *
         </label>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
@@ -75,10 +75,10 @@ export function NewPostForm() {
               key={cat.value}
               type="button"
               onClick={() => setForm((f) => ({ ...f, category: cat.value }))}
-              className={`border px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                 form.category === cat.value
-                  ? "border-primary bg-primary/5 text-primary"
-                  : "border-hairline text-on-surface-variant hover:border-on-surface"
+                  ? "bg-primary-container text-on-primary border-transparent shadow-sm"
+                  : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
               }`}
             >
               {cat.label}
@@ -88,8 +88,8 @@ export function NewPostForm() {
       </div>
 
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
-          TITEL *
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Titel *
         </label>
         <Input
           value={form.title}
@@ -102,7 +102,7 @@ export function NewPostForm() {
       </div>
 
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
+        <label className="text-label-lg text-on-surface mb-1.5 block">
           Samenvatting
         </label>
         <Textarea
@@ -116,8 +116,8 @@ export function NewPostForm() {
       </div>
 
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
-          INHOUD *
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Inhoud *
         </label>
         <Textarea
           value={form.content}
@@ -134,7 +134,7 @@ export function NewPostForm() {
       </div>
 
       <div>
-        <label className="text-label-md text-secondary mb-2 block">
+        <label className="text-label-lg text-on-surface mb-1.5 block">
           Omslagafbeelding
         </label>
         {form.coverImageUrl ? (
@@ -143,7 +143,7 @@ export function NewPostForm() {
             <img
               src={form.coverImageUrl}
               alt="Cover"
-              className="border-hairline h-40 w-full border object-cover"
+              className="h-40 w-full rounded-xl object-cover"
             />
             <button
               type="button"
@@ -154,7 +154,7 @@ export function NewPostForm() {
             </button>
           </div>
         ) : (
-          <label className="hover:shadow-elevated bg-surface-container-low flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-dashed transition-colors">
+          <label className="hover:shadow-elevated bg-surface-container-low border-outline-variant flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-colors">
             {uploading ? (
               <Spinner />
             ) : (
@@ -178,7 +178,7 @@ export function NewPostForm() {
         )}
       </div>
 
-      <div className="hairline-t pt-6">
+      <div className="border-hairline flex flex-col gap-3 border-t pt-5">
         <p className="text-body-md text-secondary mb-4">
           Je artikel wordt na indiening beoordeeld door het We Shape the
           Future-team voordat het gepubliceerd wordt.

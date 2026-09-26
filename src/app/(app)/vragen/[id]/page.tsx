@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
 import { auth } from "@/server/auth/config";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardBody } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle, ChevronLeft } from "lucide-react";
 import { formatDate } from "@/lib/date-utils";
 import { AnswerSection } from "./answer-section";
 
@@ -32,51 +31,49 @@ export default async function VraagPage({ params }: Props) {
   const isAuthor = session?.user?.id === question.authorId;
 
   return (
-    <div className="max-w-2xl space-y-6">
-      {/* Question */}
-      <Card hover={false}>
-        <CardBody>
-          <div className="mb-4 flex items-start gap-3">
-            {question.isResolved && (
-              <CheckCircle size={20} className="text-primary mt-0.5 shrink-0" />
-            )}
-            <h1 className="text-headline-md text-on-surface">
-              {question.title}
-            </h1>
-          </div>
+    <div className="flex flex-col gap-5">
+      <Link
+        href="/vragen"
+        className="text-label-md text-secondary hover:text-primary-container inline-flex w-fit items-center gap-1"
+      >
+        <ChevronLeft size={16} /> Community feed
+      </Link>
 
-          {question.sector && (
-            <Badge variant="default" size="sm" className="mb-3">
-              {question.sector}
-            </Badge>
-          )}
-
-          {question.content && (
-            <p className="text-body-md text-on-surface-variant mb-4">
-              {question.content}
+      <article className="bg-surface-container-lowest shadow-card flex flex-col gap-3 rounded-2xl p-5">
+        <div className="flex items-center gap-2.5">
+          <Avatar
+            src={question.author.avatarUrl}
+            naam={question.author.naam ?? question.author.name ?? "?"}
+            size="xs"
+            className="!h-10 !w-10"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-title-md text-on-surface truncate">
+              {question.author.naam ?? question.author.name}
             </p>
-          )}
-
-          <div className="hairline-t flex items-center gap-3 pt-4">
-            <Avatar
-              src={question.author.avatarUrl}
-              naam={question.author.naam ?? question.author.name ?? "?"}
-              size="xs"
-              grayscale={false}
-            />
-            <span className="text-secondary text-xs">
-              {question.author.naam ?? question.author.name} ·{" "}
+            <p className="text-body-sm text-secondary">
               {formatDate(new Date(question.createdAt))}
-            </span>
-            <span className="text-secondary ml-auto text-xs">
-              {question.answers.length} antwoord
-              {question.answers.length !== 1 ? "en" : ""}
-            </span>
+            </p>
           </div>
-        </CardBody>
-      </Card>
+          {question.isResolved && (
+            <span className="bg-tertiary/10 text-label-sm text-tertiary flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1">
+              <CheckCircle size={14} /> Opgelost
+            </span>
+          )}
+        </div>
+        {question.sector && (
+          <span className="bg-primary-fixed text-label-sm text-on-primary-fixed w-fit rounded-full px-2.5 py-0.5 uppercase">
+            {question.sector}
+          </span>
+        )}
+        <h1 className="text-headline-md text-on-surface">{question.title}</h1>
+        {question.content && (
+          <p className="text-body-lg text-on-surface-variant whitespace-pre-line">
+            {question.content}
+          </p>
+        )}
+      </article>
 
-      {/* Answers */}
       <AnswerSection
         questionId={id}
         answers={question.answers}

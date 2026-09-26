@@ -99,8 +99,8 @@ export function MailManager() {
           )}
 
           <div>
-            <label className="text-label-md text-secondary mb-2 block">
-              ONDERWERP *
+            <label className="text-label-lg text-on-surface mb-1.5 block">
+              Onderwerp *
             </label>
             <Input
               value={subject}
@@ -109,7 +109,7 @@ export function MailManager() {
             />
           </div>
           <div>
-            <label className="text-label-md text-secondary mb-2 block">
+            <label className="text-label-lg text-on-surface mb-1.5 block">
               BERICHT (Markdown) *
             </label>
             <Textarea
@@ -122,7 +122,7 @@ export function MailManager() {
 
           {/* Segment */}
           <div>
-            <label className="text-label-md text-secondary mb-2 block">
+            <label className="text-label-lg text-on-surface mb-1.5 block">
               Segment
             </label>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">

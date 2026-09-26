@@ -101,8 +101,8 @@ export function OnboardingFlow({ user }: { user: Me }) {
           <>
             <h2 className="text-headline-md text-on-surface">Wie ben jij?</h2>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
-                NAAM *
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Naam *
               </label>
               <Input
                 value={form.naam}
@@ -113,7 +113,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Bio
               </label>
               <Textarea
@@ -134,7 +134,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               In welke context werk jij?
             </h2>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Sector
               </label>
               <select
@@ -153,7 +153,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               </select>
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Regio
               </label>
               <select
@@ -172,7 +172,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               </select>
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Fase
               </label>
               <div className="flex gap-2">
@@ -181,10 +181,10 @@ export function OnboardingFlow({ user }: { user: Me }) {
                     key={value}
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, fase: value }))}
-                    className={`flex-1 border py-3 text-xs font-bold tracking-widest uppercase transition-colors ${
+                    className={`text-label-md flex-1 border py-3 transition-colors ${
                       form.fase === value
-                        ? "bg-on-surface text-on-primary border-on-surface"
-                        : "border-hairline text-secondary hover:border-on-surface"
+                        ? "bg-on-surface text-surface-container-lowest border-transparent"
+                        : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                     }`}
                   >
                     {label}
@@ -201,7 +201,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               Wat drijft jou?
             </h2>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Missie
               </label>
               <Textarea
@@ -214,7 +214,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               />
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 WAT ZOEK JE? *
               </label>
               <p className="text-body-md text-secondary mb-3">
@@ -235,10 +235,10 @@ export function OnboardingFlow({ user }: { user: Me }) {
                             : [...f.zoektNaar, value],
                         }))
                       }
-                      className={`border px-3 py-2 text-xs font-bold tracking-wide transition-colors ${
+                      className={`text-label-md rounded-full border px-3 py-2 transition-colors ${
                         selected
                           ? "bg-primary text-on-primary border-primary"
-                          : "border-hairline text-secondary hover:border-on-surface"
+                          : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                       }`}
                     >
                       {label}
@@ -248,7 +248,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
               </div>
             </div>
             <div>
-              <label className="text-label-md text-secondary mb-2 block">
+              <label className="text-label-lg text-on-surface mb-1.5 block">
                 Toelichting (optioneel)
               </label>
               <Textarea
@@ -280,8 +280,8 @@ export function OnboardingFlow({ user }: { user: Me }) {
                   }
                   className={`text-label-md border py-4 transition-colors ${
                     form.mentorshipRole === value
-                      ? "bg-on-surface text-on-primary border-on-surface"
-                      : "border-hairline text-secondary hover:border-on-surface"
+                      ? "bg-on-surface text-surface-container-lowest border-transparent"
+                      : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                   }`}
                 >
                   {label}

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { formatDate } from "@/lib/date-utils";
 import { POST_CATEGORIES } from "@/lib/constants";
 import { renderMarkdown } from "@/lib/markdown";
@@ -70,55 +71,62 @@ export default async function PostPage({ params }: Props) {
   };
 
   return (
-    <article className="max-w-2xl space-y-8">
+    <article className="flex flex-col gap-5">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <Link
+        href="/kennis"
+        className="text-label-md text-secondary hover:text-primary-container inline-flex w-fit items-center gap-1"
+      >
+        <ChevronLeft size={16} /> Kennisbank
+      </Link>
+
       {post.coverImageUrl && (
-        <div className="border-hairline aspect-video w-full overflow-hidden border">
+        <div className="bg-surface-container shadow-elevated aspect-video w-full overflow-hidden rounded-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.coverImageUrl}
-            alt={post.title}
+            alt=""
             className="h-full w-full object-cover"
           />
         </div>
       )}
 
-      <div>
-        <Badge variant="default" className="mb-4">
+      <header className="flex flex-col gap-3">
+        <span className="bg-primary-fixed text-label-sm text-on-primary-fixed w-fit rounded-full px-2.5 py-0.5 uppercase">
           {POST_CATEGORIES.find((c) => c.value === post.category)?.label ??
             post.category}
-        </Badge>
-        <h1 className="text-headline-lg text-on-surface mb-4">{post.title}</h1>
-
-        <div className="flex items-center gap-3">
+        </span>
+        <h1 className="text-headline-lg sm:text-display-lg text-on-surface">
+          {post.title}
+        </h1>
+        <div className="bg-surface-container-low flex items-center gap-3 rounded-xl p-3">
           <Avatar
             src={post.author.avatarUrl}
             naam={post.author.naam ?? post.author.name ?? "?"}
-            size="sm"
-            grayscale={false}
+            size="xs"
+            className="!h-10 !w-10"
           />
-          <div>
-            <p className="text-on-surface text-sm font-semibold">
+          <div className="min-w-0">
+            <p className="text-label-lg text-on-surface truncate">
               {post.author.naam ?? post.author.name}
             </p>
             {post.publishedAt && (
-              <p className="text-secondary text-xs">
+              <p className="text-body-sm text-secondary">
                 {formatDate(post.publishedAt)}
               </p>
             )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Content */}
       <div
-        className="prose prose-sm text-on-surface-variant prose-headings:text-on-surface prose-a:text-primary prose-strong:text-on-surface max-w-none"
+        className="lesson-content bg-surface-container-lowest shadow-card rounded-2xl p-5 sm:p-6"
         dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
       />
 
-      {/* Interactions */}
       <PostInteractions
         postId={post.id}
         reactionCount={post.reactions.length}

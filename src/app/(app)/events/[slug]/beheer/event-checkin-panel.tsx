@@ -160,7 +160,7 @@ export function EventCheckinPanel({
           return (
             <li
               key={a.id}
-              className={`flex items-center justify-between gap-3 border px-3 py-2.5 ${isCheckedIn ? "border-primary/20 bg-primary/5" : "border-hairline"}`}
+              className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 ${isCheckedIn ? "bg-tertiary/10" : "bg-surface-container-low"}`}
             >
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar

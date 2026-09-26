@@ -228,7 +228,7 @@ export function OrderForm({
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="text-label-md text-secondary mb-1 block">
+            <span className="text-label-lg text-on-surface mb-1.5 block">
               Naam *
             </span>
             <input
@@ -241,7 +241,7 @@ export function OrderForm({
             />
           </label>
           <label className="block">
-            <span className="text-label-md text-secondary mb-1 block">
+            <span className="text-label-lg text-on-surface mb-1.5 block">
               E-mail *
             </span>
             <input
@@ -294,7 +294,7 @@ export function OrderForm({
               </>
             ) : (
               <>
-                <span className="text-label-md text-secondary mb-1 block">
+                <span className="text-label-lg text-on-surface mb-1.5 block">
                   {f.label}
                   {f.required && " *"}
                 </span>

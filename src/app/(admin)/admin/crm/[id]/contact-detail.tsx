@@ -198,10 +198,10 @@ export function ContactDetail({ id }: { id: string }) {
                     type="button"
                     disabled={setStage.isPending}
                     onClick={() => setStage.mutate({ contactId: id, stage: s })}
-                    className={`w-full border px-3 py-2 text-left text-sm font-medium transition-colors ${
+                    className={`w-full rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors ${
                       user.crmStage === s
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-hairline text-on-surface-variant hover:border-on-surface"
+                        ? "bg-primary-container text-on-primary border-transparent shadow-sm"
+                        : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                     }`}
                   >
                     {STAGE_LABEL[s]}

@@ -91,7 +91,7 @@ export function TicketActions({
             Kun je zelf niet? Geef je ticket door aan een collega of vriend.
           </p>
           <label className="block">
-            <span className="text-label-md text-secondary mb-1 block">
+            <span className="text-label-lg text-on-surface mb-1.5 block">
               Naam
             </span>
             <input
@@ -103,7 +103,7 @@ export function TicketActions({
             />
           </label>
           <label className="block">
-            <span className="text-label-md text-secondary mb-1 block">
+            <span className="text-label-lg text-on-surface mb-1.5 block">
               E-mail
             </span>
             <input

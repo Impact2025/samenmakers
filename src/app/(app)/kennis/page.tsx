@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { BookOpen, Plus, Search } from "lucide-react";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardBody } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonClasses } from "@/components/ui/button";
+import { fieldClasses } from "@/components/ui/field-styles";
+import { PageHeader } from "@/components/shared/page-header";
+import { EmptyState } from "@/components/shared/empty-state";
 import { formatDate } from "@/lib/date-utils";
 import { POST_CATEGORIES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import { KennisFilters } from "./kennis-filters";
 
 export const metadata: Metadata = { title: "Kennisbank" };
@@ -15,93 +19,122 @@ interface Props {
   searchParams: Promise<{ category?: string; search?: string }>;
 }
 
+type Category = "blog" | "kennisbank" | "tool" | "funding";
+
 export default async function KennisPage({ searchParams }: Props) {
   const { category, search } = await searchParams;
+  const cat = POST_CATEGORIES.some((c) => c.value === category)
+    ? (category as Category)
+    : undefined;
 
   const { items } = await api.posts.list({
-    category: category as
-      | "blog"
-      | "kennisbank"
-      | "tool"
-      | "funding"
-      | undefined,
-    search,
+    ...(cat ? { category: cat } : {}),
+    ...(search ? { search } : {}),
     limit: 20,
   });
 
   return (
-    <div>
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-label-md text-secondary mb-1">Platform</p>
-          <h1 className="text-headline-lg text-on-surface">Kennisbank</h1>
-        </div>
-        <Link href="/kennis/nieuw" className="mt-1 shrink-0">
-          <Button size="sm" variant="primary">
-            + Artikel
-          </Button>
-        </Link>
-      </div>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        label="Kennis delen"
+        title="Kennisbank"
+        description="Toolkits, artikelen en funding-tips van en voor changemakers"
+        action={
+          <Link href="/kennis/nieuw" className={buttonClasses("primary", "sm")}>
+            <Plus size={16} /> Artikel
+          </Link>
+        }
+        className="mb-0"
+      />
 
-      <KennisFilters {...(category ? { activeCategory: category } : {})} />
+      <form action="/kennis" method="get" role="search" className="relative">
+        {cat && <input type="hidden" name="category" value={cat} />}
+        <label>
+          <span className="sr-only">Zoeken in de kennisbank</span>
+          <Search
+            size={20}
+            className="text-secondary pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
+          />
+          <input
+            name="search"
+            type="search"
+            defaultValue={search ?? ""}
+            placeholder="Zoek artikelen, tools en tips..."
+            className={cn(fieldClasses, "pl-12")}
+          />
+        </label>
+      </form>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.length === 0 ? (
-          <div className="border-hairline col-span-full border py-20 text-center">
-            <p className="text-on-surface-variant">Geen artikelen gevonden</p>
-          </div>
-        ) : (
-          items.map((post) => (
-            <Link key={post.id} href={`/kennis/${post.slug}`}>
-              <Card className="h-full">
-                <CardBody className="flex h-full flex-col p-5">
-                  <div className="mb-3 flex items-center gap-2">
-                    <Badge variant="default" size="sm">
-                      {POST_CATEGORIES.find((c) => c.value === post.category)
-                        ?.label ?? post.category}
-                    </Badge>
-                  </div>
-                  {post.coverImageUrl && (
-                    <div className="bg-surface-container mb-3 aspect-video w-full overflow-hidden">
-                      <img
-                        src={post.coverImageUrl}
-                        alt={post.title}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <h3 className="text-on-surface mb-2 line-clamp-2 flex-1 font-extrabold">
-                    {post.title}
-                  </h3>
-                  {post.excerpt && (
-                    <p className="text-body-md text-on-surface-variant mb-3 line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                  )}
-                  <div className="mt-auto flex items-center gap-2">
-                    <Avatar
-                      src={post.author.avatarUrl}
-                      naam={post.author.naam ?? post.author.name ?? "?"}
-                      size="xs"
-                      grayscale={false}
-                    />
-                    <div>
-                      <p className="text-on-surface text-xs font-semibold">
-                        {post.author.naam ?? post.author.name}
-                      </p>
-                      {post.publishedAt && (
-                        <p className="text-secondary text-[10px]">
-                          {formatDate(post.publishedAt)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
+      <KennisFilters
+        {...(cat ? { activeCategory: cat } : {})}
+        {...(search ? { search } : {})}
+      />
+
+      {items.length === 0 ? (
+        <EmptyState
+          icon={<BookOpen size={22} />}
+          title="Geen artikelen gevonden"
+          description="Probeer een andere categorie of deel zelf je kennis."
+          action={
+            <Link href="/kennis/nieuw" className={buttonClasses("tonal", "sm")}>
+              Artikel schrijven
             </Link>
-          ))
-        )}
-      </div>
+          }
+        />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {items.map((post) => (
+            <Link
+              key={post.id}
+              href={`/kennis/${post.slug}`}
+              className="group bg-surface-container-lowest shadow-card hover:shadow-elevated flex flex-col overflow-hidden rounded-2xl transition-shadow"
+            >
+              {post.coverImageUrl && (
+                <div className="bg-surface-container relative aspect-video w-full overflow-hidden">
+                  <Image
+                    src={post.coverImageUrl}
+                    alt=""
+                    fill
+                    sizes="(min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                </div>
+              )}
+              <div className="flex flex-1 flex-col gap-2 p-4">
+                <span className="bg-primary-fixed text-label-sm text-on-primary-fixed w-fit rounded-full px-2.5 py-0.5 uppercase">
+                  {POST_CATEGORIES.find((c) => c.value === post.category)
+                    ?.label ?? post.category}
+                </span>
+                <h3 className="text-title-md text-on-surface group-hover:text-primary-container line-clamp-2 transition-colors">
+                  {post.title}
+                </h3>
+                {post.excerpt && (
+                  <p className="text-body-sm text-secondary line-clamp-2">
+                    {post.excerpt}
+                  </p>
+                )}
+                <div className="mt-auto flex items-center gap-2 pt-2">
+                  <Avatar
+                    src={post.author.avatarUrl}
+                    naam={post.author.naam ?? post.author.name ?? "?"}
+                    size="xs"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-label-md text-on-surface truncate">
+                      {post.author.naam ?? post.author.name}
+                    </p>
+                    {post.publishedAt && (
+                      <p className="text-body-sm text-secondary">
+                        {formatDate(post.publishedAt)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

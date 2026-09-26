@@ -283,7 +283,7 @@ export function EventForm({
           ).map(([value, text]) => (
             <label
               key={value}
-              className={`text-label-md cursor-pointer border px-4 py-2 ${form.format === value ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-on-surface hover:border-on-surface"}`}
+              className={`text-label-md cursor-pointer rounded-full border px-4 py-2 ${form.format === value ? "bg-on-surface text-surface-container-lowest border-transparent" : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"}`}
             >
               <input
                 type="radio"
