@@ -155,7 +155,7 @@ export default async function MakerProfilePage({ params }: Props) {
           {user.ikZoek && (
             <div className="mt-4">
               <p className="text-label-md text-secondary mb-2">
-                {zoektNaar.length > 0 ? "TOELICHTING" : "IK ZOEK"}
+                {zoektNaar.length > 0 ? "Toelichting" : "Ik zoek"}
               </p>
               <p className="text-body-md text-on-surface-variant">
                 {user.ikZoek}

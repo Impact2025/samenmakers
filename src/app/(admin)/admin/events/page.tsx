@@ -60,12 +60,12 @@ export default async function AdminEventsPage({
           <thead>
             <tr className="hairline-b bg-surface-container-low">
               {[
-                "TITEL",
-                "DATUM",
-                "LOCATIE",
-                "ORGANISATOR",
-                "BEZETTING",
-                "STATUS",
+                "Titel",
+                "Datum",
+                "Locatie",
+                "Organisator",
+                "Bezetting",
+                "Status",
                 "",
               ].map((h) => (
                 <th

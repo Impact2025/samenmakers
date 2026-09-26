@@ -105,8 +105,8 @@ export default async function ManageEventPage({ params }: Props) {
       <section className="space-y-3">
         <h2 className="text-label-md text-on-surface">
           {features.eventTickets
-            ? "AANMELDINGEN (ZONDER TICKET) EN WACHTLIJST"
-            : "DEELNEMERS EN CHECK-IN"}
+            ? "Aanmeldingen (zonder ticket) en wachtlijst"
+            : "Deelnemers en check-in"}
         </h2>
         <EventCheckinPanel
           eventId={event.id}

@@ -20,7 +20,7 @@ export function JoinByCode() {
         e.preventDefault();
         join.mutate({ code });
       }}
-      className="flex items-end gap-4"
+      className="flex items-end gap-2"
     >
       <div className="flex-1">
         <Input
@@ -36,7 +36,8 @@ export function JoinByCode() {
       </div>
       <Button
         type="submit"
-        size="sm"
+        size="lg"
+        className="h-[50px]"
         disabled={join.isPending || code.trim().length < 4}
       >
         {join.isPending ? <Spinner size="sm" /> : "Deelnemen"}

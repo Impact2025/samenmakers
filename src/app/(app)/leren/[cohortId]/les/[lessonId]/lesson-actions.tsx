@@ -73,13 +73,13 @@ export function LessonActions({
   }
 
   return (
-    <div className="border-hairline space-y-8 border-t pt-8">
+    <div className="bg-surface-container-lowest shadow-card flex flex-col gap-6 rounded-2xl p-5">
       <div className="space-y-2">
         <Textarea
           label={
             isReflection
-              ? "JOUW ANTWOORD (ALLEEN VOOR JOU)"
-              : "MIJN NOTITIES (ALLEEN VOOR JOU)"
+              ? "Jouw antwoord (alleen voor jou)"
+              : "Mijn notities (alleen voor jou)"
           }
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -105,8 +105,8 @@ export function LessonActions({
       <div className="flex flex-wrap items-center gap-4">
         {done ? (
           <>
-            <span className="text-label-md text-primary inline-flex items-center gap-2">
-              <CircleCheck size={16} /> Les afgerond
+            <span className="text-label-lg text-tertiary bg-tertiary/10 inline-flex h-11 items-center gap-2 rounded-full px-4">
+              <CircleCheck size={18} /> Les afgerond
             </span>
             <Button
               variant="ghost"
@@ -121,6 +121,8 @@ export function LessonActions({
           </>
         ) : (
           <Button
+            size="lg"
+            className="w-full sm:w-auto"
             onClick={() => void completeAndContinue()}
             disabled={setLessonStatus.isPending}
           >
@@ -140,20 +142,17 @@ export function LessonActions({
         )}
       </div>
 
-      <nav
-        className="border-hairline grid grid-cols-2 gap-4 border-t pt-6"
-        aria-label="Lesnavigatie"
-      >
+      <nav className="grid grid-cols-2 gap-3" aria-label="Lesnavigatie">
         <div>
           {prev && (
             <Link
               href={`/leren/${cohortId}/les/${prev.id}`}
-              className="group block"
+              className="group bg-surface-container-low hover:bg-surface-container block h-full rounded-2xl p-4 transition-colors"
             >
               <span className="text-label-md text-secondary flex items-center gap-2">
                 <ArrowLeft size={12} /> Vorige
               </span>
-              <span className="text-body-md text-on-surface mt-1 block group-hover:underline">
+              <span className="text-label-lg text-on-surface group-hover:text-primary-container mt-1 line-clamp-2 block">
                 {prev.title}
               </span>
             </Link>
@@ -163,19 +162,19 @@ export function LessonActions({
           {next ? (
             <Link
               href={`/leren/${cohortId}/les/${next.id}`}
-              className="group block"
+              className="group bg-surface-container-low hover:bg-surface-container block h-full rounded-2xl p-4 transition-colors"
             >
               <span className="text-label-md text-secondary flex items-center justify-end gap-2">
                 Volgende <ArrowRight size={12} />
               </span>
-              <span className="text-body-md text-on-surface mt-1 block group-hover:underline">
+              <span className="text-label-lg text-on-surface group-hover:text-primary-container mt-1 line-clamp-2 block">
                 {next.title}
               </span>
             </Link>
           ) : (
             <Link
               href={`/leren/${cohortId}`}
-              className="text-label-md text-primary underline underline-offset-4"
+              className="bg-primary-fixed/50 text-label-lg text-primary-container flex h-full items-center justify-end rounded-2xl p-4"
             >
               Terug naar leerpad
             </Link>

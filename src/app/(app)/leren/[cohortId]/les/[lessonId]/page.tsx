@@ -52,11 +52,11 @@ export default async function LessonPage({ params }: Props) {
   const meetingUrl = safeHttpUrl(c.meetingUrl);
 
   return (
-    <article className="max-w-3xl space-y-8">
+    <article className="flex flex-col gap-6">
       <div className="space-y-4">
         <Link
           href={`/leren/${cohort.id}`}
-          className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-2"
+          className="text-label-md text-secondary hover:text-primary-container inline-flex items-center gap-1"
         >
           <ArrowLeft size={14} /> {program.name}
         </Link>
@@ -68,7 +68,7 @@ export default async function LessonPage({ params }: Props) {
       </div>
 
       <header className="space-y-3">
-        <p className="text-label-md text-primary-container flex items-center gap-2">
+        <p className="text-label-sm text-primary-container flex items-center gap-2 uppercase">
           <LessonIcon type={lesson.type} size={14} />
           {lesson.moduleTitle} · les {data.position.index} van{" "}
           {data.position.total}
@@ -85,7 +85,7 @@ export default async function LessonPage({ params }: Props) {
 
       {lesson.type === "video" &&
         (embed ? (
-          <div className="border-hairline bg-on-surface aspect-video w-full border">
+          <div className="bg-on-surface shadow-elevated aspect-video w-full overflow-hidden rounded-2xl">
             <iframe
               src={embed}
               title={lesson.title}
@@ -101,16 +101,18 @@ export default async function LessonPage({ params }: Props) {
             href={c.videoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-label-md text-primary inline-flex items-center gap-2 underline"
+            className="text-label-lg text-primary-container inline-flex items-center gap-2 hover:underline"
           >
             Bekijk de video <ExternalLink size={12} />
           </a>
         ) : null)}
 
       {lesson.type === "live" && (c.startsAt || meetingUrl) && (
-        <div className="border-on-surface flex flex-wrap items-center justify-between gap-4 border bg-white p-5">
+        <div className="bg-surface-container-lowest shadow-elevated flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5">
           <div className="flex items-center gap-3">
-            <Radio size={20} className="text-primary" aria-hidden />
+            <span className="bg-tertiary/10 text-tertiary flex h-10 w-10 items-center justify-center rounded-full">
+              <Radio size={20} aria-hidden />
+            </span>
             <div>
               <p className="text-label-md text-secondary">Live sessie</p>
               {c.startsAt && (
@@ -147,7 +149,9 @@ export default async function LessonPage({ params }: Props) {
           rel="noopener noreferrer"
           className="hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-4 rounded-2xl p-5 transition-colors"
         >
-          <Download size={20} className="text-primary" aria-hidden />
+          <span className="bg-tertiary/10 text-tertiary flex h-10 w-10 items-center justify-center rounded-xl">
+            <Download size={20} aria-hidden />
+          </span>
           <span className="text-body-md text-on-surface font-semibold">
             {c.fileName || "Download het bestand"}
           </span>
@@ -155,8 +159,10 @@ export default async function LessonPage({ params }: Props) {
       )}
 
       {lesson.type === "reflectie" && c.prompt && (
-        <blockquote className="border-primary-container bg-surface-container-low border-l-2 p-5">
-          <p className="text-label-md text-secondary mb-2">Reflectievraag</p>
+        <blockquote className="border-primary-container bg-primary-fixed/40 rounded-2xl border-l-4 p-5">
+          <p className="text-label-sm text-primary-container mb-2 uppercase">
+            Reflectievraag
+          </p>
           <p className="text-body-lg text-on-surface">{c.prompt}</p>
         </blockquote>
       )}

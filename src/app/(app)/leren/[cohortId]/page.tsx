@@ -3,11 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TRPCError } from "@trpc/server";
 import {
-  ArrowLeft,
   ArrowRight,
+  BookOpen,
+  Check,
+  ChevronDown,
+  ChevronLeft,
   Circle,
   CircleCheck,
   CircleDashed,
+  GraduationCap,
+  Timer,
   Users,
 } from "lucide-react";
 import { api } from "@/trpc/server";
@@ -15,7 +20,9 @@ import { features } from "@/lib/features";
 import { formatDate } from "@/lib/date-utils";
 import { LESSON_TYPE_LABELS } from "@/lib/learning";
 import { cn } from "@/lib/utils";
-import { ProgressBar } from "@/components/learning/progress-bar";
+import { ProgressRing } from "@/components/ui/progress-ring";
+import { EmptyState } from "@/components/shared/empty-state";
+import { buttonClasses } from "@/components/ui/button";
 import { LessonIcon } from "@/components/learning/lesson-icon";
 
 interface Props {
@@ -45,157 +52,222 @@ export default async function LeerpadPage({ params }: Props) {
   const now = new Date();
 
   return (
-    <div className="space-y-10">
+    <div className="flex flex-col gap-6">
       <Link
         href="/leren"
-        className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-2"
+        className="text-label-md text-secondary hover:text-primary-container inline-flex w-fit items-center gap-1"
       >
-        <ArrowLeft size={14} /> Mijn leren
+        <ChevronLeft size={16} /> Mijn leertraject
       </Link>
 
-      <header className="space-y-5">
+      <header className="bg-surface-container-low shadow-card relative overflow-hidden rounded-2xl p-5">
         <div
-          className="h-1.5 w-16"
+          className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full opacity-20 blur-2xl"
           style={{ backgroundColor: program.color }}
         />
-        <div>
-          <p className="text-label-md text-primary-container mb-2">
-            {cohort.name}
-          </p>
-          <h1 className="text-headline-lg lg:text-display-lg text-on-surface">
-            {program.name}
-          </h1>
-          {program.tagline && (
-            <p className="text-body-lg text-on-surface-variant mt-3">
-              {program.tagline}
-            </p>
-          )}
-        </div>
-        <div className="max-w-xl space-y-2">
-          <ProgressBar
-            percent={progress.percent}
-            color={program.color}
-            label="Voortgang programma"
-          />
-          <p className="text-body-md text-on-surface-variant">
-            {progress.done} van {progress.total} lessen klaar ·{" "}
-            {progress.percent}%
-            {cohort.startDate && (
-              <>
-                {" "}
-                · {formatDate(cohort.startDate)}
-                {cohort.endDate && <> – {formatDate(cohort.endDate)}</>}
-              </>
+        <div className="relative flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <span className="bg-primary/10 text-label-sm text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 uppercase">
+              <GraduationCap size={14} /> {cohort.name}
+            </span>
+            <h1 className="text-headline-lg text-on-surface mt-2">
+              {program.name}
+            </h1>
+            {program.tagline && (
+              <p className="text-body-md text-secondary mt-1">
+                {program.tagline}
+              </p>
             )}
-          </p>
+          </div>
+          <ProgressRing percent={progress.percent}>
+            <span className="text-label-md text-on-surface">
+              {progress.percent}%
+            </span>
+          </ProgressRing>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <p className="text-body-sm text-secondary relative mt-3">
+          {progress.done} van {progress.total} lessen klaar
+          {cohort.startDate && (
+            <>
+              {" "}
+              · {formatDate(cohort.startDate)}
+              {cohort.endDate && <> – {formatDate(cohort.endDate)}</>}
+            </>
+          )}
+        </p>
+        <div className="relative mt-4 flex flex-wrap gap-2">
           {nextLessonId && (
             <Link
               href={`/leren/${cohort.id}/les/${nextLessonId}`}
-              className="text-label-md bg-primary-container text-on-primary shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 transition-colors"
+              className={buttonClasses("primary", "lg", "flex-1 sm:flex-none")}
             >
               {progress.done === 0 ? "Start het programma" : "Ga verder"}{" "}
-              <ArrowRight size={14} />
+              <ArrowRight size={18} />
             </Link>
           )}
           {data.isStaff && (
             <Link
               href={`/leren/${cohort.id}/deelnemers`}
-              className="text-label-md text-on-surface hover:bg-surface-container-low hover:text-on-surface border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-6 py-3 transition-colors"
+              className={buttonClasses("secondary", "lg")}
             >
-              <Users size={14} /> Cursistoverzicht
+              <Users size={18} /> Cursistoverzicht
             </Link>
           )}
         </div>
       </header>
 
-      {modules.length === 0 ? (
-        <p className="text-body-md text-secondary">
-          Er is nog geen lesmateriaal toegevoegd aan dit programma.
-        </p>
-      ) : (
-        <ol className="space-y-6">
-          {modules.map((mod, i) => {
-            const isCurrent =
-              mod.startsAt &&
-              mod.endsAt &&
-              mod.startsAt <= now &&
-              now <= mod.endsAt;
-            return (
-              <li
-                key={mod.id}
-                className={cn(
-                  "border bg-white",
-                  isCurrent ? "border-on-surface" : "border-hairline",
-                )}
-              >
-                <div className="hairline-b flex flex-wrap items-start justify-between gap-4 p-5 lg:p-6">
-                  <div className="min-w-0">
-                    <p className="text-label-md text-secondary mb-2">
-                      MODULE {i + 1}
-                      {isCurrent && (
-                        <span className="text-primary ml-2">· NU</span>
-                      )}
-                    </p>
-                    <h2 className="text-headline-sm text-on-surface">
-                      {mod.title}
-                    </h2>
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-headline-sm text-on-surface">Curriculum</h2>
+          <span className="text-label-md text-secondary">
+            {modules.length} {modules.length === 1 ? "module" : "modules"}
+          </span>
+        </div>
+
+        {modules.length === 0 ? (
+          <EmptyState
+            icon={<BookOpen size={22} />}
+            title="Nog geen lesmateriaal"
+            description="Er is nog geen lesmateriaal aan dit programma toegevoegd."
+          />
+        ) : (
+          <ol className="flex flex-col gap-2">
+            {modules.map((mod, i) => {
+              const isCurrent = !!(
+                mod.startsAt &&
+                mod.endsAt &&
+                mod.startsAt <= now &&
+                now <= mod.endsAt
+              );
+              const pct =
+                mod.progress.total === 0
+                  ? 0
+                  : Math.round((mod.progress.done / mod.progress.total) * 100);
+              const complete =
+                mod.progress.total > 0 &&
+                mod.progress.done === mod.progress.total;
+              const hasNext = mod.lessons.some((l) => l.id === nextLessonId);
+              return (
+                <li key={mod.id}>
+                  <details
+                    open={isCurrent || hasNext}
+                    className={cn(
+                      "group rounded-2xl",
+                      isCurrent || hasNext
+                        ? "bg-surface-container-lowest shadow-card"
+                        : "bg-surface-container-low",
+                    )}
+                  >
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span
+                          className={cn(
+                            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                            complete
+                              ? "bg-tertiary/15 text-tertiary"
+                              : isCurrent || hasNext
+                                ? "bg-primary-container/15 text-primary-container"
+                                : "bg-surface-variant text-secondary",
+                          )}
+                        >
+                          {complete ? (
+                            <Check size={20} />
+                          ) : isCurrent || hasNext ? (
+                            <Timer size={20} />
+                          ) : (
+                            <BookOpen size={18} />
+                          )}
+                        </span>
+                        <div className="min-w-0">
+                          <span
+                            className={cn(
+                              "text-label-sm uppercase",
+                              isCurrent || hasNext
+                                ? "text-primary-container"
+                                : "text-secondary",
+                            )}
+                          >
+                            Module {i + 1}
+                            {isCurrent && " • Nu"}
+                            {(mod.startsAt || mod.endsAt) && (
+                              <span className="text-secondary normal-case">
+                                {" "}
+                                · {mod.startsAt && formatDate(mod.startsAt)}
+                                {mod.endsAt && <> – {formatDate(mod.endsAt)}</>}
+                              </span>
+                            )}
+                          </span>
+                          <h3 className="text-title-md text-on-surface truncate">
+                            {mod.title}
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span
+                          className={cn(
+                            "text-label-sm rounded-full px-2 py-1",
+                            complete
+                              ? "bg-tertiary/10 text-tertiary"
+                              : isCurrent || hasNext
+                                ? "bg-primary-container text-on-primary"
+                                : "bg-surface-variant text-secondary",
+                          )}
+                        >
+                          {pct}%
+                        </span>
+                        <ChevronDown
+                          size={18}
+                          className="text-secondary transition-transform group-open:rotate-180"
+                        />
+                      </div>
+                    </summary>
+
                     {mod.description && (
-                      <p className="text-body-md text-on-surface-variant mt-1">
+                      <p className="text-body-sm text-secondary px-4 pb-2">
                         {mod.description}
                       </p>
                     )}
-                    {(mod.startsAt || mod.endsAt) && (
-                      <p className="text-body-md text-secondary mt-2">
-                        {mod.startsAt && formatDate(mod.startsAt)}
-                        {mod.endsAt && <> – {formatDate(mod.endsAt)}</>}
-                      </p>
-                    )}
-                  </div>
-                  <p className="text-label-md text-secondary shrink-0">
-                    {mod.progress.done}/{mod.progress.total}
-                  </p>
-                </div>
-                <ul>
-                  {mod.lessons.map((lesson) => (
-                    <li key={lesson.id} className="hairline-b last:border-b-0">
-                      <Link
-                        href={`/leren/${cohort.id}/les/${lesson.id}`}
-                        className={cn(
-                          "hover:bg-surface-container-low flex items-center gap-4 px-5 py-4 transition-colors lg:px-6",
-                          lesson.id === nextLessonId &&
-                            "bg-surface-container-low",
-                        )}
-                      >
-                        <StatusIcon status={lesson.status} />
-                        <span className="min-w-0 flex-1">
-                          <span className="text-body-md text-on-surface block truncate">
-                            {lesson.title}
-                          </span>
-                          <span className="text-body-md text-secondary flex items-center gap-2">
-                            <LessonIcon type={lesson.type} size={12} />
-                            {LESSON_TYPE_LABELS[lesson.type]}
-                            {lesson.durationMinutes ? (
-                              <> · {lesson.durationMinutes} min</>
-                            ) : null}
-                            {!lesson.isRequired && <> · optioneel</>}
-                          </span>
-                        </span>
-                        {lesson.id === nextLessonId && (
-                          <span className="text-label-md text-primary hidden sm:inline">
-                            Volgende
-                          </span>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            );
-          })}
-        </ol>
-      )}
+                    <ul className="flex flex-col gap-1 px-2 pb-2">
+                      {mod.lessons.map((lesson) => (
+                        <li key={lesson.id}>
+                          <Link
+                            href={`/leren/${cohort.id}/les/${lesson.id}`}
+                            className={cn(
+                              "hover:bg-surface-container-low flex items-center gap-3 rounded-xl px-3 py-3 transition-colors",
+                              lesson.id === nextLessonId &&
+                                "bg-primary-fixed/40",
+                            )}
+                          >
+                            <StatusIcon status={lesson.status} />
+                            <span className="min-w-0 flex-1">
+                              <span className="text-label-lg text-on-surface block truncate">
+                                {lesson.title}
+                              </span>
+                              <span className="text-body-sm text-secondary flex items-center gap-1.5">
+                                <LessonIcon type={lesson.type} size={14} />
+                                {LESSON_TYPE_LABELS[lesson.type]}
+                                {lesson.durationMinutes ? (
+                                  <> · {lesson.durationMinutes} min</>
+                                ) : null}
+                                {!lesson.isRequired && <> · optioneel</>}
+                              </span>
+                            </span>
+                            {lesson.id === nextLessonId && (
+                              <span className="bg-primary-container text-label-sm text-on-primary hidden rounded-full px-2.5 py-1 sm:inline">
+                                Volgende
+                              </span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </section>
     </div>
   );
 }
@@ -205,7 +277,7 @@ function StatusIcon({ status }: { status: "open" | "bezig" | "klaar" }) {
     return (
       <CircleCheck
         size={20}
-        className="text-primary shrink-0"
+        className="text-tertiary shrink-0"
         aria-label="Klaar"
       />
     );
@@ -221,7 +293,7 @@ function StatusIcon({ status }: { status: "open" | "bezig" | "klaar" }) {
     <Circle
       size={20}
       strokeWidth={1.5}
-      className="text-outline-variant shrink-0"
+      className="text-secondary-fixed-dim shrink-0"
       aria-label="Nog niet gestart"
     />
   );
