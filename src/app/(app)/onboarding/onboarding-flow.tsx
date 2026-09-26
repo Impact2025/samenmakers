@@ -79,18 +79,18 @@ export function OnboardingFlow({ user }: { user: Me }) {
   }
 
   return (
-    <div className="bg-surface-container-lowest shadow-card rounded-2xl">
+    <div className="bg-surface-container-lowest shadow-elevated rounded-3xl">
       {/* Progress */}
       <div className="px-8 pt-8 pb-0">
         <div className="text-label-md text-secondary mb-3 flex items-center justify-between">
           <span>
-            STAP {stepIndex + 1} VAN {STEPS.length}
+            Stap {stepIndex + 1} van {STEPS.length}
           </span>
-          <span>{progress}%</span>
+          <span className="text-primary-container">{progress}%</span>
         </div>
-        <div className="bg-surface-container mb-8 h-1 w-full">
+        <div className="bg-surface-container mb-8 h-2 w-full overflow-hidden rounded-full">
           <div
-            className="bg-primary h-1 transition-all duration-500"
+            className="bg-primary-container h-2 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

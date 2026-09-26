@@ -14,9 +14,12 @@ export default function GlobalError({ error, reset }: Props) {
 
   return (
     <html lang="nl">
-      <body className="flex min-h-screen flex-col items-center justify-center bg-white px-6 font-sans antialiased">
+      <body
+        style={{ background: "#f9f9ff", color: "#141b2b" }}
+        className="flex min-h-screen flex-col items-center justify-center px-6 font-sans antialiased"
+      >
         <div className="max-w-sm text-center">
-          <p className="text-label-md text-secondary mb-4">
+          <p className="mb-4 text-sm font-bold" style={{ color: "#d8006e" }}>
             We Shape the Future
           </p>
           <h1 className="text-on-surface mb-3 text-2xl font-extrabold">
@@ -34,7 +37,8 @@ export default function GlobalError({ error, reset }: Props) {
           )}
           <button
             onClick={reset}
-            className="bg-primary hover:bg-primary/90 shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-xs font-bold text-white transition-colors"
+            className="inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold text-white"
+            style={{ background: "#d8006e" }}
           >
             Opnieuw proberen
           </button>

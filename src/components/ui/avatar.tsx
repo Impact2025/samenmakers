@@ -8,7 +8,7 @@ const sizes: Record<
   AvatarSize,
   { px: number; className: string; dot: string }
 > = {
-  xs: { px: 32, className: "w-8 h-8 text-[11px]", dot: "w-2.5 h-2.5" },
+  xs: { px: 32, className: "w-8 h-8 text-label-sm", dot: "w-2.5 h-2.5" },
   sm: { px: 48, className: "w-12 h-12 text-sm", dot: "w-3 h-3" },
   md: { px: 64, className: "w-16 h-16 text-base", dot: "w-3.5 h-3.5" },
   lg: { px: 96, className: "w-24 h-24 text-xl", dot: "w-4 h-4" },

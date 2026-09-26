@@ -166,7 +166,7 @@ export function OrderForm({
                         : formatEuro(t.priceCents)}
                   </p>
                   {t.kind === "paid" && (
-                    <p className="text-secondary text-[11px]">incl. btw</p>
+                    <p className="text-secondary text-label-sm">incl. btw</p>
                   )}
                 </div>
                 <div
@@ -415,7 +415,7 @@ export function OrderForm({
           )}
         </Button>
         {total > 0 && (
-          <p className="text-secondary text-center text-[11px]">
+          <p className="text-secondary text-label-sm text-center">
             Veilig betalen via Stripe. Kortingscode? Die vul je in bij het
             betalen.
           </p>

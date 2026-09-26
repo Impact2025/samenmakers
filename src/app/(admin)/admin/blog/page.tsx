@@ -21,14 +21,14 @@ export default async function AdminBlogPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-on-surface text-2xl font-extrabold">Blog</h1>
+          <h1 className="text-headline-lg text-on-surface">Blog</h1>
           <p className="text-secondary mt-1 text-sm">
             AI-gegenereerde, SEO-geoptimaliseerde artikelen
           </p>
         </div>
         <Link
           href="/admin/blog/nieuw"
-          className="bg-primary-container text-on-primary px-5 py-3 text-[11px] font-bold tracking-widest uppercase"
+          className="bg-primary-container text-on-primary text-label-sm px-5 py-3 font-bold uppercase"
         >
           + Nieuw artikel
         </Link>
@@ -42,16 +42,16 @@ export default async function AdminBlogPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-hairline border-b text-left">
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Titel
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     SEO
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Status
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Bijgewerkt
                   </th>
                   <th className="p-4"></th>

@@ -171,7 +171,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
           <CardBody className="bg-primary/5 space-y-3 p-5">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-primary" />
-              <h2 className="text-on-surface text-[11px] font-bold tracking-widest uppercase">
+              <h2 className="text-on-surface text-label-sm uppercase">
                 AI-generator
               </h2>
             </div>
@@ -277,7 +277,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         {/* SEO meta */}
         <Card hover={false}>
           <CardBody className="space-y-4 p-5">
-            <h2 className="text-on-surface text-[11px] font-bold tracking-widest uppercase">
+            <h2 className="text-on-surface text-label-sm uppercase">
               SEO-meta
             </h2>
             <div>
@@ -385,9 +385,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
       <div className="space-y-4">
         <Card hover={false}>
           <CardBody className="p-5">
-            <p className="text-secondary mb-2 text-[10px] font-bold tracking-widest">
-              Seo-score
-            </p>
+            <p className="text-secondary text-label-sm uppercase">Seo-score</p>
             <div className="mb-4 flex items-baseline gap-1">
               <span
                 className={`text-5xl font-extrabold ${seo.score >= 80 ? "text-primary" : seo.score >= 50 ? "text-amber-600" : "text-error"}`}
@@ -417,7 +415,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         {suggestions && (
           <Card hover={false}>
             <CardBody className="p-5">
-              <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
+              <p className="text-secondary text-label-sm uppercase">
                 Link-suggesties (AI)
               </p>
               {suggestions.internal.length > 0 && (

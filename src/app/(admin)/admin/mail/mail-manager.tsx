@@ -67,7 +67,7 @@ export function MailManager() {
       {/* Composer */}
       <Card hover={false}>
         <CardBody className="space-y-5 p-6">
-          <h2 className="text-on-surface text-[11px] font-bold tracking-widest uppercase">
+          <h2 className="text-on-surface text-label-sm uppercase">
             Nieuwe mailing
           </h2>
 
@@ -247,16 +247,16 @@ export function MailManager() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-hairline border-b text-left">
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Onderwerp
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Bereik
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Status
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Aangemaakt
                   </th>
                   <th className="p-4"></th>

@@ -72,7 +72,7 @@ function DefaultErrorFallback({ error }: { error: Error | null }) {
         )}
         <button
           onClick={() => window.location.reload()}
-          className="bg-primary hover:bg-primary/90 px-5 py-2.5 text-xs font-bold tracking-widest text-white uppercase transition-colors"
+          className="bg-primary hover:bg-primary/90 px-5 py-2.5 text-xs font-bold text-white uppercase transition-colors"
         >
           Pagina verversen
         </button>

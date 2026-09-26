@@ -366,7 +366,7 @@ function TicketForm({
             value={f.salesEnd}
             onChange={(e) => set("salesEnd", e.target.value)}
           />
-          <span className="text-secondary text-[11px]">
+          <span className="text-secondary text-label-sm">
             Vroegboek: zet hier de einddatum.
           </span>
         </label>

@@ -90,7 +90,7 @@ export function CouponManager() {
       {/* Create form */}
       <Card hover={false}>
         <CardBody className="p-6">
-          <h2 className="text-on-surface mb-4 text-[11px] font-bold tracking-widest uppercase">
+          <h2 className="text-on-surface text-label-sm uppercase">
             Nieuwe coupon
           </h2>
           <form
@@ -239,19 +239,19 @@ export function CouponManager() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-hairline border-b text-left">
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Code
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Korting
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Duur
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Gebruik
                   </th>
-                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                  <th className="text-secondary text-label-sm p-4 uppercase">
                     Status
                   </th>
                   <th className="p-4"></th>

@@ -9,7 +9,7 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-on-surface text-2xl font-extrabold">Analytics</h1>
+      <h1 className="text-headline-lg text-on-surface">Analytics</h1>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
@@ -44,10 +44,8 @@ export default async function AdminAnalyticsPage() {
         ].map(({ label, value, change }) => (
           <Card key={label} hover={false}>
             <CardBody className="p-5">
-              <p className="text-secondary mb-2 text-[10px] font-bold tracking-widest">
-                {label}
-              </p>
-              <p className="text-on-surface text-3xl font-extrabold">{value}</p>
+              <p className="text-secondary text-label-sm uppercase">{label}</p>
+              <p className="text-display-lg text-on-surface">{value}</p>
               <p className="text-secondary mt-1 text-xs">{change}</p>
             </CardBody>
           </Card>
@@ -56,7 +54,9 @@ export default async function AdminAnalyticsPage() {
 
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">Groei indicatoren</h2>
+          <h2 className="text-headline-sm text-on-surface">
+            Groei indicatoren
+          </h2>
         </CardHeader>
         <CardBody>
           <div className="space-y-4">

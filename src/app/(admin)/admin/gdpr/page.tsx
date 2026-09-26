@@ -6,13 +6,13 @@ export const metadata: Metadata = { title: "Admin — GDPR" };
 export default function AdminGdprPage() {
   return (
     <div className="max-w-2xl space-y-8">
-      <h1 className="text-on-surface text-2xl font-extrabold">
-        GDPR & Privacy
-      </h1>
+      <h1 className="text-headline-lg text-on-surface">GDPR & Privacy</h1>
 
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">Gegevensverzoeken</h2>
+          <h2 className="text-headline-sm text-on-surface">
+            Gegevensverzoeken
+          </h2>
         </CardHeader>
         <CardBody>
           <p className="text-body-md text-on-surface-variant mb-4">
@@ -60,7 +60,7 @@ export default function AdminGdprPage() {
 
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">
+          <h2 className="text-headline-sm text-on-surface">
             Privacy instellingen platform
           </h2>
         </CardHeader>

@@ -89,7 +89,7 @@ export function AppTopBar({
             >
               <MessageCircle size={22} />
               {unreadMessages > 0 && (
-                <span className="bg-primary-container text-on-primary absolute top-1.5 right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold">
+                <span className="bg-primary-container text-on-primary text-label-sm absolute top-1.5 right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-bold">
                   {unreadMessages > 9 ? "9+" : unreadMessages}
                 </span>
               )}

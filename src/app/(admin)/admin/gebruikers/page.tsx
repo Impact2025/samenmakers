@@ -12,7 +12,7 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-on-surface text-2xl font-extrabold">Gebruikers</h1>
+        <h1 className="text-headline-lg text-on-surface">Gebruikers</h1>
         <p className="text-secondary mt-1 text-sm">{users.length} gebruikers</p>
       </div>
 
@@ -56,7 +56,7 @@ export default async function AdminUsersPage() {
                       <p className="text-on-surface font-semibold">
                         {user.naam ?? user.name}
                       </p>
-                      <p className="text-secondary text-[10px]">
+                      <p className="text-secondary text-label-sm">
                         {user.sector ?? "—"}
                       </p>
                     </div>

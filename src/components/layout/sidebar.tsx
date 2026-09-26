@@ -75,7 +75,7 @@ function Group({
             <Icon size={20} strokeWidth={active ? 2.25 : 1.75} />
             <span className="flex-1">{item.label}</span>
             {item.href === "/berichten" && unreadMessages > 0 && (
-              <span className="bg-primary-container text-on-primary flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+              <span className="bg-primary-container text-on-primary text-label-sm flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 font-bold">
                 {unreadMessages > 9 ? "9+" : unreadMessages}
               </span>
             )}

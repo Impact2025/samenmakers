@@ -17,9 +17,7 @@ export default async function EditBlogPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-on-surface text-2xl font-extrabold">
-          Artikel bewerken
-        </h1>
+        <h1 className="text-headline-lg text-on-surface">Artikel bewerken</h1>
         <span className="text-secondary text-xs">
           {post.isPublished ? "Live" : "Concept"}
         </span>

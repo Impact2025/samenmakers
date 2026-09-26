@@ -154,19 +154,19 @@ export function CrmContacts() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-hairline border-b text-left">
-                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    <th className="text-secondary text-label-sm p-4 uppercase">
                       Naam
                     </th>
-                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    <th className="text-secondary text-label-sm p-4 uppercase">
                       Sector / regio
                     </th>
-                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    <th className="text-secondary text-label-sm p-4 uppercase">
                       Abonnement
                     </th>
-                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    <th className="text-secondary text-label-sm p-4 uppercase">
                       Fase
                     </th>
-                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    <th className="text-secondary text-label-sm p-4 uppercase">
                       Laatste contact
                     </th>
                   </tr>

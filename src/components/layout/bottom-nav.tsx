@@ -38,7 +38,7 @@ export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
               <span className="relative">
                 <Icon size={24} strokeWidth={active ? 2.25 : 1.75} />
                 {showBadge && (
-                  <span className="bg-primary-container text-on-primary absolute -top-1 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold">
+                  <span className="bg-primary-container text-on-primary text-label-sm absolute -top-1 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 font-bold">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}

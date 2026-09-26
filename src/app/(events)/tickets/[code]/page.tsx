@@ -107,7 +107,7 @@ export default async function TicketPage({
           canCancel={t.canCancel}
         />
       )}
-      <p className="text-secondary text-center text-[11px]">
+      <p className="text-secondary text-label-sm text-center">
         Deze link is je ticket. Deel hem alleen met wie het ticket gebruikt.
       </p>
     </div>

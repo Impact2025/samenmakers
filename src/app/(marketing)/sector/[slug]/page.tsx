@@ -35,17 +35,8 @@ export default async function SectorPage({ params }: Props) {
   if (!sector) notFound();
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="hairline-b px-6 py-5">
-        <Link
-          href="/"
-          className="text-on-surface text-xl font-extrabold tracking-tighter"
-        >
-          We Shape the Future
-        </Link>
-      </header>
-
-      <main className="mx-auto max-w-2xl px-6 py-16">
+    <>
+      <main className="mx-auto max-w-2xl px-5 py-10">
         <p className="text-label-md text-secondary mb-3">Sector</p>
         <h1 className="text-display-lg text-on-surface mb-6">{sector}</h1>
         <p className="text-body-lg text-on-surface-variant mb-10 max-w-lg">
@@ -114,6 +105,6 @@ export default async function SectorPage({ params }: Props) {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }

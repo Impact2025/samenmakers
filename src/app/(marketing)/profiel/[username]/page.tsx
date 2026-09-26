@@ -30,17 +30,8 @@ export default async function PublicProfilePage({ params }: Props) {
   if (!user || user.profileVisibility === "members") notFound();
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="hairline-b px-6 py-5">
-        <Link
-          href="/"
-          className="text-on-surface text-xl font-extrabold tracking-tighter"
-        >
-          We Shape the Future
-        </Link>
-      </header>
-
-      <main className="mx-auto max-w-2xl px-6 py-16">
+    <>
+      <main className="mx-auto max-w-2xl px-5 py-10">
         {/* Profile header */}
         <div className="mb-10 flex items-start gap-6">
           <Avatar
@@ -108,6 +99,6 @@ export default async function PublicProfilePage({ params }: Props) {
           </p>
         </div>
       </main>
-    </div>
+    </>
   );
 }

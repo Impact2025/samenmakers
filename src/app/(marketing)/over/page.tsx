@@ -9,16 +9,8 @@ export const metadata: Metadata = {
 
 export default function OverPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <header className="hairline-b px-6 py-5">
-        <Link
-          href="/"
-          className="text-on-surface text-xl font-extrabold tracking-tighter"
-        >
-          We Shape the Future
-        </Link>
-      </header>
-      <main className="mx-auto max-w-2xl space-y-12 px-6 py-16">
+    <>
+      <main className="mx-auto max-w-2xl px-5 py-10">
         <div>
           <p className="text-label-md text-secondary mb-3">Over ons</p>
           <h1 className="text-display-lg text-on-surface mb-6">
@@ -67,6 +59,6 @@ export default function OverPage() {
           </Link>
         </div>
       </main>
-    </div>
+    </>
   );
 }

@@ -95,7 +95,7 @@ export default async function ManageEventPage({ params }: Props) {
 
       {features.eventTickets && event.status !== "cancelled" && (
         <section className="space-y-3">
-          <h2 className="text-label-md text-on-surface">
+          <h2 className="text-headline-sm text-on-surface">
             Tickets en bestellingen
           </h2>
           <TicketsManager eventId={event.id} timezone={event.timezone} />
@@ -103,7 +103,7 @@ export default async function ManageEventPage({ params }: Props) {
       )}
 
       <section className="space-y-3">
-        <h2 className="text-label-md text-on-surface">
+        <h2 className="text-headline-sm text-on-surface">
           {features.eventTickets
             ? "Aanmeldingen (zonder ticket) en wachtlijst"
             : "Deelnemers en check-in"}
@@ -117,7 +117,9 @@ export default async function ManageEventPage({ params }: Props) {
 
       {event.status !== "cancelled" && (
         <section className="space-y-3">
-          <h2 className="text-label-md text-on-surface">Gegevens wijzigen</h2>
+          <h2 className="text-headline-sm text-on-surface">
+            Gegevens wijzigen
+          </h2>
           <p className="text-body-md text-secondary">
             Wijzig je datum, tijd, locatie of link van een gepubliceerd event,
             dan krijgen deelnemers automatisch bericht.

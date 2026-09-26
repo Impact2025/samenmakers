@@ -12,15 +12,13 @@ export default async function AdminContentPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-on-surface text-2xl font-extrabold">
-        Content moderatie
-      </h1>
+      <h1 className="text-headline-lg text-on-surface">Content moderatie</h1>
 
       {/* Posts awaiting approval */}
       <Card hover={false}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-label-md text-on-surface">
+            <h2 className="text-headline-sm text-on-surface">
               Te publiceren posts
             </h2>
             <Badge variant="default">{unpublishedPosts.length}</Badge>
@@ -56,7 +54,7 @@ export default async function AdminContentPage() {
       <Card hover={false}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-label-md text-on-surface">
+            <h2 className="text-headline-sm text-on-surface">
               Te publiceren events
             </h2>
             <Badge variant="default">{unpublishedEvents.length}</Badge>
@@ -94,7 +92,7 @@ export default async function AdminContentPage() {
       <Card hover={false}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-label-md text-on-surface">Meldingen</h2>
+            <h2 className="text-headline-sm text-on-surface">Meldingen</h2>
             <Badge variant={pendingReports.length > 0 ? "primary" : "default"}>
               {pendingReports.length}
             </Badge>

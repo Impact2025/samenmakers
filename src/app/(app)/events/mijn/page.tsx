@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  CalendarCheck2,
+  CalendarPlus,
+  ChevronLeft,
+  ChevronRight,
+  Ticket,
+  Wallet,
+} from "lucide-react";
 import { api } from "@/trpc/server";
 import { EventCard } from "@/components/events/event-card";
+import { SegmentedTabs } from "@/components/ui/segmented-tabs";
+import { EmptyState } from "@/components/shared/empty-state";
+import { buttonClasses } from "@/components/ui/button";
+import { IconTile } from "@/components/ui/stat-card";
 import { CalendarFeed } from "./calendar-feed";
 import { features } from "@/lib/features";
 import { formatEventWhen } from "@/lib/event-format";
@@ -27,33 +39,54 @@ export default async function MyEventsPage() {
   const organisedPast = organised.filter((e) => !organisedUpcoming.includes(e));
 
   return (
-    <div className="space-y-10">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="text-label-md text-secondary mb-1">
-            <Link href="/events" className="hover:text-on-surface">
-              Events
-            </Link>
-          </p>
-          <h1 className="text-headline-lg text-on-surface">Mijn events</h1>
-        </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3">
         <Link
-          href="/events/nieuw"
-          className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex shrink-0 items-center justify-center gap-2 rounded-full px-4 py-2 transition-colors"
+          href="/events"
+          className="text-label-md text-secondary hover:text-primary-container inline-flex w-fit items-center gap-1"
         >
-          + Nieuw
+          <ChevronLeft size={16} /> Evenementen
         </Link>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-headline-lg text-on-surface">Mijn events</h1>
+            <p className="text-body-md text-secondary mt-0.5">
+              Aanmeldingen, tickets en events die je organiseert
+            </p>
+          </div>
+          <Link
+            href="/events/nieuw"
+            className={buttonClasses("primary", "sm", "shrink-0")}
+          >
+            <CalendarPlus size={16} /> Nieuw
+          </Link>
+        </div>
+        <SegmentedTabs
+          active="mijn"
+          tabs={[
+            { key: "komend", label: "Aankomend", href: "/events" },
+            {
+              key: "mijn",
+              label: "Mijn aanmeldingen",
+              count: registrations.length,
+              href: "/events/mijn",
+            },
+          ]}
+        />
       </div>
 
-      <section className="space-y-3">
-        <h2 className="text-label-md text-on-surface">Ik ga</h2>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-headline-sm text-on-surface">Ik ga</h2>
         {registrations.length === 0 ? (
-          <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-5">
-            Je bent nog nergens voor aangemeld.{" "}
-            <Link href="/events" className="underline underline-offset-4">
-              Ontdek events
-            </Link>
-          </p>
+          <EmptyState
+            icon={<CalendarCheck2 size={22} />}
+            title="Nog nergens voor aangemeld"
+            action={
+              <Link href="/events" className={buttonClasses("tonal", "sm")}>
+                Ontdek evenementen
+              </Link>
+            }
+          />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {registrations.map((e) => (
@@ -61,54 +94,64 @@ export default async function MyEventsPage() {
             ))}
           </div>
         )}
+
         {tickets.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="text-label-md text-secondary">Mijn tickets</h3>
-            <ul className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
+          <div className="flex flex-col gap-2">
+            <h3 className="text-label-sm text-secondary uppercase">
+              Mijn tickets
+            </h3>
+            <ul className="flex flex-col gap-2">
               {tickets.map((t) => (
                 <li key={t.code}>
                   <Link
                     href={`/tickets/${t.code}`}
-                    className="hover:bg-surface-container-low flex items-center gap-3 p-4"
+                    className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex items-center gap-3 rounded-2xl p-3 transition-shadow"
                   >
+                    <IconTile tone="primary">
+                      <Ticket size={20} />
+                    </IconTile>
                     <span className="min-w-0 flex-1">
-                      <span className="text-on-surface block truncate font-semibold">
+                      <span className="text-title-md text-on-surface block truncate">
                         {t.eventTitle}
                       </span>
-                      <span className="text-body-md text-secondary block">
+                      <span className="text-body-sm text-secondary block">
                         {formatEventWhen(t.startAt, t.endAt, t.timezone)} ·{" "}
                         {t.ticketName} · {t.holderName}
                         {t.eventStatus === "cancelled" && " · geannuleerd"}
                       </span>
                     </span>
-                    <span className="text-label-md text-primary shrink-0">
-                      Ticket →
-                    </span>
+                    <ChevronRight
+                      size={18}
+                      className="text-secondary shrink-0"
+                    />
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
         )}
-        <CalendarFeed https={feed.https} webcal={feed.webcal} />
+        <div id="agenda" className="scroll-mt-20">
+          <CalendarFeed https={feed.https} webcal={feed.webcal} />
+        </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-label-md text-on-surface">Ik organiseer</h2>
+          <h2 className="text-headline-sm text-on-surface">Ik organiseer</h2>
           {features.eventTickets && (
             <Link
               href="/events/uitbetalingen"
-              className="text-label-md text-primary"
+              className={buttonClasses("tonal", "sm")}
             >
-              Uitbetalingen →
+              <Wallet size={16} /> Uitbetalingen
             </Link>
           )}
         </div>
         {organisedUpcoming.length === 0 ? (
-          <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-5">
-            Geen komende events.
-          </p>
+          <EmptyState
+            title="Geen komende events"
+            description="Organiseer een meetup, workshop of borrel voor de community."
+          />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {organisedUpcoming.map((e) => (
@@ -121,8 +164,8 @@ export default async function MyEventsPage() {
           </div>
         )}
         {organisedPast.length > 0 && (
-          <details className="bg-surface-container-lowest shadow-card rounded-2xl">
-            <summary className="text-label-md text-secondary cursor-pointer px-5 py-3">
+          <details className="bg-surface-container-low rounded-2xl">
+            <summary className="text-label-lg text-secondary cursor-pointer px-5 py-3">
               Afgelopen en geannuleerd ({organisedPast.length})
             </summary>
             <div className="grid gap-3 p-3 sm:grid-cols-2">

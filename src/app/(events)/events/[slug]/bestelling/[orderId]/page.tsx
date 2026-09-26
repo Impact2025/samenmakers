@@ -75,7 +75,7 @@ export default async function OrderConfirmationPage({
 
       {done && (
         <section className="space-y-2">
-          <h2 className="text-label-md text-on-surface">Je tickets</h2>
+          <h2 className="text-headline-sm text-on-surface">Je tickets</h2>
           <ul className="space-y-2">
             {order.tickets.map((tk, i) => (
               <li key={tk.code}>
@@ -111,7 +111,7 @@ export default async function OrderConfirmationPage({
       )}
 
       <section className="bg-surface-container-lowest shadow-card space-y-2 rounded-2xl p-5">
-        <h2 className="text-label-md text-secondary">Overzicht</h2>
+        <h2 className="text-headline-sm text-on-surface">Overzicht</h2>
         <ul className="text-body-md text-on-surface-variant space-y-1">
           {order.items.map((it) => (
             <li key={it.name} className="flex justify-between gap-4">

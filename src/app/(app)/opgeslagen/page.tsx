@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Bookmark, MapPin } from "lucide-react";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/shared/page-header";
+import { EmptyState } from "@/components/shared/empty-state";
+import { buttonClasses } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Opgeslagen makers" };
 
@@ -10,30 +13,26 @@ export default async function OpgeslagenPage() {
   const bookmarks = await api.connections.myBookmarks();
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-8">
-        <p className="text-label-md text-secondary mb-1">Netwerk</p>
-        <h1 className="text-headline-lg text-on-surface">Opgeslagen makers</h1>
-        <p className="text-body-md text-secondary mt-1">
-          {bookmarks.length} opgeslagen
-        </p>
-      </div>
+    <div>
+      <PageHeader
+        title="Opgeslagen makers"
+        description={`${bookmarks.length} opgeslagen`}
+        className="mb-5"
+      />
 
       {bookmarks.length === 0 ? (
-        <div className="border-hairline border py-20 text-center">
-          <p className="text-on-surface-variant mb-2">Nog niets opgeslagen</p>
-          <p className="text-body-md text-secondary mb-6">
-            Sla makers op via hun profielpagina om ze hier terug te vinden.
-          </p>
-          <Link
-            href="/ontdekken"
-            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition-colors"
-          >
-            Makers ontdekken
-          </Link>
-        </div>
+        <EmptyState
+          icon={<Bookmark size={22} />}
+          title="Nog niets opgeslagen"
+          description="Sla makers op via hun profielpagina om ze hier terug te vinden."
+          action={
+            <Link href="/ontdekken" className={buttonClasses("primary", "md")}>
+              Makers ontdekken
+            </Link>
+          }
+        />
       ) : (
-        <div className="space-y-3">
+        <div className="flex flex-col gap-2">
           {bookmarks.map((b) => {
             if (!b.user) return null;
             const naam = b.user.naam ?? b.user.name ?? "Maker";
@@ -41,34 +40,29 @@ export default async function OpgeslagenPage() {
               <Link
                 key={b.id}
                 href={`/makers/${b.user.id}`}
-                className="hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-4 rounded-2xl p-4 transition-colors"
+                className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex items-center gap-3 rounded-2xl p-4 transition-shadow"
               >
-                <Avatar
-                  src={b.user.avatarUrl}
-                  naam={naam}
-                  size="md"
-                  grayscale={false}
-                />
+                <Avatar src={b.user.avatarUrl} naam={naam} size="sm" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-on-surface font-bold">{naam}</p>
+                  <p className="text-title-md text-on-surface truncate">
+                    {naam}
+                  </p>
                   {b.user.sector && (
-                    <p className="text-body-md text-secondary">
+                    <p className="text-body-sm text-primary-container font-medium">
                       {b.user.sector}
                     </p>
                   )}
                   {b.user.missie && (
-                    <p className="text-body-md text-on-surface-variant mt-0.5 line-clamp-1">
+                    <p className="text-body-sm text-secondary line-clamp-1">
                       {b.user.missie}
                     </p>
                   )}
                 </div>
-                <div className="flex shrink-0 flex-wrap justify-end gap-1">
-                  {b.user.regio && (
-                    <Badge variant="default" size="sm">
-                      {b.user.regio}
-                    </Badge>
-                  )}
-                </div>
+                {b.user.regio && (
+                  <span className="bg-surface-container text-label-sm text-secondary flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1">
+                    <MapPin size={12} /> {b.user.regio}
+                  </span>
+                )}
               </Link>
             );
           })}

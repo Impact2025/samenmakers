@@ -70,9 +70,7 @@ export function ContactDetail({ id }: { id: string }) {
         <div className="space-y-6">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-on-surface text-2xl font-extrabold">
-                {naam}
-              </h1>
+              <h1 className="text-headline-lg text-on-surface">{naam}</h1>
               <p className="text-secondary text-sm">{user.email}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {user.sector && (
@@ -109,12 +107,10 @@ export function ContactDetail({ id }: { id: string }) {
             ].map((s) => (
               <Card key={s.label} hover={false}>
                 <CardBody className="p-4">
-                  <p className="text-secondary text-[10px] font-bold tracking-widest">
+                  <p className="text-secondary text-label-sm uppercase">
                     {s.label}
                   </p>
-                  <p className="text-on-surface text-2xl font-extrabold">
-                    {s.value}
-                  </p>
+                  <p className="text-headline-lg text-on-surface">{s.value}</p>
                 </CardBody>
               </Card>
             ))}
@@ -123,7 +119,7 @@ export function ContactDetail({ id }: { id: string }) {
           {/* Add note */}
           <Card hover={false}>
             <CardBody className="p-5">
-              <h2 className="text-on-surface mb-3 text-[11px] font-bold tracking-widest uppercase">
+              <h2 className="text-on-surface text-label-sm uppercase">
                 Notitie toevoegen
               </h2>
               <Textarea
@@ -151,7 +147,7 @@ export function ContactDetail({ id }: { id: string }) {
           {/* Activity timeline */}
           <Card hover={false}>
             <CardBody className="p-5">
-              <h2 className="text-on-surface mb-4 text-[11px] font-bold tracking-widest uppercase">
+              <h2 className="text-on-surface text-label-sm uppercase">
                 Tijdlijn
               </h2>
               {activities.length === 0 ? (
@@ -188,9 +184,7 @@ export function ContactDetail({ id }: { id: string }) {
         <div className="space-y-4">
           <Card hover={false}>
             <CardBody className="p-5">
-              <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
-                Crm-fase
-              </p>
+              <p className="text-secondary text-label-sm uppercase">Crm-fase</p>
               <div className="space-y-2">
                 {STAGES.map((s) => (
                   <button
@@ -213,9 +207,7 @@ export function ContactDetail({ id }: { id: string }) {
 
           <Card hover={false}>
             <CardBody className="p-5">
-              <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
-                Tags
-              </p>
+              <p className="text-secondary text-label-sm uppercase">Tags</p>
               <div className="mb-3 flex flex-wrap gap-2">
                 {user.crmTags.length === 0 && (
                   <span className="text-secondary text-xs">Geen tags</span>
