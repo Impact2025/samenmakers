@@ -30,7 +30,7 @@ export default function OgImage() {
             fontWeight: 600,
           }}
         >
-          PURPOSE-DRIVEN NETWERK
+          Purpose-driven netwerk
         </span>
         <h1
           style={{
@@ -93,7 +93,7 @@ export default function OgImage() {
               color: "#191c1a",
             }}
           >
-            WE SHAPE THE FUTURE
+            We Shape the Future
           </span>
         </div>
       </div>

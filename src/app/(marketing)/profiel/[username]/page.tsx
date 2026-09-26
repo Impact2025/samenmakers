@@ -36,7 +36,7 @@ export default async function PublicProfilePage({ params }: Props) {
           href="/"
           className="text-on-surface text-xl font-extrabold tracking-tighter"
         >
-          WE SHAPE THE FUTURE
+          We Shape the Future
         </Link>
       </header>
 
@@ -61,33 +61,33 @@ export default async function PublicProfilePage({ params }: Props) {
 
         {user.missie && (
           <div className="mb-8">
-            <p className="text-label-md text-secondary mb-2">MISSIE</p>
+            <p className="text-label-md text-secondary mb-2">Missie</p>
             <p className="text-body-md text-on-surface">{user.missie}</p>
           </div>
         )}
 
         {user.bio && (
           <div className="mb-8">
-            <p className="text-label-md text-secondary mb-2">OVER</p>
+            <p className="text-label-md text-secondary mb-2">Over</p>
             <p className="text-body-md text-on-surface-variant">{user.bio}</p>
           </div>
         )}
 
         {user.ikZoek && (
-          <div className="border-hairline bg-surface-container-low mb-8 border p-5">
-            <p className="text-label-md text-secondary mb-2">IK ZOEK</p>
+          <div className="bg-surface-container-low mb-8 rounded-2xl p-5">
+            <p className="text-label-md text-secondary mb-2">Ik zoek</p>
             <p className="text-body-md text-on-surface">{user.ikZoek}</p>
           </div>
         )}
 
         {user.expertise && user.expertise.length > 0 && (
           <div className="mb-8">
-            <p className="text-label-md text-secondary mb-3">EXPERTISE</p>
+            <p className="text-label-md text-secondary mb-3">Expertise</p>
             <div className="flex flex-wrap gap-2">
               {user.expertise.map((tag) => (
                 <span
                   key={tag}
-                  className="border-hairline text-on-surface-variant border px-3 py-1 text-sm"
+                  className="text-on-surface-variant border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors"
                 >
                   {tag}
                 </span>
@@ -99,7 +99,7 @@ export default async function PublicProfilePage({ params }: Props) {
         <div className="hairline-t pt-8">
           <Link
             href="/aanmelden"
-            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 inline-block px-8 py-3 font-bold transition-colors"
+            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 shadow-cta inline-block inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 font-bold transition-colors"
           >
             Verbind op We Shape the Future
           </Link>

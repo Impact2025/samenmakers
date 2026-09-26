@@ -98,8 +98,8 @@ export function AnswerSection({
       ))}
 
       {!isResolved && (
-        <div className="border-hairline space-y-3 border bg-white p-5">
-          <p className="text-label-md text-on-surface">GEEF EEN ANTWOORD</p>
+        <div className="bg-surface-container-lowest shadow-card space-y-3 rounded-2xl p-5">
+          <p className="text-label-md text-on-surface">Geef een antwoord</p>
           <Textarea
             value={answerText}
             onChange={(e) => setAnswerText(e.target.value)}

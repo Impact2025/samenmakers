@@ -2,10 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
-import { Calendar, MapPin, Monitor, Users, Settings } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  CalendarPlus,
+  ChevronLeft,
+  MapPin,
+  Monitor,
+  Users,
+  Settings,
+} from "lucide-react";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Card, CardBody } from "@/components/ui/card";
+import { buttonClasses } from "@/components/ui/button";
 import { breadcrumbSchema, eventSchema } from "@/lib/seo-kit";
 import { FORMAT_LABEL, eventWhere, formatEventWhen } from "@/lib/event-format";
 import { PHASE_LABEL, effectiveEnd } from "@/server/events/status";
@@ -138,27 +147,36 @@ export default async function EventPage({ params }: Props) {
         ].join(",")
       : null;
 
+  const infoRow = "flex items-start gap-3";
+  const infoIcon =
+    "w-10 h-10 rounded-xl bg-primary-container/10 text-primary-container flex items-center justify-center shrink-0";
+
   return (
-    <article className="max-w-3xl space-y-6">
+    <article className="flex flex-col gap-5">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <nav aria-label="Kruimelpad" className="text-body-md text-secondary">
-        <Link href="/events" className="hover:text-on-surface">
-          Events
-        </Link>{" "}
-        / <span className="text-on-surface-variant">{e.title}</span>
+      <nav
+        aria-label="Kruimelpad"
+        className="text-label-md text-secondary flex items-center gap-1"
+      >
+        <Link
+          href="/events"
+          className="hover:text-primary-container inline-flex items-center gap-1"
+        >
+          <ChevronLeft size={16} aria-hidden /> Evenementen
+        </Link>
       </nav>
 
       {e.status === "cancelled" && (
-        <div className="border-on-surface border bg-white p-4" role="status">
-          <p className="text-on-surface font-extrabold">
+        <div className="bg-error-container rounded-2xl p-4" role="status">
+          <p className="text-title-md text-on-error-container">
             Dit event is geannuleerd
           </p>
           {e.cancellationReason && (
-            <p className="text-body-md text-on-surface-variant mt-1">
+            <p className="text-body-md text-on-error-container mt-1">
               {e.cancellationReason}
             </p>
           )}
@@ -166,7 +184,7 @@ export default async function EventPage({ params }: Props) {
       )}
       {e.status === "draft" && (
         <div
-          className="border-outline text-body-md text-on-surface-variant border border-dashed bg-white p-4"
+          className="border-outline-variant bg-surface-container-low text-body-md text-on-surface-variant rounded-2xl border border-dashed p-4"
           role="status"
         >
           Dit is een concept en alleen zichtbaar voor jou. Publiceer het via
@@ -174,68 +192,83 @@ export default async function EventPage({ params }: Props) {
         </div>
       )}
 
-      {e.coverImageUrl && (
-        <div className="border-hairline bg-surface-container-low aspect-[2/1] w-full overflow-hidden border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* Hero */}
+      <div className="from-primary-container to-primary shadow-elevated relative overflow-hidden rounded-2xl bg-gradient-to-br">
+        {e.coverImageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={e.coverImageUrl}
             alt=""
-            className="h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
+        )}
+        <div className="from-inverse-surface/90 via-inverse-surface/40 absolute inset-0 bg-gradient-to-t to-transparent" />
+        <div className="relative flex min-h-56 flex-col justify-end gap-3 p-5 sm:min-h-72 sm:p-6">
+          <div className="flex flex-wrap gap-1.5">
+            <span className="bg-surface-container-lowest/90 text-label-sm text-on-surface rounded-full px-2.5 py-1 uppercase backdrop-blur-md">
+              {FORMAT_LABEL[e.format]}
+            </span>
+            {e.thema && (
+              <span className="bg-primary-container text-label-sm text-on-primary rounded-full px-2.5 py-1 uppercase">
+                {e.thema}
+              </span>
+            )}
+            {e.phase !== "open" && (
+              <span className="bg-tertiary-fixed text-label-sm text-on-tertiary-fixed-variant rounded-full px-2.5 py-1 uppercase">
+                {PHASE_LABEL[e.phase]}
+              </span>
+            )}
+          </div>
+          <h1 className="text-headline-lg sm:text-display-lg text-inverse-on-surface">
+            {e.title}
+          </h1>
         </div>
-      )}
+      </div>
 
-      <header className="space-y-4">
-        <div className="text-label-md flex flex-wrap gap-2">
-          <span className="border-hairline text-secondary border px-2 py-1">
-            {FORMAT_LABEL[e.format]}
+      {/* Kerngegevens */}
+      <dl className="bg-surface-container-lowest shadow-card grid gap-3 rounded-2xl p-4 sm:grid-cols-3">
+        <div className={infoRow}>
+          <span className={infoIcon}>
+            <CalendarDays size={20} aria-hidden />
           </span>
-          {e.thema && (
-            <span className="border-hairline text-secondary border px-2 py-1">
-              {e.thema}
-            </span>
-          )}
-          {e.phase !== "open" && (
-            <span className="bg-on-surface text-on-primary px-2 py-1">
-              {PHASE_LABEL[e.phase]}
-            </span>
-          )}
-        </div>
-        <h1 className="text-headline-lg sm:text-display-lg text-on-surface">
-          {e.title}
-        </h1>
-        <dl className="text-body-md text-on-surface-variant grid gap-2">
-          <div className="flex items-start gap-2">
-            <dt className="sr-only">Wanneer</dt>
-            <Calendar size={16} className="mt-1 shrink-0" aria-hidden />
-            <dd>
+          <div>
+            <dt className="text-label-sm text-secondary uppercase">Wanneer</dt>
+            <dd className="text-body-md text-on-surface">
               <time dateTime={e.startAt.toISOString()}>
                 {formatEventWhen(e.startAt, e.endAt, e.timezone)}
               </time>
             </dd>
           </div>
-          <div className="flex items-start gap-2">
-            <dt className="sr-only">Waar</dt>
+        </div>
+        <div className={infoRow}>
+          <span className={infoIcon}>
             {e.format === "online" ? (
-              <Monitor size={16} className="mt-1 shrink-0" aria-hidden />
+              <Monitor size={20} aria-hidden />
             ) : (
-              <MapPin size={16} className="mt-1 shrink-0" aria-hidden />
+              <MapPin size={20} aria-hidden />
             )}
-            <dd>{where}</dd>
+          </span>
+          <div>
+            <dt className="text-label-sm text-secondary uppercase">Waar</dt>
+            <dd className="text-body-md text-on-surface">{where}</dd>
           </div>
-          <div className="flex items-start gap-2">
-            <dt className="sr-only">Deelnemers</dt>
-            <Users size={16} className="mt-1 shrink-0" aria-hidden />
-            <dd>
+        </div>
+        <div className={infoRow}>
+          <span className={infoIcon}>
+            <Users size={20} aria-hidden />
+          </span>
+          <div>
+            <dt className="text-label-sm text-secondary uppercase">
+              Deelnemers
+            </dt>
+            <dd className="text-body-md text-on-surface">
               {e.seatsTaken} {e.seatsTaken === 1 ? "deelnemer" : "deelnemers"}
-              {e.maxAttendees ? ` van ${e.maxAttendees} plekken` : ""}
-              {e.waitlistCount > 0
-                ? ` · ${e.waitlistCount} op de wachtlijst`
-                : ""}
+              {e.maxAttendees ? ` van ${e.maxAttendees}` : ""}
+              {e.waitlistCount > 0 ? ` · ${e.waitlistCount} wachtlijst` : ""}
             </dd>
           </div>
-        </dl>
-      </header>
+        </div>
+      </dl>
 
       <RsvpPanel
         eventId={e.id}
@@ -252,15 +285,15 @@ export default async function EventPage({ params }: Props) {
       <div className="flex flex-wrap gap-2">
         <a
           href={`/api/events/${e.id}/ics`}
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className={buttonClasses("secondary", "sm")}
         >
-          Agenda (.ics)
+          <CalendarPlus size={16} aria-hidden /> Agenda (.ics)
         </a>
         <a
           href={links.google}
           target="_blank"
           rel="noopener noreferrer"
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className={buttonClasses("secondary", "sm")}
         >
           Google Agenda
         </a>
@@ -268,7 +301,7 @@ export default async function EventPage({ params }: Props) {
           href={links.outlook}
           target="_blank"
           rel="noopener noreferrer"
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className={buttonClasses("secondary", "sm")}
         >
           Outlook
         </a>
@@ -276,93 +309,99 @@ export default async function EventPage({ params }: Props) {
         {me?.canManage && (
           <Link
             href={`/events/${e.slug}/beheer`}
-            className="bg-on-surface text-on-primary text-label-md inline-flex items-center gap-2 px-4 py-2"
+            className={buttonClasses("dark", "sm")}
           >
-            <Settings size={14} aria-hidden /> Beheren
+            <Settings size={16} aria-hidden /> Beheren
           </Link>
         )}
       </div>
 
       {e.description && (
-        <Card hover={false}>
-          <CardBody>
-            <h2 className="text-label-md text-secondary mb-3">
-              OVER DIT EVENT
-            </h2>
-            <p className="text-body-md text-on-surface-variant whitespace-pre-line">
-              {e.description}
-            </p>
-          </CardBody>
-        </Card>
+        <section className="bg-surface-container-lowest shadow-card rounded-2xl p-5">
+          <h2 className="text-headline-sm text-on-surface mb-2">
+            Over dit event
+          </h2>
+          <p className="text-body-lg text-on-surface-variant whitespace-pre-line">
+            {e.description}
+          </p>
+        </section>
       )}
 
       {mapBox && e.format !== "online" && (
-        <Card hover={false}>
-          <CardBody className="space-y-3">
-            <h2 className="text-label-md text-secondary">LOCATIE</h2>
-            <p className="text-body-md text-on-surface">{e.location}</p>
-            <iframe
-              title={`Kaart: ${e.location ?? e.title}`}
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapBox}&layer=mapnik&marker=${e.latitude},${e.longitude}`}
-              className="border-hairline h-64 w-full border"
-              loading="lazy"
+        <section className="bg-surface-container-lowest shadow-card flex flex-col gap-3 rounded-2xl p-5">
+          <h2 className="text-headline-sm text-on-surface">Locatie</h2>
+          <p className="bg-surface-container-low text-body-md text-on-surface flex items-center gap-1.5 rounded-lg p-2">
+            <MapPin
+              size={18}
+              className="text-primary-container shrink-0"
+              aria-hidden
             />
-            <a
-              href={`https://www.openstreetmap.org/?mlat=${e.latitude}&mlon=${e.longitude}#map=16/${e.latitude}/${e.longitude}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-label-md text-primary"
-            >
-              Route plannen →
-            </a>
-          </CardBody>
-        </Card>
+            {e.location}
+          </p>
+          <iframe
+            title={`Kaart: ${e.location ?? e.title}`}
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapBox}&layer=mapnik&marker=${e.latitude},${e.longitude}`}
+            className="h-64 w-full rounded-xl"
+            loading="lazy"
+          />
+          <a
+            href={`https://www.openstreetmap.org/?mlat=${e.latitude}&mlon=${e.longitude}#map=16/${e.latitude}/${e.longitude}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-label-lg text-primary-container inline-flex items-center gap-1"
+          >
+            Route plannen <ArrowRight size={16} aria-hidden />
+          </a>
+        </section>
       )}
 
-      <Card hover={false}>
-        <CardBody>
-          <h2 className="text-label-md text-secondary mb-3">ORGANISATOR</h2>
-          <div className="flex items-center gap-3">
-            <Avatar
-              src={organiser?.avatarUrl ?? null}
-              naam={organiserNaam}
-              size="md"
-              grayscale={false}
-            />
-            <div>
-              <p className="text-on-surface font-semibold">{organiserNaam}</p>
-              {organiser?.sector && (
-                <p className="text-body-md text-secondary">
-                  {organiser.sector}
-                </p>
-              )}
-            </div>
+      <section className="bg-surface-container-lowest shadow-card rounded-2xl p-5">
+        <h2 className="text-label-sm text-secondary mb-3 uppercase">
+          Organisator
+        </h2>
+        <div className="bg-surface-container-low flex items-center gap-3 rounded-xl p-3">
+          <Avatar
+            src={organiser?.avatarUrl ?? null}
+            naam={organiserNaam}
+            size="sm"
+          />
+          <div className="min-w-0">
+            <p className="text-title-md text-on-surface truncate">
+              {organiserNaam}
+            </p>
+            {organiser?.sector && (
+              <p className="text-body-sm text-secondary truncate">
+                {organiser.sector}
+              </p>
+            )}
           </div>
-        </CardBody>
-      </Card>
+        </div>
+      </section>
 
       {attendeesPreview.length > 0 && (
-        <Card hover={false}>
-          <CardBody>
-            <h2 className="text-label-md text-secondary mb-3">WIE KOMEN ER</h2>
-            <div className="flex flex-wrap gap-2">
+        <section className="bg-surface-container-lowest shadow-card rounded-2xl p-5">
+          <h2 className="text-headline-sm text-on-surface mb-3">
+            Wie komen er
+          </h2>
+          <div className="flex items-center">
+            <div className="flex -space-x-2">
               {attendeesPreview.map((a) => (
                 <Avatar
                   key={a.id}
                   src={a.avatarUrl}
                   naam={a.naam ?? a.name ?? "?"}
-                  size="sm"
-                  grayscale={false}
+                  size="xs"
+                  className="[&>div]:ring-surface-container-lowest [&>div]:ring-2"
                 />
               ))}
-              {e.seatsTaken > attendeesPreview.length && (
-                <span className="text-body-md text-secondary self-center">
-                  +{e.seatsTaken - attendeesPreview.length}
-                </span>
-              )}
             </div>
-          </CardBody>
-        </Card>
+            {e.seatsTaken > attendeesPreview.length && (
+              <span className="text-label-md text-secondary ml-3">
+                +{e.seatsTaken - attendeesPreview.length} anderen
+              </span>
+            )}
+          </div>
+        </section>
       )}
     </article>
   );

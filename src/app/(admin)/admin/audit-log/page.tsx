@@ -31,7 +31,7 @@ export default async function AuditLogPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-label-md text-secondary mb-1">ADMIN</p>
+        <p className="text-label-md text-secondary mb-1">Admin</p>
         <h1 className="text-headline-lg text-on-surface">Audit log</h1>
       </div>
 

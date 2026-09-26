@@ -15,7 +15,7 @@ export default function Error({ error, reset }: Props) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 font-sans antialiased">
       <div className="max-w-sm text-center">
-        <p className="text-label-md text-secondary mb-4">WE SHAPE THE FUTURE</p>
+        <p className="text-label-md text-secondary mb-4">We Shape the Future</p>
         <h1 className="text-on-surface mb-3 text-2xl font-extrabold">
           Er ging iets mis
         </h1>
@@ -31,7 +31,7 @@ export default function Error({ error, reset }: Props) {
         )}
         <button
           onClick={reset}
-          className="bg-primary hover:bg-primary/90 px-6 py-3 text-xs font-bold tracking-widest text-white uppercase transition-colors"
+          className="bg-primary hover:bg-primary/90 shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-xs font-bold text-white transition-colors"
         >
           Opnieuw proberen
         </button>

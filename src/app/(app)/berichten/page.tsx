@@ -10,7 +10,7 @@ export default async function BerichtenPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <p className="text-label-md text-secondary mb-1">COMMUNICATIE</p>
+        <p className="text-label-md text-secondary mb-1">Communicatie</p>
         <h1 className="text-headline-lg text-on-surface">Berichten</h1>
       </div>
       <ConversationList initialMatches={matches} />

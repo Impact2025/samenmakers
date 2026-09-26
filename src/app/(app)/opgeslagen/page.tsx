@@ -12,7 +12,7 @@ export default async function OpgeslagenPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <p className="text-label-md text-secondary mb-1">NETWERK</p>
+        <p className="text-label-md text-secondary mb-1">Netwerk</p>
         <h1 className="text-headline-lg text-on-surface">Opgeslagen makers</h1>
         <p className="text-body-md text-secondary mt-1">
           {bookmarks.length} opgeslagen
@@ -27,7 +27,7 @@ export default async function OpgeslagenPage() {
           </p>
           <Link
             href="/ontdekken"
-            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 px-6 py-3 font-bold transition-colors"
+            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition-colors"
           >
             Makers ontdekken
           </Link>
@@ -41,7 +41,7 @@ export default async function OpgeslagenPage() {
               <Link
                 key={b.id}
                 href={`/makers/${b.user.id}`}
-                className="border-hairline hover:border-on-surface flex items-center gap-4 border bg-white p-4 transition-colors"
+                className="hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-4 rounded-2xl p-4 transition-colors"
               >
                 <Avatar
                   src={b.user.avatarUrl}

@@ -91,13 +91,13 @@ export function CheckoutWithCoupon() {
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <label className="text-label-md text-secondary mb-2 flex items-center gap-1">
-              <Tag size={12} /> KORTINGSCODE
+              <Tag size={12} /> Kortingscode
             </label>
             <input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="Heb je een code?"
-              className="border-on-surface text-body-lg text-on-surface placeholder:text-secondary w-full border-b bg-transparent pb-2 transition-all outline-none focus:border-b-2"
+              className="text-body-lg text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-4 py-3 pb-2 transition-all outline-none focus:ring-[3px]"
             />
           </div>
           <Button

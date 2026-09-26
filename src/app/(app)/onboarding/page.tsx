@@ -20,7 +20,7 @@ export default async function OnboardingPage() {
       <div className="w-full max-w-lg">
         <div className="mb-10 text-center">
           <p className="text-on-surface mb-2 text-2xl font-extrabold tracking-tighter">
-            WE SHAPE THE FUTURE
+            We Shape the Future
           </p>
           <h1 className="text-headline-lg text-on-surface mb-3">
             Welkom! Laten we beginnen.

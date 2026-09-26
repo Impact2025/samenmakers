@@ -26,7 +26,7 @@ export default async function LerenPage() {
 
   return (
     <div className="space-y-12">
-      <PageHeader label="LEEROMGEVING" title="Mijn leren" className="mb-8" />
+      <PageHeader label="Leeromgeving" title="Mijn leren" className="mb-8" />
 
       {focus?.nextLesson && (
         <Link
@@ -130,9 +130,9 @@ export default async function LerenPage() {
       {teaching.length > 0 && (
         <section className="space-y-4">
           <h2 className="text-label-md text-secondary">
-            MIJN EDITIES (BEGELEIDING)
+            Mijn edities (begeleiding)
           </h2>
-          <div className="divide-hairline border-hairline divide-y border bg-white">
+          <div className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
             {teaching.map((e) => (
               <div
                 key={e.membershipId}
@@ -167,7 +167,7 @@ export default async function LerenPage() {
       )}
 
       <section className="max-w-md space-y-4">
-        <h2 className="text-label-md text-secondary">DEELNEMEN MET CODE</h2>
+        <h2 className="text-label-md text-secondary">Deelnemen met code</h2>
         <JoinByCode />
       </section>
     </div>

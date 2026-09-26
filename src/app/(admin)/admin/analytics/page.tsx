@@ -14,28 +14,28 @@ export default async function AdminAnalyticsPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
           {
-            label: "TOTAAL GEBRUIKERS",
+            label: "Totaal gebruikers",
             value: stats.totalUsers,
             change: `+${stats.newUsersThisMonth} (30d)`,
           },
           {
-            label: "ACTIEF DEZE WEEK",
+            label: "Actief deze week",
             value: stats.activeUsersThisWeek,
             change: "unieke senders",
           },
           {
-            label: "PRO GEBRUIKERS",
+            label: "PRO gebruikers",
             value: stats.proUsers,
             change: `€${stats.mrr} MRR`,
           },
           {
-            label: "MATCH RATE",
+            label: "Match rate",
             value: `${stats.matchRate}%`,
             change: "wederzijds",
           },
-          { label: "BERICHTEN", value: stats.totalMessages, change: "totaal" },
-          { label: "POSTS", value: stats.totalPosts, change: "gepubliceerd" },
-          { label: "EVENTS", value: stats.totalEvents, change: "gepubliceerd" },
+          { label: "Berichten", value: stats.totalMessages, change: "totaal" },
+          { label: "Posts", value: stats.totalPosts, change: "gepubliceerd" },
+          { label: "Events", value: stats.totalEvents, change: "gepubliceerd" },
           {
             label: "MRR",
             value: `€${stats.mrr}`,
@@ -56,7 +56,7 @@ export default async function AdminAnalyticsPage() {
 
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">GROEI INDICATOREN</h2>
+          <h2 className="text-label-md text-on-surface">Groei indicatoren</h2>
         </CardHeader>
         <CardBody>
           <div className="space-y-4">

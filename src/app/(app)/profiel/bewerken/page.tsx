@@ -16,7 +16,7 @@ export default async function ProfileEditPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <p className="text-label-md text-secondary mb-1">INSTELLINGEN</p>
+        <p className="text-label-md text-secondary mb-1">Instellingen</p>
         <h1 className="text-headline-lg text-on-surface">Profiel bewerken</h1>
       </div>
       <ProfileEditForm user={me} />

@@ -41,7 +41,7 @@ export function PrivacySettings({ profileVisibility, blockedUsers }: Props) {
       <Card hover={false}>
         <CardHeader>
           <h2 className="text-label-md text-on-surface">
-            PROFIELZICHTBAARHEID
+            Profielzichtbaarheid
           </h2>
         </CardHeader>
         <CardBody className="space-y-4">
@@ -115,7 +115,7 @@ export function PrivacySettings({ profileVisibility, blockedUsers }: Props) {
       {/* Account deletion */}
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">ACCOUNT VERWIJDEREN</h2>
+          <h2 className="text-label-md text-on-surface">Account verwijderen</h2>
         </CardHeader>
         <CardBody>
           <p className="text-body-md text-on-surface-variant mb-4">

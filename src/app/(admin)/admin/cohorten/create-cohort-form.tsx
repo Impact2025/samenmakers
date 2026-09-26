@@ -64,7 +64,7 @@ export function CreateCohortForm() {
         </div>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            OMSCHRIJVING
+            Omschrijving
           </label>
           <Textarea
             value={form.description}

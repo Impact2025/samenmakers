@@ -41,12 +41,12 @@ export default async function SectorPage({ params }: Props) {
           href="/"
           className="text-on-surface text-xl font-extrabold tracking-tighter"
         >
-          WE SHAPE THE FUTURE
+          We Shape the Future
         </Link>
       </header>
 
       <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-label-md text-secondary mb-3">SECTOR</p>
+        <p className="text-label-md text-secondary mb-3">Sector</p>
         <h1 className="text-display-lg text-on-surface mb-6">{sector}</h1>
         <p className="text-body-lg text-on-surface-variant mb-10 max-w-lg">
           We Shape the Future verbindt impact-ondernemers actief in {sector}.
@@ -55,7 +55,7 @@ export default async function SectorPage({ params }: Props) {
         </p>
 
         <div className="mb-12 grid gap-4 sm:grid-cols-2">
-          <div className="border-hairline border p-6">
+          <div className="bg-surface-container-lowest shadow-card rounded-2xl p-6">
             <h2 className="text-on-surface mb-2 font-extrabold">
               Ondernemers ontdekken
             </h2>
@@ -69,7 +69,7 @@ export default async function SectorPage({ params }: Props) {
               Maak een account →
             </Link>
           </div>
-          <div className="border-hairline border p-6">
+          <div className="bg-surface-container-lowest shadow-card rounded-2xl p-6">
             <h2 className="text-on-surface mb-2 font-extrabold">
               Kennis delen
             </h2>
@@ -95,18 +95,18 @@ export default async function SectorPage({ params }: Props) {
             href="/aanmelden"
             className="text-on-surface text-label-md inline-block bg-white px-8 py-3 font-bold transition-colors hover:bg-white/90"
           >
-            GRATIS AANMELDEN
+            Gratis aanmelden
           </Link>
         </div>
 
         <div className="hairline-t mt-10 pt-8">
-          <p className="text-label-md text-secondary mb-3">ANDERE SECTOREN</p>
+          <p className="text-label-md text-secondary mb-3">Andere sectoren</p>
           <div className="flex flex-wrap gap-2">
             {SECTOREN.filter((s) => s !== sector).map((s) => (
               <Link
                 key={s}
                 href={`/sector/${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                className="border-hairline text-on-surface-variant hover:border-on-surface hover:text-on-surface border px-3 py-1.5 text-sm transition-colors"
+                className="text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors"
               >
                 {s}
               </Link>

@@ -9,7 +9,7 @@ export default function MatchingPage() {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-label-md text-secondary mb-1">MATCHING</p>
+        <p className="text-label-md text-secondary mb-1">Matching</p>
         <h1 className="text-headline-lg text-on-surface">
           Vind je medemissie-ondernemer
         </h1>

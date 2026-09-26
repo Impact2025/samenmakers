@@ -103,7 +103,7 @@ export function NewPostForm() {
 
       <div>
         <label className="text-label-md text-secondary mb-2 block">
-          SAMENVATTING
+          Samenvatting
         </label>
         <Textarea
           value={form.excerpt}
@@ -135,7 +135,7 @@ export function NewPostForm() {
 
       <div>
         <label className="text-label-md text-secondary mb-2 block">
-          OMSLAGAFBEELDING
+          Omslagafbeelding
         </label>
         {form.coverImageUrl ? (
           <div className="relative">
@@ -148,13 +148,13 @@ export function NewPostForm() {
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, coverImageUrl: "" }))}
-              className="border-hairline hover:bg-surface-container absolute top-2 right-2 border bg-white px-2 py-1 text-xs font-medium"
+              className="hover:bg-surface-container border-surface-container bg-surface-container-lowest absolute top-2 right-2 inline-flex items-center justify-center gap-2 rounded-full border bg-white px-2 py-1 text-xs font-medium transition-colors"
             >
               Verwijderen
             </button>
           </div>
         ) : (
-          <label className="border-hairline hover:border-on-surface bg-surface-container-low flex h-32 w-full cursor-pointer flex-col items-center justify-center border border-dashed transition-colors">
+          <label className="hover:shadow-elevated bg-surface-container-low flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-dashed transition-colors">
             {uploading ? (
               <Spinner />
             ) : (

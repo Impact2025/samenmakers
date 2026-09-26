@@ -1,22 +1,25 @@
 export default function KennisLoading() {
   return (
     <div className="animate-pulse">
-      <div className="h-8 w-48 bg-surface-container-high mb-8" />
-      <div className="flex gap-2 mb-6">
+      <div className="bg-surface-container-high mb-8 h-8 w-48" />
+      <div className="mb-6 flex gap-2">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-8 w-24 bg-surface-container-high" />
+          <div key={i} className="bg-surface-container-high h-8 w-24" />
         ))}
       </div>
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="border border-hairline p-6 space-y-3">
+          <div
+            key={i}
+            className="bg-surface-container-lowest shadow-card space-y-3 rounded-2xl p-6"
+          >
             <div className="flex items-center gap-2">
-              <div className="h-4 w-16 bg-surface-container-high" />
-              <div className="h-4 w-32 bg-surface-container-high" />
+              <div className="bg-surface-container-high h-4 w-16" />
+              <div className="bg-surface-container-high h-4 w-32" />
             </div>
-            <div className="h-6 w-3/4 bg-surface-container-high" />
-            <div className="h-4 w-full bg-surface-container-high" />
-            <div className="h-4 w-2/3 bg-surface-container-high" />
+            <div className="bg-surface-container-high h-6 w-3/4" />
+            <div className="bg-surface-container-high h-4 w-full" />
+            <div className="bg-surface-container-high h-4 w-2/3" />
           </div>
         ))}
       </div>

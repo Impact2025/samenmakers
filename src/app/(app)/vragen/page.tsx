@@ -17,7 +17,7 @@ export default async function VragenPage() {
     <div>
       <div className="mb-8 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-label-md text-secondary mb-1">COMMUNITY</p>
+          <p className="text-label-md text-secondary mb-1">Community</p>
           <h1 className="text-headline-lg text-on-surface">
             Vragen & Antwoorden
           </h1>

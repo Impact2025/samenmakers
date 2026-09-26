@@ -116,7 +116,7 @@ export function MatchingClient() {
             Kom later terug voor nieuwe makers in jouw netwerk.
           </p>
           <Link href="/ontdekken">
-            <button className="bg-primary text-on-primary text-label-md px-6 py-3 font-bold">
+            <button className="bg-primary text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition-colors">
               Ontdek makers
             </button>
           </Link>
@@ -159,7 +159,7 @@ export function MatchingClient() {
 
               {current.missie && (
                 <div className="mb-4">
-                  <p className="text-label-md text-secondary mb-1">MISSIE</p>
+                  <p className="text-label-md text-secondary mb-1">Missie</p>
                   <p className="text-body-md text-on-surface italic">
                     &ldquo;{current.missie}&rdquo;
                   </p>
@@ -171,7 +171,7 @@ export function MatchingClient() {
                 (current as { zoektNaar?: string[] }).zoektNaar!.length > 0 && (
                   <div className="mb-4">
                     <p className="text-label-md text-secondary mb-2">
-                      OP ZOEK NAAR
+                      Op zoek naar
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {(current as { zoektNaar?: string[] }).zoektNaar!.map(
@@ -193,7 +193,7 @@ export function MatchingClient() {
               {current.ikZoek &&
                 !(current as { zoektNaar?: string[] }).zoektNaar?.length && (
                   <div className="mb-4">
-                    <p className="text-label-md text-secondary mb-1">IK ZOEK</p>
+                    <p className="text-label-md text-secondary mb-1">Ik zoek</p>
                     <p className="text-body-md text-on-surface-variant">
                       {current.ikZoek}
                     </p>

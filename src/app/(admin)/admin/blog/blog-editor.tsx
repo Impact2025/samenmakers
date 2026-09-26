@@ -239,7 +239,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
 
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            SLUG (URL)
+            Slug (URL)
           </label>
           <Input
             value={form.slug}
@@ -250,7 +250,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
 
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            SAMENVATTING
+            Samenvatting
           </label>
           <Textarea
             value={form.excerpt}
@@ -312,7 +312,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                OMSLAG / OG-IMAGE URL
+                Omslag / og-image URL
               </label>
               <Input
                 value={form.coverImageUrl}
@@ -386,7 +386,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         <Card hover={false}>
           <CardBody className="p-5">
             <p className="text-secondary mb-2 text-[10px] font-bold tracking-widest">
-              SEO-SCORE
+              Seo-score
             </p>
             <div className="mb-4 flex items-baseline gap-1">
               <span
@@ -418,7 +418,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
           <Card hover={false}>
             <CardBody className="p-5">
               <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
-                LINK-SUGGESTIES (AI)
+                Link-suggesties (AI)
               </p>
               {suggestions.internal.length > 0 && (
                 <>

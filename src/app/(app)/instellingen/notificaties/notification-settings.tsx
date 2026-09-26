@@ -48,7 +48,7 @@ export function NotificationSettings({
     <div className="space-y-6">
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">IN-APP NOTIFICATIES</h2>
+          <h2 className="text-label-md text-on-surface">In-app notificaties</h2>
         </CardHeader>
         <CardBody className="divide-hairline divide-y p-0">
           {notifSettings.map(({ key, label, description }) => (
@@ -70,7 +70,7 @@ export function NotificationSettings({
       <Card hover={false}>
         <CardHeader>
           <h2 className="text-label-md text-on-surface">
-            BROWSER NOTIFICATIES
+            Browser notificaties
           </h2>
         </CardHeader>
         <CardBody>
@@ -114,7 +114,7 @@ export function NotificationSettings({
 
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">E-MAIL</h2>
+          <h2 className="text-label-md text-on-surface">E-mail</h2>
         </CardHeader>
         <CardBody>
           <div className="flex items-start justify-between gap-4">

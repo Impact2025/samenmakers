@@ -129,7 +129,7 @@ export default async function MakerProfilePage({ params }: Props) {
 
           {user.bio && (
             <div className="hairline-t mt-6 pt-6">
-              <p className="text-label-md text-secondary mb-2">BIO</p>
+              <p className="text-label-md text-secondary mb-2">Bio</p>
               <p className="text-body-md text-on-surface-variant">{user.bio}</p>
             </div>
           )}
@@ -137,7 +137,7 @@ export default async function MakerProfilePage({ params }: Props) {
           {/* What they're looking for */}
           {zoektNaar.length > 0 && (
             <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">OP ZOEK NAAR</p>
+              <p className="text-label-md text-secondary mb-2">Op zoek naar</p>
               <div className="flex flex-wrap gap-1.5">
                 {zoektNaar.map((z) => {
                   const label =
@@ -166,7 +166,7 @@ export default async function MakerProfilePage({ params }: Props) {
           {/* Expertise with endorsements */}
           {user.expertise && user.expertise.length > 0 && (
             <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">EXPERTISE</p>
+              <p className="text-label-md text-secondary mb-2">Expertise</p>
               <ExpertiseEndorsements
                 targetUserId={user.id}
                 expertise={user.expertise}
@@ -176,7 +176,7 @@ export default async function MakerProfilePage({ params }: Props) {
 
           {user.mentorshipRole && user.mentorshipRole !== "none" && (
             <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">MENTORSCHAP</p>
+              <p className="text-label-md text-secondary mb-2">Mentorschap</p>
               <Badge variant="default">
                 {user.mentorshipRole === "mentor"
                   ? "Beschikbaar als mentor"

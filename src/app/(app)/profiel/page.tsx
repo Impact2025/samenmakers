@@ -26,7 +26,7 @@ export default async function MyProfilePage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-label-md text-secondary mb-1">JOUW PROFIEL</p>
+          <p className="text-label-md text-secondary mb-1">Jouw profiel</p>
           <h1 className="text-headline-lg text-on-surface truncate">
             {me.naam ?? me.name}
           </h1>
@@ -90,14 +90,14 @@ export default async function MyProfilePage() {
 
           {me.bio && (
             <div className="hairline-t mt-6 pt-6">
-              <p className="text-label-md text-secondary mb-2">BIO</p>
+              <p className="text-label-md text-secondary mb-2">Bio</p>
               <p className="text-body-md text-on-surface-variant">{me.bio}</p>
             </div>
           )}
 
           {me.ikZoek && (
             <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">IK ZOEK</p>
+              <p className="text-label-md text-secondary mb-2">Ik zoek</p>
               <p className="text-body-md text-on-surface-variant">
                 {me.ikZoek}
               </p>
@@ -106,7 +106,7 @@ export default async function MyProfilePage() {
 
           {me.expertise && me.expertise.length > 0 && (
             <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">EXPERTISE</p>
+              <p className="text-label-md text-secondary mb-2">Expertise</p>
               <div className="flex flex-wrap gap-2">
                 {me.expertise.map((tag) => (
                   <Badge key={tag} variant="default" size="sm">
@@ -152,7 +152,7 @@ export default async function MyProfilePage() {
           <CardBody className="p-5">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-label-md text-on-surface">
-                PROFIEL COMPLEETHEID
+                Profiel compleetheid
               </p>
               <span className="text-primary text-lg font-extrabold">
                 {completeness}%
@@ -180,7 +180,7 @@ export default async function MyProfilePage() {
               <Eye size={18} className="text-secondary" />
               <div>
                 <p className="text-label-md text-on-surface">
-                  WIE BEKEEK MIJN PROFIEL
+                  Wie bekeek mijn profiel
                 </p>
                 {me.subscriptionStatus !== "active" && (
                   <p className="text-body-md text-secondary mt-0.5">
@@ -203,7 +203,7 @@ export default async function MyProfilePage() {
         <Card>
           <CardBody className="p-5">
             <p className="text-label-md text-secondary mb-2">
-              JOUW REFERRAL CODE
+              Jouw referral code
             </p>
             <div className="flex items-center gap-3">
               <code className="text-on-surface bg-surface-container flex-1 px-4 py-2 font-mono text-lg font-extrabold">

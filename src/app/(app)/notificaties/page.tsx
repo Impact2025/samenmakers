@@ -26,7 +26,7 @@ export default async function NotificatiesPage() {
     <div className="max-w-xl">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-label-md text-secondary mb-1">ACCOUNT</p>
+          <p className="text-label-md text-secondary mb-1">Account</p>
           <h1 className="text-headline-lg text-on-surface">Notificaties</h1>
         </div>
         {unreadCount > 0 && (

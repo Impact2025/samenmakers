@@ -32,7 +32,7 @@ export function UserActions({ userId, currentStatus, currentRole }: Props) {
       </button>
 
       {open && (
-        <div className="border-hairline absolute top-full right-0 z-10 mt-1 min-w-48 border bg-white shadow-sm">
+        <div className="bg-surface-container-lowest shadow-card absolute top-full right-0 z-10 mt-1 min-w-48 rounded-2xl shadow-sm">
           {currentStatus !== "suspended" && (
             <button
               className="hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"

@@ -57,7 +57,7 @@ export function CrmContacts() {
             value={filters.search}
             onChange={(e) => set({ search: e.target.value })}
             placeholder="Zoek naam/e-mail"
-            className="border-on-surface col-span-2 border-b bg-transparent pb-2 text-sm outline-none focus:border-b-2 lg:col-span-2"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 col-span-2 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px] lg:col-span-2"
           />
           <select
             value={filters.stage ?? ""}
@@ -66,7 +66,7 @@ export function CrmContacts() {
                 stage: (e.target.value || undefined) as typeof filters.stage,
               })
             }
-            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
           >
             <option value="">Alle fases</option>
             {STAGES.map((s) => (
@@ -83,7 +83,7 @@ export function CrmContacts() {
                   undefined) as typeof filters.subscriptionStatus,
               })
             }
-            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
           >
             <option value="">Alle abonnementen</option>
             {SUBS.map((s) => (
@@ -95,7 +95,7 @@ export function CrmContacts() {
           <select
             value={filters.sector ?? ""}
             onChange={(e) => set({ sector: e.target.value || undefined })}
-            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
           >
             <option value="">Alle sectoren</option>
             {SECTOREN.map((s) => (
@@ -107,7 +107,7 @@ export function CrmContacts() {
           <select
             value={filters.regio ?? ""}
             onChange={(e) => set({ regio: e.target.value || undefined })}
-            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
           >
             <option value="">Alle regio&apos;s</option>
             {REGIO_S.map((r) => (
@@ -123,7 +123,7 @@ export function CrmContacts() {
                 fase: (e.target.value || undefined) as typeof filters.fase,
               })
             }
-            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
           >
             <option value="">Alle stadia</option>
             {FASEN.map((f) => (
@@ -155,19 +155,19 @@ export function CrmContacts() {
                 <thead>
                   <tr className="border-hairline border-b text-left">
                     <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                      NAAM
+                      Naam
                     </th>
                     <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                      SECTOR / REGIO
+                      Sector / regio
                     </th>
                     <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                      ABONNEMENT
+                      Abonnement
                     </th>
                     <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                      FASE
+                      Fase
                     </th>
                     <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                      LAATSTE CONTACT
+                      Laatste contact
                     </th>
                   </tr>
                 </thead>

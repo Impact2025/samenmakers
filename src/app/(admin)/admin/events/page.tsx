@@ -32,12 +32,12 @@ export default async function AdminEventsPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-label-md text-secondary mb-1">ADMIN</p>
+          <p className="text-label-md text-secondary mb-1">Admin</p>
           <h1 className="text-headline-lg text-on-surface">Events</h1>
         </div>
         <Link
           href="/events/nieuw"
-          className="bg-primary text-on-primary hover:bg-primary/90 px-4 py-2 text-sm font-bold transition-colors"
+          className="bg-primary text-on-primary hover:bg-primary/90 shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-colors"
         >
           + Nieuw event
         </Link>
@@ -111,7 +111,7 @@ export default async function AdminEventsPage({
                   {e.waitlistCount > 0 ? ` (+${e.waitlistCount})` : ""}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="border-hairline text-on-surface-variant border px-2 py-0.5 text-xs font-medium whitespace-nowrap">
+                  <span className="text-on-surface-variant border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-colors">
                     {PHASE_LABEL[e.phase]}
                   </span>
                 </td>

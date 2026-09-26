@@ -59,7 +59,7 @@ export function TicketsManager({
           </span>
           <Link
             href="/events/uitbetalingen"
-            className="bg-on-surface text-on-primary text-label-md px-4 py-2"
+            className="bg-on-surface text-surface-container-lowest text-label-md inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 transition-colors"
           >
             Uitbetalingen instellen
           </Link>
@@ -74,7 +74,7 @@ export function TicketsManager({
 
       <section className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-label-md text-on-surface">TICKETTYPES</h3>
+          <h3 className="text-label-md text-on-surface">Tickettypes</h3>
           {editing === null && (
             <button
               type="button"
@@ -86,13 +86,13 @@ export function TicketsManager({
           )}
         </div>
         {data.tickets.length === 0 && editing === null && (
-          <p className="border-hairline text-body-md text-secondary border bg-white p-4">
+          <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-4">
             Nog geen tickets: deelnemers melden zich gratis aan met één klik.
             Voeg een tickettype toe voor betaalde, vroegboek- of donatietickets,
             aanmeldvragen of gastbestellingen.
           </p>
         )}
-        <ul className="border-hairline divide-hairline divide-y border bg-white">
+        <ul className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
           {data.tickets.map((t) => (
             <li
               key={t.id}
@@ -154,7 +154,7 @@ export function TicketsManager({
 
 function Stat({ label: l, value }: { label: string; value: string }) {
   return (
-    <div className="border-hairline border bg-white p-4">
+    <div className="bg-surface-container-lowest shadow-card rounded-2xl p-4">
       <p className="text-label-md text-secondary">{l}</p>
       <p className="text-headline-md text-on-surface">{value}</p>
     </div>
@@ -425,8 +425,8 @@ function SettingsForm({
   const [transfer, setTransfer] = useState(initial.allowTransfer);
   const save = trpc.tickets.updateSettings.useMutation({ onSuccess: onDone });
   return (
-    <section className="border-hairline space-y-3 border bg-white p-5">
-      <h3 className="text-label-md text-on-surface">ANNULEREN EN DOORGEVEN</h3>
+    <section className="bg-surface-container-lowest shadow-card space-y-3 rounded-2xl p-5">
+      <h3 className="text-label-md text-on-surface">Annuleren en doorgeven</h3>
       <div className="grid items-end gap-3 sm:grid-cols-2">
         <label className="block">
           <span className={label}>
@@ -508,8 +508,8 @@ function FieldsEditor({
     setFields((fs) => fs.map((f, j) => (j === i ? { ...f, ...patch } : f)));
 
   return (
-    <section className="border-hairline space-y-3 border bg-white p-5">
-      <h3 className="text-label-md text-on-surface">AANMELDVRAGEN</h3>
+    <section className="bg-surface-container-lowest shadow-card space-y-3 rounded-2xl p-5">
+      <h3 className="text-label-md text-on-surface">Aanmeldvragen</h3>
       <p className="text-body-md text-secondary">
         Bijvoorbeeld dieetwensen, toegankelijkheid of motivatie. Vraag niet meer
         dan je nodig hebt.
@@ -517,7 +517,7 @@ function FieldsEditor({
       {fields.map((f, i) => (
         <div
           key={f.id ?? `new-${i}`}
-          className="border-hairline grid items-center gap-2 border p-3 sm:grid-cols-[2fr_1fr_auto_auto]"
+          className="bg-surface-container-lowest shadow-card grid items-center gap-2 rounded-2xl p-3 sm:grid-cols-[2fr_1fr_auto_auto]"
         >
           <input
             className={input}
@@ -692,12 +692,12 @@ function OrdersList({
             onChange={(e) => setQ(e.target.value)}
             placeholder="Zoek…"
             aria-label="Zoek bestelling"
-            className="border-hairline border px-3 py-1.5 text-sm"
+            className="border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors"
           />
           <button
             type="button"
             onClick={exportCsv}
-            className="border-hairline text-label-md inline-flex items-center gap-1 border px-3 py-1.5"
+            className="text-label-md border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-1 gap-2 rounded-full border px-3 py-1.5 transition-colors"
           >
             <Download size={14} aria-hidden /> CSV
           </button>
@@ -709,7 +709,7 @@ function OrdersList({
         </p>
       )}
       {orders.length === 0 ? (
-        <p className="border-hairline text-body-md text-secondary border bg-white p-4">
+        <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-4">
           Nog geen bestellingen.
         </p>
       ) : (
@@ -717,7 +717,7 @@ function OrdersList({
           {orders.map((o) => (
             <li
               key={o.id}
-              className="border-hairline space-y-2 border bg-white p-4"
+              className="bg-surface-container-lowest shadow-card space-y-2 rounded-2xl p-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
@@ -791,7 +791,7 @@ function OrdersList({
                           type="button"
                           disabled={checkIn.isPending}
                           onClick={() => checkIn.mutate({ ticketId: t.id })}
-                          className="border-hairline hover:border-on-surface border px-3 py-1 text-xs font-bold disabled:opacity-40"
+                          className="hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1 text-xs font-bold transition-colors disabled:opacity-40"
                         >
                           Inchecken
                         </button>

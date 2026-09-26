@@ -120,26 +120,26 @@ export function EventCheckinPanel({
 
   if (attendees.length === 0) {
     return (
-      <p className="border-hairline text-body-md text-secondary border bg-white p-5">
+      <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-5">
         Nog geen aanmeldingen.
       </p>
     );
   }
 
   return (
-    <div className="border-hairline border bg-white p-5">
+    <div className="bg-surface-container-lowest shadow-card rounded-2xl p-5">
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Zoek op naam of e-mail…"
           aria-label="Zoek deelnemer"
-          className="border-hairline text-on-surface placeholder:text-secondary focus:border-on-surface min-w-[12rem] flex-1 border px-3 py-2 text-sm focus:outline-none"
+          className="text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 min-w-[12rem] flex-1 rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
         />
         <button
           type="button"
           onClick={exportCsv}
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2"
+          className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 transition-colors"
         >
           <Download size={14} aria-hidden /> CSV
         </button>
@@ -189,7 +189,7 @@ export function EventCheckinPanel({
                   type="button"
                   onClick={() => void handleCheckin(a.user.id)}
                   disabled={loading === a.user.id}
-                  className="text-on-surface border-hairline hover:border-on-surface shrink-0 border px-3 py-1 text-xs font-bold disabled:opacity-40"
+                  className="text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex shrink-0 items-center justify-center gap-2 rounded-full border px-3 py-1 text-xs font-bold transition-colors disabled:opacity-40"
                 >
                   {loading === a.user.id ? <Spinner /> : "Inchecken"}
                 </button>
@@ -208,7 +208,7 @@ export function EventCheckinPanel({
             {pending.map((a) => (
               <li
                 key={a.id}
-                className="border-hairline bg-surface-container-low flex items-center gap-3 border px-3 py-2.5"
+                className="bg-surface-container-low flex items-center gap-3 rounded-2xl px-3 py-2.5"
               >
                 <Avatar
                   src={a.user.avatarUrl}

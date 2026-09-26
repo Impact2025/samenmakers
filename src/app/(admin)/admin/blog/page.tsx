@@ -43,16 +43,16 @@ export default async function AdminBlogPage() {
               <thead>
                 <tr className="border-hairline border-b text-left">
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    TITEL
+                    Titel
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
                     SEO
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    STATUS
+                    Status
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    BIJGEWERKT
+                    Bijgewerkt
                   </th>
                   <th className="p-4"></th>
                 </tr>

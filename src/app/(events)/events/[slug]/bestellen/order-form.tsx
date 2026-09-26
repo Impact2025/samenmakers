@@ -126,7 +126,7 @@ export function OrderForm({
         <h2 id="t-kies" className="text-label-md text-on-surface">
           1 · Kies je tickets
         </h2>
-        <ul className="border-hairline divide-hairline divide-y border bg-white">
+        <ul className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
           {tickets.map((t) => {
             const soldOut = t.left === 0;
             const available = t.state === "on_sale" && !soldOut;
@@ -211,7 +211,7 @@ export function OrderForm({
                       onChange={(ev) =>
                         setAmount((a) => ({ ...a, [t.id]: ev.target.value }))
                       }
-                      className="border-hairline w-24 border px-2 py-1 text-sm"
+                      className="border-surface-container bg-surface-container-lowest inline-flex w-24 items-center justify-center gap-2 rounded-full border px-2 py-1 text-sm transition-colors"
                       aria-label={`Bedrag voor ${t.name}`}
                     />
                   </label>

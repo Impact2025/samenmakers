@@ -34,7 +34,7 @@ export default async function MentorshipPage() {
   return (
     <div className="max-w-3xl">
       <div className="mb-10">
-        <p className="text-label-md text-secondary mb-1">MENTORSHIP</p>
+        <p className="text-label-md text-secondary mb-1">Mentorship</p>
         <h1 className="text-headline-lg text-on-surface mb-3">
           Leer van elkaar
         </h1>
@@ -46,7 +46,7 @@ export default async function MentorshipPage() {
 
       {/* Info cards */}
       <div className="mb-10 grid gap-4 sm:grid-cols-2">
-        <div className="border-hairline bg-surface-container-low border p-6">
+        <div className="bg-surface-container-low rounded-2xl p-6">
           <h2 className="text-on-surface mb-2 text-lg font-extrabold">
             Als mentor
           </h2>
@@ -61,7 +61,7 @@ export default async function MentorshipPage() {
             Mentor worden →
           </Link>
         </div>
-        <div className="border-hairline bg-surface-container-low border p-6">
+        <div className="bg-surface-container-low rounded-2xl p-6">
           <h2 className="text-on-surface mb-2 text-lg font-extrabold">
             Als mentee
           </h2>
@@ -96,7 +96,7 @@ export default async function MentorshipPage() {
               <Link
                 key={user.id}
                 href={`/makers/${user.id}`}
-                className="border-hairline hover:border-on-surface flex items-center gap-4 border bg-white p-4 transition-colors"
+                className="hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-4 rounded-2xl p-4 transition-colors"
               >
                 <Avatar
                   src={user.avatarUrl}
@@ -117,7 +117,7 @@ export default async function MentorshipPage() {
                   )}
                 </div>
                 {user.mentorshipRole && user.mentorshipRole !== "none" && (
-                  <span className="text-primary border-primary shrink-0 border px-2 py-0.5 text-xs font-medium">
+                  <span className="text-primary border-surface-container bg-surface-container-lowest inline-flex shrink-0 items-center justify-center gap-2 rounded-full border px-2 py-0.5 text-xs font-medium transition-colors">
                     {ROLE_LABELS[user.mentorshipRole] ?? user.mentorshipRole}
                   </span>
                 )}
@@ -145,7 +145,7 @@ export default async function MentorshipPage() {
               <Link
                 key={user.id}
                 href={`/makers/${user.id}`}
-                className="border-hairline hover:border-on-surface flex items-center gap-3 border bg-white p-3 transition-colors"
+                className="hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-3 rounded-2xl p-3 transition-colors"
               >
                 <Avatar
                   src={user.avatarUrl}

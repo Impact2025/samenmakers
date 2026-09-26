@@ -118,14 +118,14 @@ export function RsvpPanel({
             href={meetingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-primary-container text-on-primary text-label-md inline-flex items-center gap-2 px-6 py-3"
+            className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 transition-colors"
           >
             <ExternalLink size={14} aria-hidden /> Deelnemen online
           </a>
         )}
         <Link
           href="/events/mijn"
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 transition-colors"
         >
           Mijn tickets
         </Link>
@@ -148,7 +148,7 @@ export function RsvpPanel({
         <div className="flex flex-wrap gap-3">
           <Link
             href={orderHref}
-            className="bg-primary-container text-on-primary text-label-md inline-flex px-8 py-4"
+            className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 transition-colors"
           >
             Ticket bestellen
           </Link>
@@ -167,7 +167,7 @@ export function RsvpPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Link
           href={orderHref}
-          className="bg-primary-container text-on-primary text-label-md inline-flex justify-center px-8 py-4"
+          className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 transition-colors"
         >
           Tickets bestellen
         </Link>
@@ -194,7 +194,7 @@ export function RsvpPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Link
           href={`/inloggen?next=${encodeURIComponent(`/events/${slug}`)}`}
-          className="bg-primary-container text-on-primary text-label-md inline-flex justify-center px-8 py-4"
+          className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 transition-colors"
         >
           {phase === "sold_out"
             ? "Inloggen voor de wachtlijst"
@@ -246,7 +246,7 @@ export function RsvpPanel({
             href={meetingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-primary-container text-on-primary text-label-md inline-flex items-center gap-2 px-6 py-3"
+            className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 transition-colors"
           >
             <ExternalLink size={14} aria-hidden /> Deelnemen online
           </a>

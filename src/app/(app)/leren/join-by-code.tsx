@@ -24,7 +24,7 @@ export function JoinByCode() {
     >
       <div className="flex-1">
         <Input
-          label="UITNODIGINGSCODE"
+          label="Uitnodigingscode"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           placeholder="Bijv. K7M2QX9A"

@@ -52,7 +52,7 @@ export function MakerActions({ userId }: { userId: string }) {
         </Button>
 
         {showMore && (
-          <div className="border-hairline absolute top-full right-0 z-10 mt-1 min-w-44 border bg-white shadow-sm">
+          <div className="bg-surface-container-lowest shadow-card absolute top-full right-0 z-10 mt-1 min-w-44 rounded-2xl shadow-sm">
             <button
               className="text-on-surface hover:bg-surface-container-low flex w-full items-center gap-2 px-4 py-3 text-left text-sm"
               onClick={() => {

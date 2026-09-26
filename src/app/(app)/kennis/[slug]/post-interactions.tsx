@@ -62,7 +62,7 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
 
       {/* Comments */}
       <div className="space-y-4">
-        <h3 className="text-label-md text-on-surface">REACTIES</h3>
+        <h3 className="text-label-md text-on-surface">Reacties</h3>
 
         {comments.length === 0 && (
           <p className="text-body-md text-secondary">
@@ -107,7 +107,7 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Schrijf een reactie…"
-            className="border-hairline text-on-surface placeholder:text-secondary focus:border-on-surface flex-1 border bg-white px-4 py-3 text-sm focus:outline-none"
+            className="text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 flex-1 rounded-xl border border-transparent px-4 py-3 text-sm outline-none focus:ring-[3px]"
           />
           <Button
             type="submit"

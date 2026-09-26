@@ -54,7 +54,7 @@ export default async function ManageEventPage({ params }: Props) {
         <div>
           <p className="text-label-md text-secondary mb-1">
             <Link href="/events/mijn" className="hover:text-on-surface">
-              MIJN EVENTS
+              Mijn events
             </Link>{" "}
             / BEHEREN
           </p>
@@ -64,14 +64,17 @@ export default async function ManageEventPage({ params }: Props) {
             {eventWhere(event)}
           </p>
         </div>
-        <span className="text-label-md bg-on-surface text-on-primary px-3 py-1">
+        <span className="text-label-md bg-on-surface text-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full px-3 py-1 transition-colors">
           {PHASE_LABEL[event.phase]}
         </span>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         {stats.map((s) => (
-          <div key={s.label} className="border-hairline border bg-white p-4">
+          <div
+            key={s.label}
+            className="bg-surface-container-lowest shadow-card rounded-2xl p-4"
+          >
             <p className="text-label-md text-secondary">{s.label}</p>
             <p className="text-headline-md text-on-surface">
               {s.value}
@@ -93,7 +96,7 @@ export default async function ManageEventPage({ params }: Props) {
       {features.eventTickets && event.status !== "cancelled" && (
         <section className="space-y-3">
           <h2 className="text-label-md text-on-surface">
-            TICKETS EN BESTELLINGEN
+            Tickets en bestellingen
           </h2>
           <TicketsManager eventId={event.id} timezone={event.timezone} />
         </section>
@@ -114,12 +117,12 @@ export default async function ManageEventPage({ params }: Props) {
 
       {event.status !== "cancelled" && (
         <section className="space-y-3">
-          <h2 className="text-label-md text-on-surface">GEGEVENS WIJZIGEN</h2>
+          <h2 className="text-label-md text-on-surface">Gegevens wijzigen</h2>
           <p className="text-body-md text-secondary">
             Wijzig je datum, tijd, locatie of link van een gepubliceerd event,
             dan krijgen deelnemers automatisch bericht.
           </p>
-          <div className="border-hairline border bg-white p-5 sm:p-6">
+          <div className="bg-surface-container-lowest shadow-card rounded-2xl p-5 sm:p-6">
             <EditEventForm event={event} />
           </div>
         </section>

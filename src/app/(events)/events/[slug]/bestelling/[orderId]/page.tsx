@@ -64,7 +64,7 @@ export default async function OrderConfirmationPage({
 
       {order.status === "pending" && (
         <p
-          className="border-hairline text-body-md text-on-surface-variant border bg-white p-4"
+          className="text-body-md text-on-surface-variant bg-surface-container-lowest shadow-card rounded-2xl p-4"
           role="status"
         >
           {betaald
@@ -75,7 +75,7 @@ export default async function OrderConfirmationPage({
 
       {done && (
         <section className="space-y-2">
-          <h2 className="text-label-md text-on-surface">JE TICKETS</h2>
+          <h2 className="text-label-md text-on-surface">Je tickets</h2>
           <ul className="space-y-2">
             {order.tickets.map((tk, i) => (
               <li key={tk.code}>
@@ -110,8 +110,8 @@ export default async function OrderConfirmationPage({
         </section>
       )}
 
-      <section className="border-hairline space-y-2 border bg-white p-5">
-        <h2 className="text-label-md text-secondary">OVERZICHT</h2>
+      <section className="bg-surface-container-lowest shadow-card space-y-2 rounded-2xl p-5">
+        <h2 className="text-label-md text-secondary">Overzicht</h2>
         <ul className="text-body-md text-on-surface-variant space-y-1">
           {order.items.map((it) => (
             <li key={it.name} className="flex justify-between gap-4">
@@ -152,7 +152,7 @@ export default async function OrderConfirmationPage({
           </p>
           <Link
             href={`/aanmelden?email=${encodeURIComponent(order.buyerEmail)}`}
-            className="bg-primary-container text-on-primary text-label-md inline-block px-6 py-3"
+            className="bg-primary-container text-on-primary text-label-md shadow-cta inline-block inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 transition-colors"
           >
             Gratis profiel maken
           </Link>

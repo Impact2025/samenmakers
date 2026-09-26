@@ -28,7 +28,7 @@ export default async function PayoutsPage({
       <div>
         <p className="text-label-md text-secondary mb-1">
           <Link href="/events/mijn" className="hover:text-on-surface">
-            MIJN EVENTS
+            Mijn events
           </Link>
         </p>
         <h1 className="text-headline-lg text-on-surface">Uitbetalingen</h1>
@@ -39,7 +39,7 @@ export default async function PayoutsPage({
       </div>
 
       {status.isAdmin && (
-        <p className="border-hairline text-body-md text-on-surface-variant border bg-white p-4">
+        <p className="text-body-md text-on-surface-variant bg-surface-container-lowest shadow-card rounded-2xl p-4">
           Als beheerder komen betalingen voor jouw events op de platformrekening
           binnen; een eigen koppeling is niet nodig.
         </p>

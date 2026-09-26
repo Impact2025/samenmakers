@@ -93,7 +93,7 @@ export default async function LeerpadPage({ params }: Props) {
           {nextLessonId && (
             <Link
               href={`/leren/${cohort.id}/les/${nextLessonId}`}
-              className="text-label-md bg-primary-container text-on-primary inline-flex items-center gap-2 px-6 py-3"
+              className="text-label-md bg-primary-container text-on-primary shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 transition-colors"
             >
               {progress.done === 0 ? "Start het programma" : "Ga verder"}{" "}
               <ArrowRight size={14} />
@@ -102,7 +102,7 @@ export default async function LeerpadPage({ params }: Props) {
           {data.isStaff && (
             <Link
               href={`/leren/${cohort.id}/deelnemers`}
-              className="text-label-md border-on-surface text-on-surface hover:bg-on-surface hover:text-on-primary inline-flex items-center gap-2 border px-6 py-3"
+              className="text-label-md text-on-surface hover:bg-surface-container-low hover:text-on-surface border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-6 py-3 transition-colors"
             >
               <Users size={14} /> Cursistoverzicht
             </Link>
@@ -184,7 +184,7 @@ export default async function LeerpadPage({ params }: Props) {
                         </span>
                         {lesson.id === nextLessonId && (
                           <span className="text-label-md text-primary hidden sm:inline">
-                            VOLGENDE
+                            Volgende
                           </span>
                         )}
                       </Link>

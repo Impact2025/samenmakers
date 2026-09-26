@@ -16,24 +16,24 @@ export default async function AdminUsersPage() {
         <p className="text-secondary mt-1 text-sm">{users.length} gebruikers</p>
       </div>
 
-      <div className="border-hairline border bg-white">
+      <div className="bg-surface-container-lowest shadow-card rounded-2xl">
         <table className="w-full text-sm">
           <thead>
             <tr className="hairline-b">
               <th className="text-label-md text-secondary px-5 py-3 text-left font-semibold">
-                GEBRUIKER
+                Gebruiker
               </th>
               <th className="text-label-md text-secondary px-5 py-3 text-left font-semibold">
-                EMAIL
+                Email
               </th>
               <th className="text-label-md text-secondary px-5 py-3 text-left font-semibold">
-                STATUS
+                Status
               </th>
               <th className="text-label-md text-secondary px-5 py-3 text-left font-semibold">
-                ROL
+                Rol
               </th>
               <th className="text-label-md text-secondary px-5 py-3 text-left font-semibold">
-                ABO
+                Abo
               </th>
               <th className="px-5 py-3"></th>
             </tr>

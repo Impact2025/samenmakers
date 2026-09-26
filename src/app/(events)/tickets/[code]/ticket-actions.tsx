@@ -48,7 +48,7 @@ export function TicketActions({
   if (done)
     return (
       <p
-        className="border-hairline text-body-md text-on-surface border bg-white p-4"
+        className="text-body-md text-on-surface bg-surface-container-lowest shadow-card rounded-2xl p-4"
         role="status"
       >
         {done}
@@ -57,7 +57,7 @@ export function TicketActions({
 
   return (
     <section
-      className="border-hairline space-y-4 border bg-white p-5"
+      className="bg-surface-container-lowest shadow-card space-y-4 rounded-2xl p-5"
       aria-label="Ticket beheren"
     >
       {mode === "none" && (

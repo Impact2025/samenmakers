@@ -16,7 +16,7 @@ export default function AdminCohortenPage() {
       <Card hover={false}>
         <CardHeader>
           <h2 className="text-label-md text-on-surface">
-            NIEUW COHORT AANMAKEN
+            Nieuw cohort aanmaken
           </h2>
         </CardHeader>
         <CardBody>

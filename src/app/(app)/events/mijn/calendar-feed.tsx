@@ -12,7 +12,7 @@ export function CalendarFeed({
 }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div className="border-hairline flex flex-col gap-4 border bg-white p-5 sm:flex-row sm:items-center">
+    <div className="bg-surface-container-lowest shadow-card flex flex-col gap-4 rounded-2xl p-5 sm:flex-row sm:items-center">
       <CalendarPlus size={20} className="text-secondary shrink-0" aria-hidden />
       <div className="flex-1">
         <p className="text-on-surface text-sm font-semibold">
@@ -26,7 +26,7 @@ export function CalendarFeed({
       <div className="flex shrink-0 gap-2">
         <a
           href={webcal}
-          className="bg-on-surface text-on-primary text-label-md px-4 py-2"
+          className="bg-on-surface text-surface-container-lowest text-label-md inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 transition-colors"
         >
           Abonneren
         </a>
@@ -38,7 +38,7 @@ export function CalendarFeed({
               setTimeout(() => setCopied(false), 2000);
             })
           }
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 transition-colors"
         >
           {copied ? "Gekopieerd" : "Link kopiëren"}
         </button>

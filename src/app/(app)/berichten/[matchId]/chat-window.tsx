@@ -194,7 +194,7 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
                   className={`px-4 py-3 text-sm ${
                     isMe
                       ? "bg-primary text-on-primary"
-                      : "bg-surface-container-low text-on-surface border-hairline border"
+                      : "bg-surface-container-low text-on-surface rounded-2xl"
                   }`}
                 >
                   {msg.content}
@@ -218,7 +218,7 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Typ een bericht…"
-          className="border-hairline text-on-surface placeholder:text-secondary focus:border-on-surface flex-1 border bg-white px-4 py-3 text-base focus:outline-none"
+          className="text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 flex-1 rounded-xl border border-transparent px-4 py-3 text-base outline-none focus:ring-[3px]"
           disabled={send.isPending}
         />
         <button

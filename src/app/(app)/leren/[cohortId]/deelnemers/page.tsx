@@ -73,7 +73,7 @@ export default async function DeelnemersPage({ params }: Props) {
         )}
       </header>
 
-      <dl className="border-hairline grid grid-cols-3 border bg-white">
+      <dl className="bg-surface-container-lowest shadow-card grid grid-cols-3 rounded-2xl">
         <Stat label="Cursisten" value={data.learners.length} />
         <Stat label="Gem. voortgang" value={`${avg}%`} />
         <Stat label="Dreigt uit te vallen" value={atRisk} warn={atRisk > 0} />
@@ -84,7 +84,7 @@ export default async function DeelnemersPage({ params }: Props) {
           Nog geen cursisten in deze editie.
         </p>
       ) : (
-        <div className="border-hairline overflow-x-auto border bg-white">
+        <div className="bg-surface-container-lowest shadow-card overflow-x-auto rounded-2xl">
           <table className="w-full min-w-[640px] text-left">
             <thead className="hairline-b">
               <tr className="text-label-md text-secondary">

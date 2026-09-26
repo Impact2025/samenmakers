@@ -67,9 +67,9 @@ export function DiscoverContent() {
 
       {/* Filter panel */}
       {showFilters && (
-        <div className="border-hairline space-y-4 border bg-white p-5">
+        <div className="bg-surface-container-lowest shadow-card space-y-4 rounded-2xl p-5">
           <div className="flex items-center justify-between">
-            <p className="text-label-md text-on-surface">FILTERS</p>
+            <p className="text-label-md text-on-surface">Filters</p>
             <button
               onClick={() => {
                 setFilters({});
@@ -83,7 +83,7 @@ export function DiscoverContent() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                SECTOR
+                Sector
               </label>
               <select
                 value={filters.sector ?? ""}
@@ -96,7 +96,7 @@ export function DiscoverContent() {
                     return next;
                   });
                 }}
-                className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2 text-sm focus:outline-none"
+                className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle sectoren</option>
                 {SECTOREN.map((s) => (
@@ -108,7 +108,7 @@ export function DiscoverContent() {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                REGIO
+                Regio
               </label>
               <select
                 value={filters.regio ?? ""}
@@ -121,7 +121,7 @@ export function DiscoverContent() {
                     return next;
                   });
                 }}
-                className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2 text-sm focus:outline-none"
+                className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle regio&apos;s</option>
                 {REGIO_S.map((r) => (
@@ -133,7 +133,7 @@ export function DiscoverContent() {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                FASE
+                Fase
               </label>
               <select
                 value={filters.fase ?? ""}
@@ -150,7 +150,7 @@ export function DiscoverContent() {
                     return next;
                   });
                 }}
-                className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2 text-sm focus:outline-none"
+                className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle fasen</option>
                 {FASEN.map(({ value, label }) => (
@@ -214,7 +214,7 @@ export function DiscoverContent() {
               <button
                 onClick={() => void fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-8 py-3 transition-colors disabled:opacity-50"
+                className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-8 py-3 transition-colors disabled:opacity-50"
               >
                 {isFetchingNextPage ? <Spinner /> : "Meer laden"}
               </button>
@@ -261,7 +261,7 @@ function UserCard({ user }: { user: User }) {
               </p>
               {user.isFeatured && (
                 <Badge variant="primary" size="sm" className="mt-0.5">
-                  FEATURED
+                  Featured
                 </Badge>
               )}
             </div>

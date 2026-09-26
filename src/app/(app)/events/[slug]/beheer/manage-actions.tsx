@@ -56,7 +56,7 @@ export function ManageActions({
 
   if (status === "cancelled") {
     return (
-      <p className="border-hairline text-body-md text-on-surface-variant border bg-white p-4">
+      <p className="text-body-md text-on-surface-variant bg-surface-container-lowest shadow-card rounded-2xl p-4">
         Dit event is geannuleerd.
       </p>
     );
@@ -88,7 +88,7 @@ export function ManageActions({
         )}
         <Link
           href={`/events/${slug}`}
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 transition-colors"
         >
           {status === "draft" ? "Voorbeeld bekijken" : "Eventpagina"}
         </Link>
@@ -117,7 +117,7 @@ export function ManageActions({
             maxLength={500}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="border-hairline focus:border-on-surface w-full border px-3 py-2 text-sm focus:outline-none"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
             placeholder="Bijvoorbeeld: de spreker is ziek; we plannen een nieuwe datum."
           />
           <div className="flex gap-3">

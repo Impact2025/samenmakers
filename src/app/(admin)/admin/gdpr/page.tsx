@@ -12,7 +12,7 @@ export default function AdminGdprPage() {
 
       <Card hover={false}>
         <CardHeader>
-          <h2 className="text-label-md text-on-surface">GEGEVENSVERZOEKEN</h2>
+          <h2 className="text-label-md text-on-surface">Gegevensverzoeken</h2>
         </CardHeader>
         <CardBody>
           <p className="text-body-md text-on-surface-variant mb-4">
@@ -30,7 +30,7 @@ export default function AdminGdprPage() {
                   GET /api/gdpr/export
                 </code>
               </div>
-              <span className="text-primary text-xs font-semibold">ACTIEF</span>
+              <span className="text-primary text-xs font-semibold">Actief</span>
             </div>
             <div className="hairline-b flex items-center justify-between py-3">
               <div>
@@ -41,7 +41,7 @@ export default function AdminGdprPage() {
                   DELETE /api/gdpr/account
                 </code>
               </div>
-              <span className="text-primary text-xs font-semibold">ACTIEF</span>
+              <span className="text-primary text-xs font-semibold">Actief</span>
             </div>
             <div className="flex items-center justify-between py-3">
               <div>
@@ -61,7 +61,7 @@ export default function AdminGdprPage() {
       <Card hover={false}>
         <CardHeader>
           <h2 className="text-label-md text-on-surface">
-            PRIVACY INSTELLINGEN PLATFORM
+            Privacy instellingen platform
           </h2>
         </CardHeader>
         <CardBody className="text-body-md text-on-surface-variant space-y-3">

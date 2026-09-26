@@ -11,7 +11,7 @@ export default function PrivacyPage() {
           href="/"
           className="text-on-surface text-xl font-extrabold tracking-tighter"
         >
-          WE SHAPE THE FUTURE
+          We Shape the Future
         </Link>
       </header>
       <main className="prose prose-sm mx-auto max-w-2xl max-w-none px-6 py-16">

@@ -23,7 +23,7 @@ export default async function WieBekeekMijPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <p className="text-label-md text-secondary mb-1">PROFIEL</p>
+        <p className="text-label-md text-secondary mb-1">Profiel</p>
         <h1 className="text-headline-lg text-on-surface">
           Wie bekeek mijn profiel
         </h1>

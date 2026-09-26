@@ -112,7 +112,7 @@ export default async function LessonPage({ params }: Props) {
           <div className="flex items-center gap-3">
             <Radio size={20} className="text-primary" aria-hidden />
             <div>
-              <p className="text-label-md text-secondary">LIVE SESSIE</p>
+              <p className="text-label-md text-secondary">Live sessie</p>
               {c.startsAt && (
                 <p className="text-body-md text-on-surface font-semibold">
                   {formatDateTime(c.startsAt)}
@@ -125,7 +125,7 @@ export default async function LessonPage({ params }: Props) {
               href={meetingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-label-md bg-primary-container text-on-primary inline-flex items-center gap-2 px-5 py-3"
+              className="text-label-md bg-primary-container text-on-primary shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 transition-colors"
             >
               Deelnemen <ExternalLink size={12} />
             </a>
@@ -145,7 +145,7 @@ export default async function LessonPage({ params }: Props) {
           href={fileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="border-hairline hover:border-on-surface flex items-center gap-4 border bg-white p-5 transition-colors"
+          className="hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-4 rounded-2xl p-5 transition-colors"
         >
           <Download size={20} className="text-primary" aria-hidden />
           <span className="text-body-md text-on-surface font-semibold">
@@ -156,7 +156,7 @@ export default async function LessonPage({ params }: Props) {
 
       {lesson.type === "reflectie" && c.prompt && (
         <blockquote className="border-primary-container bg-surface-container-low border-l-2 p-5">
-          <p className="text-label-md text-secondary mb-2">REFLECTIEVRAAG</p>
+          <p className="text-label-md text-secondary mb-2">Reflectievraag</p>
           <p className="text-body-lg text-on-surface">{c.prompt}</p>
         </blockquote>
       )}

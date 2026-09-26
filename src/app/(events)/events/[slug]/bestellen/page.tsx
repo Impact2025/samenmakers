@@ -34,7 +34,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
         </Link>
       </nav>
       <header>
-        <p className="text-label-md text-secondary mb-1">TICKETS</p>
+        <p className="text-label-md text-secondary mb-1">Tickets</p>
         <h1 className="text-headline-lg text-on-surface">{e.title}</h1>
         <p className="text-body-md text-on-surface-variant mt-1">
           {formatEventWhen(e.startAt, e.endAt, e.timezone)} · {eventWhere(e)}
@@ -43,7 +43,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
 
       {geannuleerd && (
         <p
-          className="border-hairline text-body-md text-on-surface-variant border bg-white p-4"
+          className="text-body-md text-on-surface-variant bg-surface-container-lowest shadow-card rounded-2xl p-4"
           role="status"
         >
           De betaling is afgebroken; er is niets afgeschreven. Je kunt het
@@ -62,7 +62,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
           allowTransfer={e.allowTransfer}
         />
       ) : (
-        <p className="border-hairline text-body-md text-on-surface-variant border bg-white p-5">
+        <p className="text-body-md text-on-surface-variant bg-surface-container-lowest shadow-card rounded-2xl p-5">
           Bestellen is voor dit event niet meer mogelijk.
         </p>
       )}

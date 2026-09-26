@@ -18,14 +18,14 @@ export default function HomePage() {
       <header className="hairline-b fixed top-0 z-50 w-full bg-white">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <span className="text-on-surface text-lg font-extrabold tracking-tighter">
-            WE SHAPE THE FUTURE
+            We Shape the Future
           </span>
           <div className="flex items-center gap-4">
             <Link
               href="/inloggen"
               className="text-label-md text-secondary hover:text-on-surface transition-colors"
             >
-              INLOGGEN
+              Inloggen
             </Link>
             <Link href="/aanmelden">
               <Button variant="primary">Begin gratis</Button>
@@ -66,7 +66,7 @@ export default function HomePage() {
       {/* How it works */}
       <section className="bg-surface-container-low hairline-t hairline-b px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <p className="text-label-md text-secondary mb-3">HOE HET WERKT</p>
+          <p className="text-label-md text-secondary mb-3">Hoe het werkt</p>
           <h2 className="text-headline-lg text-on-surface mb-12 max-w-md">
             Drie stappen naar jouw medemissie-ondernemer
           </h2>
@@ -105,7 +105,7 @@ export default function HomePage() {
       {/* Sectors */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <p className="text-label-md text-secondary mb-3">SECTOREN</p>
+          <p className="text-label-md text-secondary mb-3">Sectoren</p>
           <h2 className="text-headline-lg text-on-surface mb-8">
             Van circulaire economie tot social impact
           </h2>
@@ -113,7 +113,7 @@ export default function HomePage() {
             {SECTOREN.map((s) => (
               <span
                 key={s}
-                className="border-hairline text-on-surface-variant hover:border-on-surface hover:text-on-surface border px-4 py-2 text-sm font-medium transition-colors"
+                className="text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
               >
                 {s}
               </span>
@@ -125,14 +125,14 @@ export default function HomePage() {
       {/* Pricing */}
       <section className="bg-surface-container-low hairline-t hairline-b px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <p className="text-label-md text-secondary mb-3">ABONNEMENTEN</p>
+          <p className="text-label-md text-secondary mb-3">Abonnementen</p>
           <h2 className="text-headline-lg text-on-surface mb-12">
             Transparante prijzen
           </h2>
           <div className="grid max-w-2xl gap-6 md:grid-cols-2">
             {/* Basis */}
-            <div className="border-hairline border bg-white p-8">
-              <p className="text-label-md text-secondary mb-2">BASIS</p>
+            <div className="bg-surface-container-lowest shadow-card rounded-2xl p-8">
+              <p className="text-label-md text-secondary mb-2">Basis</p>
               <p className="text-on-surface mb-1 text-4xl font-extrabold">
                 Gratis
               </p>
@@ -167,7 +167,7 @@ export default function HomePage() {
             {/* Pro */}
             <div className="border-primary relative border-2 bg-white p-8">
               <Badge variant="primary" className="absolute top-4 right-4">
-                AANBEVOLEN
+                Aanbevolen
               </Badge>
               <p className="text-label-md text-primary mb-2">PRO</p>
               <div className="mb-1 flex items-baseline gap-1">
@@ -210,7 +210,7 @@ export default function HomePage() {
           </p>
           <Link href="/aanmelden">
             <button className="text-on-surface text-label-md bg-white px-10 py-4 font-bold transition-colors hover:bg-white/90">
-              GRATIS AANMELDEN
+              Gratis aanmelden
             </button>
           </Link>
         </div>
@@ -220,7 +220,7 @@ export default function HomePage() {
       <footer className="hairline-t px-6 py-10">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <span className="text-on-surface text-sm font-extrabold">
-            WE SHAPE THE FUTURE
+            We Shape the Future
           </span>
           <div className="text-secondary flex gap-6 text-xs">
             <Link

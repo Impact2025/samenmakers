@@ -45,7 +45,7 @@ export function NewQuestionForm() {
       </div>
       <div>
         <label className="text-label-md text-secondary mb-2 block">
-          TOELICHTING
+          Toelichting
         </label>
         <Textarea
           value={form.content}
@@ -56,12 +56,12 @@ export function NewQuestionForm() {
       </div>
       <div>
         <label className="text-label-md text-secondary mb-2 block">
-          SECTOR (OPTIONEEL)
+          Sector (optioneel)
         </label>
         <select
           value={form.sector}
           onChange={(e) => setForm((f) => ({ ...f, sector: e.target.value }))}
-          className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2.5 text-sm focus:outline-none"
+          className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
         >
           <option value="">Alle sectoren</option>
           {SECTOREN.map((s) => (

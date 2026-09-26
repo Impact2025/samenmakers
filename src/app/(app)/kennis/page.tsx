@@ -33,7 +33,7 @@ export default async function KennisPage({ searchParams }: Props) {
     <div>
       <div className="mb-8 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-label-md text-secondary mb-1">PLATFORM</p>
+          <p className="text-label-md text-secondary mb-1">Platform</p>
           <h1 className="text-headline-lg text-on-surface">Kennisbank</h1>
         </div>
         <Link href="/kennis/nieuw" className="mt-1 shrink-0">

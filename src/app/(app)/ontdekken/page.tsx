@@ -9,7 +9,7 @@ export default function OntdekkenPage() {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-label-md text-secondary mb-1">NETWERK</p>
+        <p className="text-label-md text-secondary mb-1">Netwerk</p>
         <h1 className="text-headline-lg text-on-surface">Ontdek makers</h1>
       </div>
       <Suspense

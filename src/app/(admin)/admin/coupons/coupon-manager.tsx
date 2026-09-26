@@ -109,7 +109,7 @@ export function CouponManager() {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                OMSCHRIJVING
+                Omschrijving
               </label>
               <Input
                 value={form.description}
@@ -120,7 +120,7 @@ export function CouponManager() {
 
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                TYPE
+                Type
               </label>
               <div className="flex gap-2">
                 {(["percent", "amount"] as DiscountType[]).map((t) => (
@@ -154,7 +154,7 @@ export function CouponManager() {
 
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                DUUR
+                Duur
               </label>
               <div className="flex flex-wrap gap-2">
                 {(["once", "repeating", "forever"] as Duration[]).map((d) => (
@@ -189,7 +189,7 @@ export function CouponManager() {
 
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                MAX. GEBRUIK
+                Max. gebruik
               </label>
               <Input
                 type="number"
@@ -200,7 +200,7 @@ export function CouponManager() {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                VERLOOPT OP
+                Verloopt op
               </label>
               <Input
                 type="date"
@@ -240,19 +240,19 @@ export function CouponManager() {
               <thead>
                 <tr className="border-hairline border-b text-left">
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    CODE
+                    Code
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    KORTING
+                    Korting
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    DUUR
+                    Duur
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    GEBRUIK
+                    Gebruik
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    STATUS
+                    Status
                   </th>
                   <th className="p-4"></th>
                 </tr>

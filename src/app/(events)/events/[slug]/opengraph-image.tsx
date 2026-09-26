@@ -88,7 +88,7 @@ export default async function EventOgImage({
             color: "#191c1a",
           }}
         >
-          WE SHAPE THE FUTURE
+          We Shape the Future
         </span>
       </div>
     </div>,

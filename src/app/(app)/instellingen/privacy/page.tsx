@@ -13,7 +13,7 @@ export default async function PrivacyPage() {
   return (
     <div className="max-w-lg space-y-8">
       <div>
-        <p className="text-label-md text-secondary mb-1">INSTELLINGEN</p>
+        <p className="text-label-md text-secondary mb-1">Instellingen</p>
         <h1 className="text-headline-lg text-on-surface">
           Privacy & beveiliging
         </h1>

@@ -123,7 +123,7 @@ export function MailManager() {
           {/* Segment */}
           <div>
             <label className="text-label-md text-secondary mb-2 block">
-              SEGMENT
+              Segment
             </label>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <select
@@ -134,7 +134,7 @@ export function MailManager() {
                       undefined) as Segment["subscriptionStatus"],
                   })
                 }
-                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle abonnementen</option>
                 <option value="active">Pro actief</option>
@@ -148,7 +148,7 @@ export function MailManager() {
                     stage: (e.target.value || undefined) as Segment["stage"],
                   })
                 }
-                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle fases</option>
                 <option value="lead">Lead</option>
@@ -161,7 +161,7 @@ export function MailManager() {
                 onChange={(e) =>
                   setSeg({ sector: e.target.value || undefined })
                 }
-                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle sectoren</option>
                 {SECTOREN.map((s) => (
@@ -173,7 +173,7 @@ export function MailManager() {
               <select
                 value={segment.regio ?? ""}
                 onChange={(e) => setSeg({ regio: e.target.value || undefined })}
-                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle regio&apos;s</option>
                 {REGIO_S.map((r) => (
@@ -189,7 +189,7 @@ export function MailManager() {
                     fase: (e.target.value || undefined) as Segment["fase"],
                   })
                 }
-                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Alle stadia</option>
                 {FASEN.map((f) => (
@@ -248,16 +248,16 @@ export function MailManager() {
               <thead>
                 <tr className="border-hairline border-b text-left">
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    ONDERWERP
+                    Onderwerp
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    BEREIK
+                    Bereik
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    STATUS
+                    Status
                   </th>
                   <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
-                    AANGEMAAKT
+                    Aangemaakt
                   </th>
                   <th className="p-4"></th>
                 </tr>

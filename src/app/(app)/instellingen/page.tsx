@@ -48,7 +48,7 @@ export default async function InstellingenPage() {
   return (
     <div className="max-w-lg space-y-6">
       <div>
-        <p className="text-label-md text-secondary mb-1">ACCOUNT</p>
+        <p className="text-label-md text-secondary mb-1">Account</p>
         <h1 className="text-headline-lg text-on-surface">Instellingen</h1>
       </div>
 
@@ -66,7 +66,7 @@ export default async function InstellingenPage() {
         </CardBody>
       </Card>
 
-      <div className="border-hairline divide-hairline divide-y border bg-white">
+      <div className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
         {settingsSections.map(
           ({ icon: Icon, label, description, href, badge }) => (
             <Link

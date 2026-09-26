@@ -103,9 +103,9 @@ export function ContactDetail({ id }: { id: string }) {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "MATCHES", value: stats.matches },
-              { label: "POSTS", value: stats.posts },
-              { label: "EVENTS", value: stats.events },
+              { label: "Matches", value: stats.matches },
+              { label: "Posts", value: stats.posts },
+              { label: "Events", value: stats.events },
             ].map((s) => (
               <Card key={s.label} hover={false}>
                 <CardBody className="p-4">
@@ -189,7 +189,7 @@ export function ContactDetail({ id }: { id: string }) {
           <Card hover={false}>
             <CardBody className="p-5">
               <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
-                CRM-FASE
+                Crm-fase
               </p>
               <div className="space-y-2">
                 {STAGES.map((s) => (
@@ -214,7 +214,7 @@ export function ContactDetail({ id }: { id: string }) {
           <Card hover={false}>
             <CardBody className="p-5">
               <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
-                TAGS
+                Tags
               </p>
               <div className="mb-3 flex flex-wrap gap-2">
                 {user.crmTags.length === 0 && (
@@ -225,7 +225,7 @@ export function ContactDetail({ id }: { id: string }) {
                     key={t}
                     type="button"
                     onClick={() => removeTag.mutate({ contactId: id, tag: t })}
-                    className="bg-surface-container border-hairline hover:text-error border px-2 py-1 text-xs hover:border-red-400"
+                    className="bg-surface-container hover:text-error border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-2 py-1 text-xs transition-colors hover:border-red-400"
                     title="Klik om te verwijderen"
                   >
                     {t} ✕
@@ -237,7 +237,7 @@ export function ContactDetail({ id }: { id: string }) {
                   value={tag}
                   onChange={(e) => setTag(e.target.value)}
                   placeholder="Nieuwe tag"
-                  className="border-on-surface flex-1 border-b bg-transparent pb-1 text-sm outline-none"
+                  className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 flex-1 rounded-xl border border-transparent px-4 py-3 pb-1 text-sm outline-none focus:ring-[3px]"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && tag.trim())
                       addTag.mutate({ contactId: id, tag });

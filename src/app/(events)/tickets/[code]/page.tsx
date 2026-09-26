@@ -79,7 +79,7 @@ export default async function TicketPage({
           href={e.meetingUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-primary-container text-on-primary text-label-md block px-6 py-3 text-center"
+          className="bg-primary-container text-on-primary text-label-md shadow-cta block inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-center transition-colors"
         >
           Online deelnemen
         </a>
@@ -88,13 +88,13 @@ export default async function TicketPage({
       <div className="flex flex-wrap justify-center gap-2">
         <Link
           href={`/events/${e.slug}`}
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 transition-colors"
         >
           Eventpagina
         </Link>
         <a
           href={`/api/events/${e.slug}/ics`}
-          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+          className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 transition-colors"
         >
           In agenda
         </a>

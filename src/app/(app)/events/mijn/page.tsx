@@ -32,23 +32,23 @@ export default async function MyEventsPage() {
         <div>
           <p className="text-label-md text-secondary mb-1">
             <Link href="/events" className="hover:text-on-surface">
-              EVENTS
+              Events
             </Link>
           </p>
           <h1 className="text-headline-lg text-on-surface">Mijn events</h1>
         </div>
         <Link
           href="/events/nieuw"
-          className="bg-primary-container text-on-primary text-label-md shrink-0 px-4 py-2"
+          className="bg-primary-container text-on-primary text-label-md shadow-cta inline-flex shrink-0 items-center justify-center gap-2 rounded-full px-4 py-2 transition-colors"
         >
           + Nieuw
         </Link>
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-label-md text-on-surface">IK GA</h2>
+        <h2 className="text-label-md text-on-surface">Ik ga</h2>
         {registrations.length === 0 ? (
-          <p className="border-hairline text-body-md text-secondary border bg-white p-5">
+          <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-5">
             Je bent nog nergens voor aangemeld.{" "}
             <Link href="/events" className="underline underline-offset-4">
               Ontdek events
@@ -63,8 +63,8 @@ export default async function MyEventsPage() {
         )}
         {tickets.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-label-md text-secondary">MIJN TICKETS</h3>
-            <ul className="border-hairline divide-hairline divide-y border bg-white">
+            <h3 className="text-label-md text-secondary">Mijn tickets</h3>
+            <ul className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
               {tickets.map((t) => (
                 <li key={t.code}>
                   <Link
@@ -95,7 +95,7 @@ export default async function MyEventsPage() {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-label-md text-on-surface">IK ORGANISEER</h2>
+          <h2 className="text-label-md text-on-surface">Ik organiseer</h2>
           {features.eventTickets && (
             <Link
               href="/events/uitbetalingen"
@@ -106,7 +106,7 @@ export default async function MyEventsPage() {
           )}
         </div>
         {organisedUpcoming.length === 0 ? (
-          <p className="border-hairline text-body-md text-secondary border bg-white p-5">
+          <p className="text-body-md text-secondary bg-surface-container-lowest shadow-card rounded-2xl p-5">
             Geen komende events.
           </p>
         ) : (
@@ -121,7 +121,7 @@ export default async function MyEventsPage() {
           </div>
         )}
         {organisedPast.length > 0 && (
-          <details className="border-hairline border bg-white">
+          <details className="bg-surface-container-lowest shadow-card rounded-2xl">
             <summary className="text-label-md text-secondary cursor-pointer px-5 py-3">
               Afgelopen en geannuleerd ({organisedPast.length})
             </summary>

@@ -27,7 +27,7 @@ export default async function AbonnementPage({ searchParams }: Props) {
   return (
     <div className="max-w-lg space-y-8">
       <div>
-        <p className="text-label-md text-secondary mb-1">INSTELLINGEN</p>
+        <p className="text-label-md text-secondary mb-1">Instellingen</p>
         <h1 className="text-headline-lg text-on-surface">Abonnement</h1>
       </div>
 
@@ -49,7 +49,7 @@ export default async function AbonnementPage({ searchParams }: Props) {
         <Card hover={false}>
           <CardBody className="py-10 text-center">
             <Badge variant="primary" className="mb-4">
-              PRO ACTIEF
+              PRO actief
             </Badge>
             <p className="text-headline-md text-on-surface mb-2">
               Je bent Pro-lid

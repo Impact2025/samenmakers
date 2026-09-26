@@ -15,12 +15,12 @@ export default function OverPage() {
           href="/"
           className="text-on-surface text-xl font-extrabold tracking-tighter"
         >
-          WE SHAPE THE FUTURE
+          We Shape the Future
         </Link>
       </header>
       <main className="mx-auto max-w-2xl space-y-12 px-6 py-16">
         <div>
-          <p className="text-label-md text-secondary mb-3">OVER ONS</p>
+          <p className="text-label-md text-secondary mb-3">Over ons</p>
           <h1 className="text-display-lg text-on-surface mb-6">
             We Shape the Future
           </h1>
@@ -55,13 +55,13 @@ export default function OverPage() {
         <div className="hairline-t flex gap-4 pt-10">
           <Link
             href="/aanmelden"
-            className="bg-primary text-on-primary text-label-md px-6 py-3 font-bold"
+            className="bg-primary text-on-primary text-label-md shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition-colors"
           >
             Word lid
           </Link>
           <Link
             href="/"
-            className="border-hairline text-on-surface text-label-md border px-6 py-3 font-bold"
+            className="text-on-surface text-label-md border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-6 py-3 font-bold transition-colors"
           >
             Terug naar home
           </Link>

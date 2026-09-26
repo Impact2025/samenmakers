@@ -172,7 +172,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       {/* Basic info */}
       <section className="space-y-4">
         <h2 className="text-label-md text-secondary hairline-b pb-3">
-          BASISGEGEVENS
+          Basisgegevens
         </h2>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
@@ -186,7 +186,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-md text-secondary mb-2 block">BIO</label>
+          <label className="text-label-md text-secondary mb-2 block">Bio</label>
           <Textarea
             value={form.bio}
             onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
@@ -196,7 +196,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
         </div>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            MISSIE
+            Missie
           </label>
           <Textarea
             value={form.missie}
@@ -207,7 +207,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
         </div>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            IK ZOEK
+            Ik zoek
           </label>
           <Textarea
             value={form.ikZoek}
@@ -221,19 +221,19 @@ export function ProfileEditForm({ user }: { user: Me }) {
       {/* Context */}
       <section className="space-y-4">
         <h2 className="text-label-md text-secondary hairline-b pb-3">
-          CONTEXT
+          Context
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="text-label-md text-secondary mb-2 block">
-              SECTOR
+              Sector
             </label>
             <select
               value={form.sector}
               onChange={(e) =>
                 setForm((f) => ({ ...f, sector: e.target.value }))
               }
-              className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2.5 text-sm focus:outline-none"
+              className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
             >
               <option value="">Kies sector</option>
               {SECTOREN.map((s) => (
@@ -245,14 +245,14 @@ export function ProfileEditForm({ user }: { user: Me }) {
           </div>
           <div>
             <label className="text-label-md text-secondary mb-2 block">
-              REGIO
+              Regio
             </label>
             <select
               value={form.regio}
               onChange={(e) =>
                 setForm((f) => ({ ...f, regio: e.target.value }))
               }
-              className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2.5 text-sm focus:outline-none"
+              className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
             >
               <option value="">Kies regio</option>
               {REGIO_S.map((r) => (
@@ -265,7 +265,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
         </div>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            FASE
+            Fase
           </label>
           <div className="flex gap-3">
             {FASEN.map(({ value, label }) => (
@@ -290,7 +290,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       <section className="space-y-4">
         <div>
           <h2 className="text-label-md text-secondary hairline-b pb-3">
-            WAT ZOEK JE?
+            Wat zoek je?
           </h2>
           <p className="text-body-md text-secondary mt-2">
             Selecteer wat je zoekt in een samenwerking. Dit helpt ons je betere
@@ -322,7 +322,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       {/* Expertise tags */}
       <section className="space-y-4">
         <h2 className="text-label-md text-secondary hairline-b pb-3">
-          EXPERTISE
+          Expertise
         </h2>
         <div className="flex flex-wrap gap-2">
           {EXPERTISE_OPTIONS.map((item) => {
@@ -349,7 +349,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       {/* Mentorship */}
       <section className="space-y-4">
         <h2 className="text-label-md text-secondary hairline-b pb-3">
-          MENTORSCHAP
+          Mentorschap
         </h2>
         <div className="flex flex-wrap gap-3">
           {MENTORSHIP_ROLES.map(({ value, label }) => (
@@ -371,10 +371,10 @@ export function ProfileEditForm({ user }: { user: Me }) {
 
       {/* Links */}
       <section className="space-y-4">
-        <h2 className="text-label-md text-secondary hairline-b pb-3">LINKS</h2>
+        <h2 className="text-label-md text-secondary hairline-b pb-3">Links</h2>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            WEBSITE
+            Website
           </label>
           <Input
             type="url"
@@ -387,7 +387,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
         </div>
         <div>
           <label className="text-label-md text-secondary mb-2 block">
-            LINKEDIN
+            Linkedin
           </label>
           <Input
             type="url"

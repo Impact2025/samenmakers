@@ -79,7 +79,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
   }
 
   return (
-    <div className="border-hairline border bg-white">
+    <div className="bg-surface-container-lowest shadow-card rounded-2xl">
       {/* Progress */}
       <div className="px-8 pt-8 pb-0">
         <div className="text-label-md text-secondary mb-3 flex items-center justify-between">
@@ -114,7 +114,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                BIO
+                Bio
               </label>
               <Textarea
                 value={form.bio}
@@ -135,14 +135,14 @@ export function OnboardingFlow({ user }: { user: Me }) {
             </h2>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                SECTOR
+                Sector
               </label>
               <select
                 value={form.sector}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, sector: e.target.value }))
                 }
-                className="border-hairline focus:border-on-surface w-full border bg-white px-3 py-2.5 text-sm focus:outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Kies jouw sector</option>
                 {SECTOREN.map((s) => (
@@ -154,14 +154,14 @@ export function OnboardingFlow({ user }: { user: Me }) {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                REGIO
+                Regio
               </label>
               <select
                 value={form.regio}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, regio: e.target.value }))
                 }
-                className="border-hairline focus:border-on-surface w-full border bg-white px-3 py-2.5 text-sm focus:outline-none"
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Kies jouw regio</option>
                 {REGIO_S.map((r) => (
@@ -173,7 +173,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                FASE
+                Fase
               </label>
               <div className="flex gap-2">
                 {FASEN.map(({ value, label }) => (
@@ -202,7 +202,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
             </h2>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                MISSIE
+                Missie
               </label>
               <Textarea
                 value={form.missie}
@@ -249,7 +249,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
             </div>
             <div>
               <label className="text-label-md text-secondary mb-2 block">
-                TOELICHTING (OPTIONEEL)
+                Toelichting (optioneel)
               </label>
               <Textarea
                 value={form.ikZoek}

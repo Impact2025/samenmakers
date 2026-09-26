@@ -9,32 +9,32 @@ export default async function AdminDashboardPage() {
 
   const statCards = [
     {
-      label: "TOTAAL GEBRUIKERS",
+      label: "Totaal gebruikers",
       value: stats.totalUsers,
       sub: `+${stats.newUsersThisMonth} deze maand`,
     },
     {
-      label: "MATCH RATE",
+      label: "Match rate",
       value: `${stats.matchRate}%`,
       sub: "wederzijds geïnteresseerd",
     },
-    { label: "BERICHTEN", value: stats.totalMessages, sub: "totaal verzonden" },
+    { label: "Berichten", value: stats.totalMessages, sub: "totaal verzonden" },
     {
-      label: "ACTIEF DEZE WEEK",
+      label: "Actief deze week",
       value: stats.activeUsersThisWeek,
       sub: "unieke gebruikers",
     },
-    { label: "POSTS", value: stats.totalPosts, sub: "gepubliceerde artikelen" },
-    { label: "EVENTS", value: stats.totalEvents, sub: "gepubliceerde events" },
+    { label: "Posts", value: stats.totalPosts, sub: "gepubliceerde artikelen" },
+    { label: "Events", value: stats.totalEvents, sub: "gepubliceerde events" },
     {
-      label: "PRO GEBRUIKERS",
+      label: "PRO gebruikers",
       value: stats.proUsers,
       sub: "actieve abonnementen",
     },
     { label: "MRR", value: `€${stats.mrr}`, sub: "maandelijkse omzet" },
-    { label: "CLUBS", value: stats.totalCohorts, sub: "cohorten" },
+    { label: "Clubs", value: stats.totalCohorts, sub: "cohorten" },
     {
-      label: "CLUBLEDEN",
+      label: "Clubleden",
       value: stats.totalCohortMembers,
       sub: `gem. ${stats.totalCohorts > 0 ? Math.round((stats.totalCohortMembers / stats.totalCohorts) * 10) / 10 : 0} per club`,
     },
