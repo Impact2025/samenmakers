@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ChevronRight, User, CreditCard, Bell, Shield } from "lucide-react";
 import { auth } from "@/server/auth/config";
 import { api } from "@/trpc/server";
-import { Card, CardBody } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ChevronRight, User, CreditCard, Bell, Shield } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/shared/page-header";
 import { SignOutButton } from "./sign-out-button";
 
 export const metadata: Metadata = { title: "Instellingen" };
@@ -15,6 +15,7 @@ export default async function InstellingenPage() {
   if (!session?.user) redirect("/inloggen");
 
   const me = await api.users.me();
+  const isPro = me?.subscriptionStatus === "active";
 
   const settingsSections = [
     {
@@ -26,14 +27,13 @@ export default async function InstellingenPage() {
     {
       icon: CreditCard,
       label: "Abonnement",
-      description:
-        me?.subscriptionStatus === "active" ? "Pro — actief" : "Basis — gratis",
+      description: isPro ? "Pro — actief" : "Basis — gratis",
       href: "/instellingen/abonnement",
-      badge: me?.subscriptionStatus === "active" ? "PRO" : undefined,
+      badge: isPro ? "Pro" : undefined,
     },
     {
       icon: Bell,
-      label: "Notificaties",
+      label: "Meldingen & updates",
       description: "E-mail en push-instellingen",
       href: "/instellingen/notificaties",
     },
@@ -46,45 +46,53 @@ export default async function InstellingenPage() {
   ];
 
   return (
-    <div className="max-w-lg space-y-6">
-      <div>
-        <p className="text-label-md text-secondary mb-1">Account</p>
-        <h1 className="text-headline-lg text-on-surface">Instellingen</h1>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Instellingen"
+        description="Beheer je account en voorkeuren"
+        className="mb-0"
+      />
+
+      <div className="bg-surface-container-lowest shadow-card flex items-center gap-3 rounded-2xl p-4">
+        <Avatar
+          src={me?.avatarUrl}
+          naam={me?.naam ?? me?.name ?? "?"}
+          size="sm"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-title-md text-on-surface truncate">
+            {me?.naam ?? me?.name}
+          </p>
+          <p className="text-body-sm text-secondary truncate">{me?.email}</p>
+        </div>
+        {isPro && (
+          <span className="bg-primary-fixed text-label-sm text-on-primary-fixed-variant rounded-full px-3 py-1 uppercase">
+            Pro
+          </span>
+        )}
       </div>
 
-      <Card hover={false}>
-        <CardBody className="flex items-center gap-4">
-          <div className="flex-1">
-            <p className="text-on-surface font-semibold">
-              {me?.naam ?? me?.name}
-            </p>
-            <p className="text-body-md text-secondary">{me?.email}</p>
-          </div>
-          {me?.subscriptionStatus === "active" && (
-            <Badge variant="primary">PRO</Badge>
-          )}
-        </CardBody>
-      </Card>
-
-      <div className="divide-hairline bg-surface-container-lowest shadow-card divide-y rounded-2xl">
+      <div className="bg-surface-container-lowest shadow-card flex flex-col gap-1 rounded-2xl p-1.5">
         {settingsSections.map(
           ({ icon: Icon, label, description, href, badge }) => (
             <Link
               key={href}
               href={href}
-              className="hover:bg-surface-container-low flex items-center gap-4 px-5 py-4 transition-colors"
+              className="hover:bg-surface-container-low flex items-center gap-3 rounded-xl px-3 py-3 transition-colors"
             >
-              <Icon size={18} className="text-secondary shrink-0" />
+              <span className="bg-surface-container text-primary-container flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+                <Icon size={20} />
+              </span>
               <div className="min-w-0 flex-1">
-                <p className="text-on-surface text-sm font-semibold">{label}</p>
-                <p className="text-secondary mt-0.5 text-xs">{description}</p>
+                <p className="text-label-lg text-on-surface">{label}</p>
+                <p className="text-body-sm text-secondary">{description}</p>
               </div>
               {badge && (
-                <Badge variant="primary" size="sm">
+                <span className="bg-primary-fixed text-label-sm text-on-primary-fixed-variant rounded-full px-2 py-0.5 uppercase">
                   {badge}
-                </Badge>
+                </span>
               )}
-              <ChevronRight size={16} className="text-secondary shrink-0" />
+              <ChevronRight size={18} className="text-secondary shrink-0" />
             </Link>
           ),
         )}

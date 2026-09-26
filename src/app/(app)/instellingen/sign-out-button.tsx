@@ -7,10 +7,10 @@ export function SignOutButton() {
   return (
     <button
       onClick={() => void signOut({ callbackUrl: "/" })}
-      className="text-secondary hover:text-error bg-surface-container-lowest shadow-card flex w-full items-center gap-3 rounded-2xl px-5 py-4 transition-colors hover:border-red-200"
+      className="bg-surface-container-lowest text-label-lg text-error shadow-card hover:bg-error-container hover:text-on-error-container flex h-12 w-full items-center justify-center gap-2 rounded-full transition-colors"
     >
       <LogOut size={18} />
-      <span className="text-sm font-semibold">Uitloggen</span>
+      Uitloggen
     </button>
   );
 }

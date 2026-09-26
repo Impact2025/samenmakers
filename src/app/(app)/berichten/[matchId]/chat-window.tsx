@@ -99,10 +99,10 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
   return (
     <>
       {/* Header */}
-      <div className="hairline-b flex shrink-0 items-center gap-4 py-4">
+      <div className="bg-surface-container-lowest shadow-card flex shrink-0 items-center gap-3 rounded-2xl p-3">
         <Link
           href="/berichten"
-          className="text-secondary hover:text-on-surface -ml-2 p-2 lg:hidden"
+          className="text-secondary hover:bg-surface-container-low hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full lg:hidden"
         >
           <ArrowLeft size={20} />
         </Link>
@@ -116,14 +116,14 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
             size="sm"
             grayscale={false}
           />
-          <span className="text-on-surface group-hover:text-primary truncate font-semibold transition-colors">
+          <span className="text-title-md text-on-surface group-hover:text-primary-container truncate transition-colors">
             {other.naam}
           </span>
         </Link>
         {hasContext && (
           <button
             onClick={() => setContextOpen((v) => !v)}
-            className="text-secondary hover:text-on-surface -mr-2 shrink-0 p-2 transition-colors"
+            className="text-secondary hover:bg-surface-container-low hover:text-on-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors"
             aria-label={contextOpen ? "Context verbergen" : "Context tonen"}
           >
             {contextOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -133,9 +133,9 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
 
       {/* Context panel */}
       {hasContext && contextOpen && (
-        <div className="bg-surface-container-low hairline-b shrink-0 space-y-2 px-4 py-3 text-xs">
-          <p className="text-label-md text-secondary mb-1">
-            {other.naam.toUpperCase()}
+        <div className="bg-surface-container-low text-body-sm mt-2 shrink-0 space-y-2 rounded-2xl px-4 py-3">
+          <p className="text-label-sm text-secondary mb-1 uppercase">
+            {other.naam}
           </p>
           {other.missie && (
             <p className="text-on-surface-variant">
@@ -166,7 +166,7 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
       )}
 
       {/* Messages */}
-      <div className="flex-1 space-y-4 overflow-y-auto py-6">
+      <div className="flex-1 space-y-3 overflow-y-auto py-4">
         {messages.length === 0 && (
           <p className="text-body-md text-secondary text-center">
             Stuur een eerste bericht om het gesprek te starten.
@@ -191,15 +191,15 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
                 className={`group flex max-w-[80vw] flex-col lg:max-w-md ${isMe ? "items-end" : "items-start"}`}
               >
                 <div
-                  className={`px-4 py-3 text-sm ${
+                  className={`text-body-md px-4 py-2.5 whitespace-pre-line ${
                     isMe
-                      ? "bg-primary text-on-primary"
-                      : "bg-surface-container-low text-on-surface rounded-2xl"
+                      ? "bg-primary-container text-on-primary rounded-2xl rounded-br-md"
+                      : "bg-surface-container-lowest text-on-surface shadow-card rounded-2xl rounded-bl-md"
                   }`}
                 >
                   {msg.content}
                 </div>
-                <span className="text-secondary mt-1 text-[10px] opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="text-label-sm text-secondary mt-1 opacity-0 transition-opacity group-hover:opacity-100">
                   {formatRelative(new Date(msg.createdAt))}
                 </span>
               </div>
@@ -210,23 +210,22 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
       </div>
 
       {/* Input */}
-      <form
-        onSubmit={handleSend}
-        className="hairline-t pb-safe flex shrink-0 gap-3 pt-4"
-      >
+      <form onSubmit={handleSend} className="flex shrink-0 gap-2 pt-3">
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Typ een bericht…"
-          className="text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 flex-1 rounded-xl border border-transparent px-4 py-3 text-base outline-none focus:ring-[3px]"
+          aria-label="Bericht"
+          className="bg-surface-container-lowest text-on-surface shadow-card placeholder:text-secondary focus:border-primary-container focus:ring-primary-container/15 h-[50px] flex-1 rounded-full border border-transparent px-5 text-base outline-none focus:ring-[3px]"
           disabled={send.isPending}
         />
         <button
           type="submit"
           disabled={!content.trim() || send.isPending}
-          className="bg-primary text-on-primary hover:bg-primary/90 px-5 transition-colors disabled:opacity-40"
+          aria-label="Versturen"
+          className="bg-primary-container text-on-primary shadow-cta flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full transition-all hover:brightness-105 active:scale-95 disabled:opacity-40"
         >
-          {send.isPending ? <Spinner /> : <Send size={16} />}
+          {send.isPending ? <Spinner size="sm" /> : <Send size={18} />}
         </button>
       </form>
     </>

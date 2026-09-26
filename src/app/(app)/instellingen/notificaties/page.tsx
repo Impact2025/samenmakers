@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { api } from "@/trpc/server";
+import { PageHeader } from "@/components/shared/page-header";
 import { NotificationSettings } from "./notification-settings";
 
-export const metadata: Metadata = { title: "Notificaties" };
+export const metadata: Metadata = { title: "Meldingen" };
 
 export default async function NotificatiesPage() {
   const me = await api.users.me();
 
   return (
-    <div className="max-w-lg space-y-8">
-      <div>
-        <p className="text-label-md text-secondary mb-1">Instellingen</p>
-        <h1 className="text-headline-lg text-on-surface">Notificaties</h1>
-      </div>
+    <div className="flex flex-col gap-4">
+      <Link
+        href="/instellingen"
+        className="text-label-md text-secondary hover:text-primary-container inline-flex w-fit items-center gap-1"
+      >
+        <ChevronLeft size={16} /> Instellingen
+      </Link>
+      <PageHeader title="Meldingen & updates" className="mb-0" />
       <NotificationSettings weeklyDigest={me?.weeklyDigestEnabled ?? true} />
     </div>
   );

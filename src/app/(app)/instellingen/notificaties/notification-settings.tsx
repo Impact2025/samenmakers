@@ -1,11 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import { BellRing, Mail, Smartphone } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Card, CardBody, CardHeader } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
+
+const card =
+  "flex flex-col gap-4 rounded-2xl bg-surface-container-lowest p-5 shadow-card";
+
+function CardTitle({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="text-on-surface flex items-center gap-2">
+      <span className="text-secondary">{icon}</span>
+      <h2 className="text-title-md">{children}</h2>
+    </div>
+  );
+}
 
 export function NotificationSettings({
   weeklyDigest,
@@ -45,105 +64,91 @@ export function NotificationSettings({
   ];
 
   return (
-    <div className="space-y-6">
-      <Card hover={false}>
-        <CardHeader>
-          <h2 className="text-label-md text-on-surface">In-app notificaties</h2>
-        </CardHeader>
-        <CardBody className="divide-hairline divide-y p-0">
+    <div className="flex flex-col gap-4">
+      <section className={card}>
+        <CardTitle icon={<BellRing size={20} />}>In-app meldingen</CardTitle>
+        <div className="flex flex-col gap-4">
           {notifSettings.map(({ key, label, description }) => (
-            <div
-              key={key}
-              className="flex items-start justify-between gap-4 px-6 py-4"
-            >
-              <div>
-                <p className="text-on-surface text-sm font-semibold">{label}</p>
-                <p className="text-secondary mt-0.5 text-xs">{description}</p>
+            <div key={key} className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-label-lg text-on-surface">{label}</p>
+                <p className="text-body-sm text-secondary">{description}</p>
               </div>
-              <div className="bg-primary mt-0.5 h-5 w-10 shrink-0 rounded-full" />
+              <span className="bg-tertiary/10 text-label-sm text-tertiary shrink-0 rounded-full px-2.5 py-1">
+                Altijd aan
+              </span>
             </div>
           ))}
-        </CardBody>
-      </Card>
+        </div>
+      </section>
 
-      {/* Browser push */}
-      <Card hover={false}>
-        <CardHeader>
-          <h2 className="text-label-md text-on-surface">
-            Browser notificaties
-          </h2>
-        </CardHeader>
-        <CardBody>
-          {permission === "denied" ? (
-            <p className="text-body-md text-secondary">
-              Browser notificaties zijn geblokkeerd. Pas dit aan in je
-              browser-instellingen.
-            </p>
-          ) : subscribed ? (
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-on-surface text-sm font-semibold">
-                  Push-notificaties actief
-                </p>
-                <p className="text-secondary mt-0.5 text-xs">
-                  Je ontvangt notificaties via je browser.
-                </p>
-              </div>
-              <Button variant="secondary" onClick={() => void unsubscribe()}>
-                Uitschakelen
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-on-surface text-sm font-semibold">
-                  Push-notificaties
-                </p>
-                <p className="text-secondary mt-0.5 text-xs">
-                  Ontvang directe meldingen in je browser, ook als We Shape the
-                  Future niet open is.
-                </p>
-              </div>
-              <Button variant="primary" onClick={() => void subscribe()}>
-                Inschakelen
-              </Button>
-            </div>
-          )}
-        </CardBody>
-      </Card>
-
-      <Card hover={false}>
-        <CardHeader>
-          <h2 className="text-label-md text-on-surface">E-mail</h2>
-        </CardHeader>
-        <CardBody>
-          <div className="flex items-start justify-between gap-4">
+      <section className={card}>
+        <CardTitle icon={<Smartphone size={20} />}>Browsermeldingen</CardTitle>
+        {permission === "denied" ? (
+          <p className="text-body-md text-secondary">
+            Browsermeldingen zijn geblokkeerd. Pas dit aan in je
+            browser-instellingen.
+          </p>
+        ) : subscribed ? (
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-on-surface text-sm font-semibold">
-                Wekelijkse samenvatting
+              <p className="text-label-lg text-on-surface">
+                Pushmeldingen actief
               </p>
-              <p className="text-secondary mt-0.5 text-xs">
-                Ontvang elke maandag een overzicht van nieuwe makers, events en
-                kennisartikelen
+              <p className="text-body-sm text-secondary">
+                Je ontvangt meldingen via je browser.
               </p>
             </div>
-            <button
-              onClick={() => setDigest((v) => !v)}
-              className={`mt-0.5 h-5 w-10 shrink-0 rounded-full transition-colors ${digest ? "bg-primary" : "bg-hairline"}`}
-              aria-label="Toggle wekelijkse samenvatting"
-            />
-          </div>
-          <div className="mt-4">
             <Button
-              variant="primary"
-              onClick={() => updateUser.mutate({ weeklyDigestEnabled: digest })}
-              disabled={updateUser.isPending || digest === weeklyDigest}
+              variant="secondary"
+              size="sm"
+              onClick={() => void unsubscribe()}
             >
-              {updateUser.isPending ? <Spinner /> : "Opslaan"}
+              Uitschakelen
             </Button>
           </div>
-        </CardBody>
-      </Card>
+        ) : (
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-label-lg text-on-surface">Pushmeldingen</p>
+              <p className="text-body-sm text-secondary">
+                Ontvang directe meldingen in je browser, ook als We Shape the
+                Future niet open is.
+              </p>
+            </div>
+            <Button size="sm" onClick={() => void subscribe()}>
+              Inschakelen
+            </Button>
+          </div>
+        )}
+      </section>
+
+      <section className={card}>
+        <CardTitle icon={<Mail size={20} />}>E-mail</CardTitle>
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-label-lg text-on-surface">
+              Wekelijkse samenvatting
+            </p>
+            <p className="text-body-sm text-secondary">
+              Elke maandag een overzicht van nieuwe makers, events en
+              kennisartikelen
+            </p>
+          </div>
+          <Switch
+            checked={digest}
+            onCheckedChange={setDigest}
+            label="Wekelijkse samenvatting"
+          />
+        </div>
+        <Button
+          className="self-end"
+          onClick={() => updateUser.mutate({ weeklyDigestEnabled: digest })}
+          disabled={updateUser.isPending || digest === weeklyDigest}
+        >
+          {updateUser.isPending ? <Spinner size="sm" /> : "Opslaan"}
+        </Button>
+      </section>
     </div>
   );
 }

@@ -13,9 +13,9 @@ export function MarkAllReadButton() {
     <button
       onClick={() => markAll.mutate()}
       disabled={markAll.isPending}
-      className="text-label-md text-primary hover:underline disabled:opacity-50"
+      className="bg-primary-fixed/50 text-label-md text-primary-container hover:bg-primary-fixed h-9 rounded-full px-4 transition-colors disabled:opacity-50"
     >
-      Alles als gelezen markeren
+      Alles gelezen
     </button>
   );
 }
