@@ -29,15 +29,19 @@ function greeting() {
 }
 
 async function DashboardData() {
-  const [me, matches, events, questions, learning] = await Promise.all([
-    api.users.me(),
-    api.matches.myMatches(),
-    api.events.list({ upcoming: true, limit: 3 }),
-    api.questions.list({ limit: 2 }).catch(() => ({ items: [] })),
-    features.leren
-      ? api.learning.home().catch(() => null)
-      : Promise.resolve(null),
-  ]);
+  const [me, matches, events, questions, learning, teaching] =
+    await Promise.all([
+      api.users.me(),
+      api.matches.myMatches(),
+      api.events.list({ upcoming: true, limit: 3 }),
+      api.questions.list({ limit: 2 }).catch(() => ({ items: [] })),
+      features.leren
+        ? api.learning.home().catch(() => null)
+        : Promise.resolve(null),
+      features.leren
+        ? api.teaching.overview().catch(() => [])
+        : Promise.resolve([]),
+    ]);
 
   return (
     <DashboardContent
@@ -47,6 +51,7 @@ async function DashboardData() {
       events={events.items}
       questions={questions.items}
       edition={learning?.learning[0] ?? null}
+      teaching={teaching}
     />
   );
 }

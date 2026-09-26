@@ -22,6 +22,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { buttonClasses } from "@/components/ui/button";
 import { formatRelative, formatDueIn } from "@/lib/date-utils";
 import { eventWhere, formatEventShort } from "@/lib/event-format";
+import { TeacherOverview, type TeachingEditions } from "./teacher-overview";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
@@ -39,6 +40,7 @@ interface Props {
   events: EventItems;
   questions: Questions;
   edition: Edition | null;
+  teaching: TeachingEditions;
 }
 
 const shortcuts = [
@@ -75,6 +77,7 @@ export function DashboardContent({
   events,
   questions,
   edition,
+  teaching,
 }: Props) {
   const firstName = (me?.naam ?? me?.name)?.split(" ")[0] ?? "Maker";
   const completeness = me?.profileCompleteness ?? 0;
@@ -91,7 +94,9 @@ export function DashboardContent({
             <span className="truncate">
               {edition
                 ? `${edition.cohort.name} • ${edition.program.name}`
-                : "Actief netwerk"}
+                : teaching[0]
+                  ? `${teaching[0].role === "manager" ? "Manager" : "Docent"} • ${teaching[0].program.name}`
+                  : "Actief netwerk"}
             </span>
           </span>
           <h1 className="text-headline-lg text-on-surface">
@@ -108,6 +113,9 @@ export function DashboardContent({
           </span>
         )}
       </section>
+
+      {/* Docent: overzicht van eigen edities */}
+      <TeacherOverview editions={teaching} />
 
       {/* Voortgang: leertraject of profiel */}
       {edition ? (
