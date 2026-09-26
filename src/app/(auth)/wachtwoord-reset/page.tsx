@@ -2,75 +2,111 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { KeyRound, MailCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClasses } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function WachtwoordResetPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setSent(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/auth/password-reset/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(data.error ?? "Er is iets misgegaan. Probeer het opnieuw.");
+        return;
+      }
+      setSent(true);
+    } catch {
+      setError("Geen verbinding. Probeer het opnieuw.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (sent) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white">
-        <div className="w-full max-w-sm text-center">
-          <p className="text-label-caps text-outline mb-6">SAMENMAKERS</p>
-          <div className="border border-hairline p-8 mb-6">
-            <h1 className="text-headline-sm text-on-surface mb-3">Controleer je e-mail</h1>
-            <p className="text-body-sm text-on-surface-variant">
-              Als er een account bestaat voor <strong>{email}</strong>, ontvang je een
-              resetlink.
-            </p>
-          </div>
-          <Link href="/inloggen" className="text-label-caps text-on-surface hover:text-outline">
-            Terug naar inloggen
-          </Link>
+      <div className="flex flex-col items-center gap-4 text-center">
+        <span className="bg-tertiary-fixed text-tertiary flex h-14 w-14 items-center justify-center rounded-2xl">
+          <MailCheck size={28} />
+        </span>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-headline-lg text-on-surface">
+            Controleer je e-mail
+          </h1>
+          <p className="text-body-md text-secondary">
+            Als er een account bestaat voor{" "}
+            <strong className="text-on-surface">{email}</strong>, ontvang je een
+            resetlink.
+          </p>
         </div>
+        <Link
+          href="/inloggen"
+          className={buttonClasses("secondary", "lg", "w-full")}
+        >
+          Terug naar inloggen
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white">
-      <div className="w-full max-w-sm">
-        <p className="text-label-caps text-outline mb-6 text-center">SAMENMAKERS</p>
-        <div className="border border-hairline p-8 mb-6">
-          <h1 className="text-headline-sm text-on-surface mb-2">Wachtwoord vergeten</h1>
-          <p className="text-body-sm text-on-surface-variant mb-6">
-            Vul je e-mailadres in. Als er een account bestaat, sturen we je een resetlink.
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-label-caps text-outline block mb-2">E-MAILADRES</label>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="naam@bedrijf.nl"
-                required
-              />
-            </div>
-            <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-              {loading ? <Spinner /> : "Resetlink versturen"}
-            </Button>
-          </form>
-        </div>
-        <p className="text-center text-body-sm text-outline">
-          Wachtwoord weet je weer?{" "}
-          <Link href="/inloggen" className="text-on-surface font-medium hover:underline">
-            Inloggen
-          </Link>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <span className="bg-primary-fixed text-primary-container flex h-12 w-12 items-center justify-center rounded-2xl">
+          <KeyRound size={24} />
+        </span>
+        <h1 className="text-headline-lg text-on-surface">
+          Wachtwoord vergeten
+        </h1>
+        <p className="text-body-md text-secondary">
+          Vul je e-mailadres in. Als er een account bestaat, sturen we je een
+          resetlink.
         </p>
       </div>
+      <form
+        onSubmit={(e) => void handleSubmit(e)}
+        className="flex flex-col gap-4"
+      >
+        <Input
+          label="E-mailadres"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="naam@bedrijf.nl"
+          autoComplete="email"
+          required
+        />
+        {error && (
+          <p className="text-body-sm text-error" role="alert">
+            {error}
+          </p>
+        )}
+        <Button type="submit" size="lg" className="w-full" disabled={loading}>
+          {loading ? <Spinner size="sm" /> : "Resetlink versturen"}
+        </Button>
+      </form>
+      <p className="text-body-md text-secondary text-center">
+        Wachtwoord weer te binnen geschoten?{" "}
+        <Link
+          href="/inloggen"
+          className="text-primary-container font-semibold hover:underline"
+        >
+          Inloggen
+        </Link>
+      </p>
     </div>
   );
 }

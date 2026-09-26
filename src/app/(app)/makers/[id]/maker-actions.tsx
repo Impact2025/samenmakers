@@ -23,13 +23,13 @@ export function MakerActions({ userId }: { userId: string }) {
   const block = trpc.reports.block.useMutation();
 
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex flex-wrap items-center justify-center gap-2">
       <Button
         variant="primary"
         onClick={() => swipe.mutate({ targetId: userId, decision: "like" })}
         disabled={swipe.isPending}
       >
-        <Heart size={14} className="mr-2" />
+        <Heart size={16} />
         Connect
       </Button>
 
@@ -38,11 +38,11 @@ export function MakerActions({ userId }: { userId: string }) {
         onClick={() => bookmark.mutate({ targetUserId: userId })}
         disabled={bookmark.isPending}
       >
-        <Bookmark size={14} className="mr-2" />
+        <Bookmark size={16} />
         {bookmark.data?.bookmarked === false ? "Verwijderd" : "Opslaan"}
       </Button>
 
-      <div className="relative ml-auto">
+      <div className="relative">
         <Button
           variant="ghost"
           onClick={() => setShowMore((v) => !v)}
@@ -52,9 +52,9 @@ export function MakerActions({ userId }: { userId: string }) {
         </Button>
 
         {showMore && (
-          <div className="absolute right-0 top-full mt-1 bg-white border border-hairline shadow-sm z-10 min-w-44">
+          <div className="bg-surface-container-lowest shadow-floating absolute top-full right-0 z-10 mt-1 min-w-48 overflow-hidden rounded-2xl p-1">
             <button
-              className="w-full text-left px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2"
+              className="text-on-surface hover:bg-surface-container-low text-label-lg flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left"
               onClick={() => {
                 report.mutate({ targetUserId: userId, type: "other" });
                 setShowMore(false);
@@ -64,7 +64,7 @@ export function MakerActions({ userId }: { userId: string }) {
               Rapporteer gebruiker
             </button>
             <button
-              className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-surface-container-low flex items-center gap-2"
+              className="text-error hover:bg-error-container text-label-lg flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left"
               onClick={() => {
                 block.mutate({ targetId: userId });
                 setShowMore(false);

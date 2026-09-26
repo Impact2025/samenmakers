@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { trpc } from "@/trpc/client";
 import { MoreHorizontal } from "lucide-react";
 
@@ -13,7 +12,6 @@ interface Props {
 
 export function UserActions({ userId, currentStatus, currentRole }: Props) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
   const utils = trpc.useUtils();
 
   const updateUser = trpc.admin.updateUser.useMutation({
@@ -27,54 +25,60 @@ export function UserActions({ userId, currentStatus, currentRole }: Props) {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="p-1.5 text-outline hover:text-on-surface transition-colors"
+        className="text-secondary hover:text-on-surface p-1.5 transition-colors"
         aria-label="Opties"
       >
         <MoreHorizontal size={16} />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 bg-white border border-hairline shadow-sm z-10 min-w-48">
+        <div className="bg-surface-container-lowest shadow-card absolute top-full right-0 z-10 mt-1 min-w-48 rounded-2xl shadow-sm">
           {currentStatus !== "suspended" && (
             <button
-              className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low"
-              onClick={() => updateUser.mutate({ id: userId, status: "suspended" })}
+              className="hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"
+              onClick={() =>
+                updateUser.mutate({ id: userId, status: "suspended" })
+              }
             >
               Schorsen
             </button>
           )}
           {currentStatus === "suspended" && (
             <button
-              className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low"
-              onClick={() => updateUser.mutate({ id: userId, status: "active" })}
+              className="hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"
+              onClick={() =>
+                updateUser.mutate({ id: userId, status: "active" })
+              }
             >
               Activeren
             </button>
           )}
           {currentStatus !== "banned" && (
             <button
-              className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-surface-container-low"
-              onClick={() => updateUser.mutate({ id: userId, status: "banned" })}
+              className="text-error hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"
+              onClick={() =>
+                updateUser.mutate({ id: userId, status: "banned" })
+              }
             >
               Bannen
             </button>
           )}
           {currentRole !== "admin" && (
             <button
-              className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low"
+              className="hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"
               onClick={() => updateUser.mutate({ id: userId, role: "admin" })}
             >
               Maak admin
             </button>
           )}
           <button
-            className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low"
+            className="hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"
             onClick={() => updateUser.mutate({ id: userId, isFeatured: true })}
           >
             Featured markeren
           </button>
           <button
-            className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-container-low"
+            className="hover:bg-surface-container-low w-full px-4 py-2.5 text-left text-sm"
             onClick={() => updateUser.mutate({ id: userId, isVerified: true })}
           >
             Verifiëren

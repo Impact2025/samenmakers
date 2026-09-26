@@ -11,9 +11,12 @@ interface Props {
 
 export function ExpertiseEndorsements({ targetUserId, expertise }: Props) {
   const utils = trpc.useUtils();
-  const { data: endorsements = [] } = trpc.endorsements.forUser.useQuery({ targetId: targetUserId });
+  const { data: endorsements = [] } = trpc.endorsements.forUser.useQuery({
+    targetId: targetUserId,
+  });
   const toggle = trpc.endorsements.toggle.useMutation({
-    onSuccess: () => void utils.endorsements.forUser.invalidate({ targetId: targetUserId }),
+    onSuccess: () =>
+      void utils.endorsements.forUser.invalidate({ targetId: targetUserId }),
   });
 
   const endorsementMap = new Map(endorsements.map((e) => [e.skill, e]));
@@ -31,19 +34,23 @@ export function ExpertiseEndorsements({ targetUserId, expertise }: Props) {
             onClick={() => toggle.mutate({ targetId: targetUserId, skill })}
             disabled={toggle.isPending}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border transition-all active:scale-95",
+              "text-label-md flex h-8 items-center gap-1.5 rounded-full px-3 transition-all active:scale-95",
               endorsed
-                ? "bg-primary text-on-primary border-primary"
-                : "border-hairline text-on-surface hover:border-primary hover:text-primary",
+                ? "bg-primary-container text-on-primary shadow-sm"
+                : "bg-surface-container text-on-surface hover:bg-primary-fixed hover:text-on-primary-fixed",
             )}
-            title={endorsed ? "Endorsement intrekken" : "Endorseer deze expertise"}
+            title={
+              endorsed ? "Endorsement intrekken" : "Endorseer deze expertise"
+            }
           >
             {skill}
             {count > 0 && (
-              <span className={cn(
-                "flex items-center gap-0.5",
-                endorsed ? "text-on-primary/80" : "text-outline",
-              )}>
+              <span
+                className={cn(
+                  "flex items-center gap-0.5",
+                  endorsed ? "text-on-primary/80" : "text-secondary",
+                )}
+              >
                 <ThumbsUp size={10} />
                 {count}
               </span>

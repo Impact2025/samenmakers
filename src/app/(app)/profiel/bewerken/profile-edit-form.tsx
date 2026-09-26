@@ -9,16 +9,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
-import { SECTOREN, REGIO_S, FASEN, MENTORSHIP_ROLES, ZOEKT_NAAR_OPTIONS } from "@/lib/constants";
+import {
+  SECTOREN,
+  REGIO_S,
+  FASEN,
+  MENTORSHIP_ROLES,
+  ZOEKT_NAAR_OPTIONS,
+} from "@/lib/constants";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
 type Me = NonNullable<inferRouterOutputs<AppRouter>["users"]["me"]>;
 
 const EXPERTISE_OPTIONS = [
-  "Businessmodelling", "Fundraising", "Marketing", "Technologie",
-  "Juridisch", "Finance", "HR", "Sales", "Design", "Data",
-  "Communicatie", "Netwerk", "Duurzaamheid", "Impact meten",
+  "Businessmodelling",
+  "Fundraising",
+  "Marketing",
+  "Technologie",
+  "Juridisch",
+  "Finance",
+  "HR",
+  "Sales",
+  "Design",
+  "Data",
+  "Communicatie",
+  "Netwerk",
+  "Duurzaamheid",
+  "Impact meten",
 ];
 
 export function ProfileEditForm({ user }: { user: Me }) {
@@ -28,7 +45,9 @@ export function ProfileEditForm({ user }: { user: Me }) {
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl ?? "");
   const [uploading, setUploading] = useState(false);
   const [expertise, setExpertise] = useState<string[]>(user.expertise ?? []);
-  const [zoektNaar, setZoektNaar] = useState<string[]>((user as { zoektNaar?: string[] }).zoektNaar ?? []);
+  const [zoektNaar, setZoektNaar] = useState<string[]>(
+    (user as { zoektNaar?: string[] }).zoektNaar ?? [],
+  );
 
   const [form, setForm] = useState({
     naam: user.naam ?? "",
@@ -59,7 +78,10 @@ export function ProfileEditForm({ user }: { user: Me }) {
     fd.append("file", file);
 
     try {
-      const res = await fetch("/api/upload/avatar", { method: "POST", body: fd });
+      const res = await fetch("/api/upload/avatar", {
+        method: "POST",
+        body: fd,
+      });
       const data = (await res.json()) as { url?: string };
       if (data.url) setAvatarUrl(data.url);
     } finally {
@@ -87,12 +109,16 @@ export function ProfileEditForm({ user }: { user: Me }) {
         bio: form.bio || undefined,
         missie: form.missie || undefined,
         ikZoek: form.ikZoek || undefined,
-        sector: (form.sector as typeof SECTOREN[number]) || undefined,
-        regio: (form.regio as typeof REGIO_S[number]) || undefined,
+        sector: (form.sector as (typeof SECTOREN)[number]) || undefined,
+        regio: (form.regio as (typeof REGIO_S)[number]) || undefined,
         fase: (form.fase as "starter" | "groei" | "scale" | "") || undefined,
         website: form.website || undefined,
         linkedin: form.linkedin || undefined,
-        mentorshipRole: form.mentorshipRole as "mentor" | "mentee" | "both" | "none",
+        mentorshipRole: form.mentorshipRole as
+          | "mentor"
+          | "mentee"
+          | "both"
+          | "none",
         expertise,
         zoektNaar,
       });
@@ -113,14 +139,14 @@ export function ProfileEditForm({ user }: { user: Me }) {
             grayscale={false}
           />
           {uploading && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-full">
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-white/70">
               <Spinner />
             </div>
           )}
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="absolute bottom-0 right-0 w-8 h-8 bg-on-surface text-on-primary flex items-center justify-center rounded-full hover:bg-primary-container transition-colors"
+            className="bg-on-surface text-on-primary hover:bg-primary-container absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
             aria-label="Foto wijzigen"
           >
             <Camera size={14} />
@@ -130,12 +156,14 @@ export function ProfileEditForm({ user }: { user: Me }) {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             className="hidden"
-            onChange={handleAvatarChange}
+            onChange={(e) => void handleAvatarChange(e)}
           />
         </div>
         <div>
-          <p className="font-semibold text-on-surface">{form.naam || "Jouw naam"}</p>
-          <p className="text-body-sm text-outline mt-0.5">
+          <p className="text-on-surface font-semibold">
+            {form.naam || "Jouw naam"}
+          </p>
+          <p className="text-body-md text-secondary mt-0.5">
             Klik op het camera-icoon om je foto te wijzigen
           </p>
         </div>
@@ -143,9 +171,13 @@ export function ProfileEditForm({ user }: { user: Me }) {
 
       {/* Basic info */}
       <section className="space-y-4">
-        <h2 className="text-label-caps text-outline hairline-b pb-3">BASISGEGEVENS</h2>
+        <h2 className="text-label-md text-secondary hairline-b pb-3">
+          Basisgegevens
+        </h2>
         <div>
-          <label className="text-label-caps text-outline block mb-2">NAAM *</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Naam *
+          </label>
           <Input
             value={form.naam}
             onChange={(e) => setForm((f) => ({ ...f, naam: e.target.value }))}
@@ -154,7 +186,9 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-caps text-outline block mb-2">BIO</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Bio
+          </label>
           <Textarea
             value={form.bio}
             onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
@@ -163,7 +197,9 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-caps text-outline block mb-2">MISSIE</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Missie
+          </label>
           <Textarea
             value={form.missie}
             onChange={(e) => setForm((f) => ({ ...f, missie: e.target.value }))}
@@ -172,7 +208,9 @@ export function ProfileEditForm({ user }: { user: Me }) {
           />
         </div>
         <div>
-          <label className="text-label-caps text-outline block mb-2">IK ZOEK</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Ik zoek
+          </label>
           <Textarea
             value={form.ikZoek}
             onChange={(e) => setForm((f) => ({ ...f, ikZoek: e.target.value }))}
@@ -184,47 +222,63 @@ export function ProfileEditForm({ user }: { user: Me }) {
 
       {/* Context */}
       <section className="space-y-4">
-        <h2 className="text-label-caps text-outline hairline-b pb-3">CONTEXT</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <h2 className="text-label-md text-secondary hairline-b pb-3">
+          Context
+        </h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="text-label-caps text-outline block mb-2">SECTOR</label>
+            <label className="text-label-lg text-on-surface mb-1.5 block">
+              Sector
+            </label>
             <select
               value={form.sector}
-              onChange={(e) => setForm((f) => ({ ...f, sector: e.target.value }))}
-              className="w-full border border-hairline bg-white px-3 py-2.5 text-sm text-on-surface focus:outline-none focus:border-on-surface"
+              onChange={(e) =>
+                setForm((f) => ({ ...f, sector: e.target.value }))
+              }
+              className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
             >
               <option value="">Kies sector</option>
               {SECTOREN.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="text-label-caps text-outline block mb-2">REGIO</label>
+            <label className="text-label-lg text-on-surface mb-1.5 block">
+              Regio
+            </label>
             <select
               value={form.regio}
-              onChange={(e) => setForm((f) => ({ ...f, regio: e.target.value }))}
-              className="w-full border border-hairline bg-white px-3 py-2.5 text-sm text-on-surface focus:outline-none focus:border-on-surface"
+              onChange={(e) =>
+                setForm((f) => ({ ...f, regio: e.target.value }))
+              }
+              className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
             >
               <option value="">Kies regio</option>
               {REGIO_S.map((r) => (
-                <option key={r} value={r}>{r}</option>
+                <option key={r} value={r}>
+                  {r}
+                </option>
               ))}
             </select>
           </div>
         </div>
         <div>
-          <label className="text-label-caps text-outline block mb-2">FASE</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Fase
+          </label>
           <div className="flex gap-3">
             {FASEN.map(({ value, label }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setForm((f) => ({ ...f, fase: value }))}
-                className={`flex-1 py-2.5 px-3 text-xs font-bold tracking-widest uppercase border transition-colors ${
+                className={`text-label-md flex-1 rounded-full border px-3 py-2.5 transition-colors ${
                   form.fase === value
-                    ? "bg-on-surface text-on-primary border-on-surface"
-                    : "border-hairline text-outline hover:border-on-surface"
+                    ? "bg-on-surface text-surface-container-lowest border-transparent"
+                    : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                 }`}
               >
                 {label}
@@ -237,8 +291,13 @@ export function ProfileEditForm({ user }: { user: Me }) {
       {/* Zoekt naar */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-label-caps text-outline hairline-b pb-3">WAT ZOEK JE?</h2>
-          <p className="text-body-sm text-outline mt-2">Selecteer wat je zoekt in een samenwerking. Dit helpt ons je betere matches te tonen.</p>
+          <h2 className="text-label-md text-secondary hairline-b pb-3">
+            Wat zoek je?
+          </h2>
+          <p className="text-body-md text-secondary mt-2">
+            Selecteer wat je zoekt in een samenwerking. Dit helpt ons je betere
+            matches te tonen.
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           {ZOEKT_NAAR_OPTIONS.map(({ value, label }) => {
@@ -248,13 +307,13 @@ export function ProfileEditForm({ user }: { user: Me }) {
                 key={value}
                 type="button"
                 onClick={() => toggleZoektNaar(value)}
-                className={`px-3 py-1.5 text-xs font-semibold tracking-wide border transition-colors ${
+                className={`text-label-md rounded-full border px-3 py-1.5 transition-colors ${
                   selected
                     ? "bg-primary text-on-primary border-primary"
-                    : "border-hairline text-outline hover:border-on-surface"
+                    : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                 }`}
               >
-                {selected && <X size={10} className="inline mr-1" />}
+                {selected && <X size={10} className="mr-1 inline" />}
                 {label}
               </button>
             );
@@ -264,7 +323,9 @@ export function ProfileEditForm({ user }: { user: Me }) {
 
       {/* Expertise tags */}
       <section className="space-y-4">
-        <h2 className="text-label-caps text-outline hairline-b pb-3">EXPERTISE</h2>
+        <h2 className="text-label-md text-secondary hairline-b pb-3">
+          Expertise
+        </h2>
         <div className="flex flex-wrap gap-2">
           {EXPERTISE_OPTIONS.map((item) => {
             const selected = expertise.includes(item);
@@ -273,13 +334,13 @@ export function ProfileEditForm({ user }: { user: Me }) {
                 key={item}
                 type="button"
                 onClick={() => toggleExpertise(item)}
-                className={`px-3 py-1.5 text-xs font-semibold tracking-wide border transition-colors ${
+                className={`text-label-md rounded-full border px-3 py-1.5 transition-colors ${
                   selected
                     ? "bg-primary text-on-primary border-primary"
-                    : "border-hairline text-outline hover:border-on-surface"
+                    : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                 }`}
               >
-                {selected && <X size={10} className="inline mr-1" />}
+                {selected && <X size={10} className="mr-1 inline" />}
                 {item}
               </button>
             );
@@ -289,17 +350,19 @@ export function ProfileEditForm({ user }: { user: Me }) {
 
       {/* Mentorship */}
       <section className="space-y-4">
-        <h2 className="text-label-caps text-outline hairline-b pb-3">MENTORSCHAP</h2>
-        <div className="flex gap-3 flex-wrap">
+        <h2 className="text-label-md text-secondary hairline-b pb-3">
+          Mentorschap
+        </h2>
+        <div className="flex flex-wrap gap-3">
           {MENTORSHIP_ROLES.map(({ value, label }) => (
             <button
               key={value}
               type="button"
               onClick={() => setForm((f) => ({ ...f, mentorshipRole: value }))}
-              className={`py-2.5 px-4 text-xs font-bold tracking-widest uppercase border transition-colors ${
+              className={`text-label-md rounded-full border px-4 py-2.5 transition-colors ${
                 form.mentorshipRole === value
-                  ? "bg-on-surface text-on-primary border-on-surface"
-                  : "border-hairline text-outline hover:border-on-surface"
+                  ? "bg-on-surface text-surface-container-lowest border-transparent"
+                  : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
               }`}
             >
               {label}
@@ -310,22 +373,30 @@ export function ProfileEditForm({ user }: { user: Me }) {
 
       {/* Links */}
       <section className="space-y-4">
-        <h2 className="text-label-caps text-outline hairline-b pb-3">LINKS</h2>
+        <h2 className="text-label-md text-secondary hairline-b pb-3">Links</h2>
         <div>
-          <label className="text-label-caps text-outline block mb-2">WEBSITE</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Website
+          </label>
           <Input
             type="url"
             value={form.website}
-            onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, website: e.target.value }))
+            }
             placeholder="https://jouwbedrijf.nl"
           />
         </div>
         <div>
-          <label className="text-label-caps text-outline block mb-2">LINKEDIN</label>
+          <label className="text-label-lg text-on-surface mb-1.5 block">
+            Linkedin
+          </label>
           <Input
             type="url"
             value={form.linkedin}
-            onChange={(e) => setForm((f) => ({ ...f, linkedin: e.target.value }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, linkedin: e.target.value }))
+            }
             placeholder="https://linkedin.com/in/jounaam"
           />
         </div>
@@ -347,7 +418,7 @@ export function ProfileEditForm({ user }: { user: Me }) {
       </div>
 
       {updateUser.error && (
-        <p className="text-sm text-red-600">{updateUser.error.message}</p>
+        <p className="text-error text-sm">{updateUser.error.message}</p>
       )}
     </form>
   );

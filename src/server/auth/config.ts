@@ -66,10 +66,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.id) {
+    async jwt({ token, user, trigger }) {
+      // On initial sign-in, enrich from the user id; on an explicit
+      // session.update() (e.g. after a Stripe upgrade) re-read from the
+      // existing token id so Pro/role changes propagate without re-login.
+      const userId = user?.id ?? (trigger === "update" ? (token.id as string | undefined) : undefined);
+      if (userId) {
         const dbUser = await db.query.users.findFirst({
-          where: eq(users.id, user.id),
+          where: eq(users.id, userId),
         });
         if (dbUser) {
           token.id = dbUser.id;

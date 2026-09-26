@@ -1,105 +1,114 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, GraduationCap, Handshake, Sprout } from "lucide-react";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { MENTORSHIP_ROLES } from "@/lib/constants";
+import { PageHeader } from "@/components/shared/page-header";
+import { SectionHeader } from "@/components/shared/section-header";
+import { EmptyState } from "@/components/shared/empty-state";
 
 export const metadata: Metadata = {
   title: "Mentorship",
-  description: "Vind een mentor of word zelf mentor voor andere impact-ondernemers.",
+  description:
+    "Vind een mentor of word zelf mentor voor andere impact-ondernemers.",
 };
 
 const ROLE_LABELS: Record<string, string> = {
   mentor: "Mentor",
   mentee: "Mentee",
-  both: "Mentor & Mentee",
+  both: "Mentor & mentee",
 };
 
 export default async function MentorshipPage() {
-  const mentors = await api.users.list({ mentorshipRole: "mentor", limit: 12 }).catch(() => ({
-    items: [],
-    nextCursor: undefined,
-  }));
-
-  const mentees = await api.users.list({ mentorshipRole: "mentee", limit: 12 }).catch(() => ({
-    items: [],
-    nextCursor: undefined,
-  }));
+  const empty = { items: [], nextCursor: undefined };
+  const [mentors, mentees] = await Promise.all([
+    api.users.list({ mentorshipRole: "mentor", limit: 12 }).catch(() => empty),
+    api.users.list({ mentorshipRole: "mentee", limit: 12 }).catch(() => empty),
+  ]);
 
   return (
-    <div className="max-w-3xl">
-      <div className="mb-10">
-        <p className="text-label-caps text-outline mb-1">MENTORSHIP</p>
-        <h1 className="text-headline-md text-on-surface mb-3">Leer van elkaar</h1>
-        <p className="text-body text-on-surface-variant max-w-lg">
-          Ervaren impact-ondernemers die hun kennis delen. Of jij nu een mentor zoekt of zelf
-          kennis wil doorgeven — verbind je hier.
-        </p>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        label="Mentorship"
+        title="Leer van elkaar"
+        description="Ervaren impact-ondernemers delen hun kennis. Zoek je een mentor of wil je zelf kennis doorgeven? Verbind je hier."
+        className="mb-0"
+      />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {[
+          {
+            icon: GraduationCap,
+            title: "Als mentor",
+            text: "Deel je expertise, help starters met jouw ervaringen en bouw aan een sterker impact-ecosysteem.",
+            cta: "Mentor worden",
+          },
+          {
+            icon: Sprout,
+            title: "Als mentee",
+            text: "Leer van ondernemers die al verder zijn. Stel vragen, krijg feedback en groei sneller.",
+            cta: "Mentee worden",
+          },
+        ].map(({ icon: Icon, title, text, cta }) => (
+          <div
+            key={title}
+            className="bg-surface-container-low flex flex-col gap-2 rounded-2xl p-5"
+          >
+            <span className="bg-primary-container/10 text-primary-container flex h-10 w-10 items-center justify-center rounded-xl">
+              <Icon size={20} />
+            </span>
+            <h2 className="text-headline-sm text-on-surface">{title}</h2>
+            <p className="text-body-md text-on-surface-variant">{text}</p>
+            <Link
+              href="/profiel/bewerken"
+              className="text-label-lg text-primary-container mt-1 inline-flex items-center gap-1"
+            >
+              {cta} <ArrowRight size={16} />
+            </Link>
+          </div>
+        ))}
       </div>
 
-      {/* Info cards */}
-      <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        <div className="border border-hairline p-6 bg-surface-container-low">
-          <h2 className="text-lg font-black text-on-surface mb-2">Als mentor</h2>
-          <p className="text-body-sm text-on-surface-variant mb-4">
-            Deel je expertise, help starters met jouw ervaringen en bouw aan een sterker
-            impact-ecosysteem.
-          </p>
-          <Link
-            href="/profiel/bewerken"
-            className="text-label-caps text-primary hover:underline"
-          >
-            Mentor worden →
-          </Link>
-        </div>
-        <div className="border border-hairline p-6 bg-surface-container-low">
-          <h2 className="text-lg font-black text-on-surface mb-2">Als mentee</h2>
-          <p className="text-body-sm text-on-surface-variant mb-4">
-            Leer van ondernemers die al verder zijn. Stel vragen, krijg feedback en groei
-            sneller.
-          </p>
-          <Link
-            href="/profiel/bewerken"
-            className="text-label-caps text-primary hover:underline"
-          >
-            Mentee worden →
-          </Link>
-        </div>
-      </div>
-
-      {/* Mentor directory */}
-      <section className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-headline-sm text-on-surface">Beschikbare mentors</h2>
-          <Badge variant="default">{mentors.items.length}</Badge>
-        </div>
+      <section>
+        <SectionHeader
+          title="Beschikbare mentors"
+          count={mentors.items.length}
+        />
         {mentors.items.length === 0 ? (
-          <p className="text-body-sm text-outline">Nog geen mentors beschikbaar.</p>
+          <EmptyState
+            icon={<Handshake size={22} />}
+            title="Nog geen mentors beschikbaar"
+          />
         ) : (
-          <div className="space-y-3">
+          <div className="flex flex-col gap-2">
             {mentors.items.map((user) => (
               <Link
                 key={user.id}
                 href={`/makers/${user.id}`}
-                className="flex items-center gap-4 p-4 border border-hairline hover:border-on-surface transition-colors bg-white"
+                className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex items-center gap-3 rounded-2xl p-4 transition-shadow"
               >
-                <Avatar src={user.avatarUrl} naam={user.naam ?? user.name ?? "M"} size="md" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-on-surface truncate">
+                <Avatar
+                  src={user.avatarUrl}
+                  naam={user.naam ?? user.name ?? "M"}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-title-md text-on-surface truncate">
                     {user.naam ?? user.name ?? "Maker"}
                   </p>
                   {user.sector && (
-                    <p className="text-body-sm text-outline">{user.sector}</p>
+                    <p className="text-body-sm text-primary-container font-medium">
+                      {user.sector}
+                    </p>
                   )}
                   {user.missie && (
-                    <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                    <p className="text-body-sm text-secondary line-clamp-1">
                       {user.missie}
                     </p>
                   )}
                 </div>
                 {user.mentorshipRole && user.mentorshipRole !== "none" && (
-                  <span className="text-xs font-medium text-primary border border-primary px-2 py-0.5 shrink-0">
+                  <span className="bg-tertiary-fixed text-label-sm text-on-tertiary-fixed-variant shrink-0 rounded-full px-2.5 py-1">
                     {ROLE_LABELS[user.mentorshipRole] ?? user.mentorshipRole}
                   </span>
                 )}
@@ -109,29 +118,35 @@ export default async function MentorshipPage() {
         )}
       </section>
 
-      {/* Mentees looking for mentors */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-headline-sm text-on-surface">Zoeken naar een mentor</h2>
-          <Badge variant="default">{mentees.items.length}</Badge>
-        </div>
+        <SectionHeader
+          title="Zoeken naar een mentor"
+          count={mentees.items.length}
+        />
         {mentees.items.length === 0 ? (
-          <p className="text-body-sm text-outline">Nog niemand op zoek naar een mentor.</p>
+          <EmptyState
+            icon={<Sprout size={22} />}
+            title="Nog niemand op zoek naar een mentor"
+          />
         ) : (
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid gap-2 sm:grid-cols-2">
             {mentees.items.map((user) => (
               <Link
                 key={user.id}
                 href={`/makers/${user.id}`}
-                className="flex items-center gap-3 p-3 border border-hairline hover:border-on-surface transition-colors bg-white"
+                className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex items-center gap-3 rounded-2xl p-3 transition-shadow"
               >
-                <Avatar src={user.avatarUrl} naam={user.naam ?? user.name ?? "M"} size="sm" />
+                <Avatar
+                  src={user.avatarUrl}
+                  naam={user.naam ?? user.name ?? "M"}
+                  size="sm"
+                />
                 <div className="min-w-0">
-                  <p className="font-bold text-on-surface text-sm truncate">
+                  <p className="text-title-md text-on-surface truncate">
                     {user.naam ?? user.name ?? "Maker"}
                   </p>
                   {user.sector && (
-                    <p className="text-xs text-outline">{user.sector}</p>
+                    <p className="text-body-sm text-secondary">{user.sector}</p>
                   )}
                 </div>
               </Link>
@@ -140,13 +155,14 @@ export default async function MentorshipPage() {
         )}
       </section>
 
-      <div className="hairline-t mt-10 pt-8">
-        <p className="text-body-sm text-outline">
-          Wil jij mentor of mentee worden?{" "}
-          <Link href="/profiel/bewerken" className="text-on-surface font-medium hover:underline">
-            Stel je mentorship-rol in via je profiel.
-          </Link>
-        </p>
+      <div className="bg-primary-fixed/40 text-body-md text-on-surface-variant rounded-2xl p-4">
+        Wil jij mentor of mentee worden?{" "}
+        <Link
+          href="/profiel/bewerken"
+          className="text-primary-container font-semibold hover:underline"
+        >
+          Stel je mentorship-rol in via je profiel.
+        </Link>
       </div>
     </div>
   );

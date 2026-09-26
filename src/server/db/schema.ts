@@ -8,8 +8,11 @@ import {
   uniqueIndex,
   index,
   primaryKey,
+  check,
+  jsonb,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import type { AdapterAccountType } from "next-auth/adapters";
 
 // =============================================
@@ -67,6 +70,57 @@ export const eventAttendeeStatusEnum = pgEnum("event_attendee_status", [
   "waitlisted",
   "checked_in",
   "cancelled",
+  "offered", // wachtlijst 2.0: plek aangeboden, houdt de plek vast tot offerExpiresAt
+  "offer_expired",
+  "converted", // ticketed event: aanbod omgezet in een gekocht ticket (telt niet meer mee)
+]);
+
+export const ticketKindEnum = pgEnum("ticket_kind", [
+  "free",
+  "paid",
+  "donation", // "betaal wat je kunt", priceCents is het minimum
+]);
+
+export const eventOrderStatusEnum = pgEnum("event_order_status", [
+  "pending", // plekken gereserveerd tot expiresAt, wacht op betaling
+  "paid",
+  "free",
+  "expired",
+  "cancelled",
+  "refunded",
+]);
+
+export const issuedTicketStatusEnum = pgEnum("issued_ticket_status", [
+  "valid",
+  "cancelled",
+  "refunded",
+]);
+
+export const formFieldTypeEnum = pgEnum("event_form_field_type", [
+  "text",
+  "textarea",
+  "select",
+  "checkbox",
+]);
+
+// Opgeslagen status; "uitverkocht", "gaande" en "afgelopen" worden afgeleid
+// uit tijd en bezetting (zie src/server/events/status.ts).
+export const eventStatusEnum = pgEnum("event_status", [
+  "draft",
+  "published",
+  "cancelled",
+]);
+
+export const eventFormatEnum = pgEnum("event_format", [
+  "in_person",
+  "online",
+  "hybrid",
+]);
+
+export const eventVisibilityEnum = pgEnum("event_visibility", [
+  "public", // publiek, geïndexeerd
+  "members", // alleen ingelogde leden
+  "unlisted", // alleen via link, niet in overzicht of sitemap
 ]);
 
 export const reportTypeEnum = pgEnum("report_type", [
@@ -94,6 +148,92 @@ export const userStatusEnum = pgEnum("user_status", [
 export const scheduledContentTypeEnum = pgEnum("scheduled_content_type", [
   "post",
   "event",
+]);
+
+export const couponDiscountTypeEnum = pgEnum("coupon_discount_type", [
+  "percent",
+  "amount",
+]);
+
+export const couponDurationEnum = pgEnum("coupon_duration", [
+  "once",
+  "repeating",
+  "forever",
+]);
+
+export const crmStageEnum = pgEnum("crm_stage", [
+  "lead",
+  "engaged",
+  "customer",
+  "churned",
+]);
+
+export const crmActivityTypeEnum = pgEnum("crm_activity_type", [
+  "note",
+  "email",
+  "stage_change",
+  "tag",
+  "system",
+]);
+
+export const emailCampaignStatusEnum = pgEnum("email_campaign_status", [
+  "draft",
+  "sending",
+  "sent",
+  "failed",
+]);
+
+export const emailRecipientStatusEnum = pgEnum("email_recipient_status", [
+  "pending",
+  "sent",
+  "failed",
+]);
+
+// Leeromgeving
+export const programStatusEnum = pgEnum("program_status", [
+  "concept",
+  "gepubliceerd",
+  "gearchiveerd",
+]);
+
+export const admissionModeEnum = pgEnum("admission_mode", [
+  "open",
+  "uitnodiging",
+  "aanmelding",
+]);
+
+export const cohortStatusEnum = pgEnum("cohort_status", [
+  "concept",
+  "open",
+  "lopend",
+  "afgerond",
+]);
+
+export const cohortRoleEnum = pgEnum("cohort_role", [
+  "cursist",
+  "docent",
+  "manager",
+  "alumnus",
+]);
+
+export const enrollmentStatusEnum = pgEnum("enrollment_status", [
+  "actief",
+  "gepauzeerd",
+  "afgerond",
+  "uitgeschreven",
+]);
+
+export const lessonTypeEnum = pgEnum("lesson_type", [
+  "tekst",
+  "video",
+  "bestand",
+  "reflectie",
+  "live",
+]);
+
+export const lessonProgressStatusEnum = pgEnum("lesson_progress_status", [
+  "bezig",
+  "klaar",
 ]);
 
 // =============================================
@@ -148,6 +288,11 @@ export const users = pgTable(
     subscriptionStatus: subscriptionStatusEnum("subscription_status")
       .default("none")
       .notNull(),
+    // Stripe Connect (Express) voor doorbetaling van ticketverkoop
+    stripeConnectAccountId: text("stripe_connect_account_id").unique(),
+    stripeConnectReady: boolean("stripe_connect_ready")
+      .default(false)
+      .notNull(),
 
     // Referral
     referralCode: text("referral_code").unique(),
@@ -157,6 +302,13 @@ export const users = pgTable(
     weeklyDigestEnabled: boolean("weekly_digest_enabled")
       .default(true)
       .notNull(),
+
+    // CRM
+    crmStage: crmStageEnum("crm_stage").default("lead").notNull(),
+    crmTags: text("crm_tags").array().default([]).notNull(),
+    crmLastContactedAt: timestamp("crm_last_contacted_at", {
+      withTimezone: true,
+    }),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -175,6 +327,7 @@ export const users = pgTable(
     index("users_featured_idx").on(t.isFeatured),
     index("users_mentorship_idx").on(t.mentorshipRole),
     index("users_status_idx").on(t.status),
+    index("users_crm_stage_idx").on(t.crmStage),
   ],
 );
 
@@ -304,6 +457,18 @@ export const posts = pgTable(
     content: text("content").notNull(),
     coverImageUrl: text("cover_image_url"),
     category: postCategoryEnum("category").notNull(),
+
+    // SEO
+    metaTitle: text("meta_title"),
+    metaDescription: text("meta_description"),
+    focusKeyword: text("focus_keyword"),
+    keywords: text("keywords").array().default([]).notNull(),
+    canonicalUrl: text("canonical_url"),
+    ogImageUrl: text("og_image_url"),
+    seoScore: integer("seo_score").default(0).notNull(),
+    readingTime: integer("reading_time").default(0).notNull(),
+    aiGenerated: boolean("ai_generated").default(false).notNull(),
+
     isPublished: boolean("is_published").default(false).notNull(),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -434,8 +599,28 @@ export const events = pgTable(
     startAt: timestamp("start_at", { withTimezone: true }).notNull(),
     endAt: timestamp("end_at", { withTimezone: true }),
     maxAttendees: integer("max_attendees"),
+    // Legacy vlag, synchroon gehouden met status === "published".
     isPublished: boolean("is_published").default(false).notNull(),
+    status: eventStatusEnum("status").default("draft").notNull(),
+    format: eventFormatEnum("format").default("in_person").notNull(),
+    visibility: eventVisibilityEnum("visibility").default("public").notNull(),
+    timezone: text("timezone").default("Europe/Amsterdam").notNull(),
+    regio: text("regio"),
+    thema: text("thema"),
+    latitude: doublePrecision("latitude"),
+    longitude: doublePrecision("longitude"),
+    waitlistOfferHours: integer("waitlist_offer_hours").default(24).notNull(),
+    // Tickets (fase 2). Terugbetalen kan tot zoveel uur voor de start; null = niet.
+    refundUntilHours: integer("refund_until_hours"),
+    allowTransfer: boolean("allow_transfer").default(true).notNull(),
+    currency: text("currency").default("eur").notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    cancellationReason: text("cancellation_reason"),
     createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
@@ -444,6 +629,7 @@ export const events = pgTable(
     index("events_organiser_idx").on(t.organiserId),
     index("events_start_at_idx").on(t.startAt),
     index("events_published_idx").on(t.isPublished),
+    index("events_status_start_idx").on(t.status, t.startAt),
   ],
 );
 
@@ -460,12 +646,20 @@ export const eventAttendees = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     status: eventAttendeeStatusEnum("status").default("registered").notNull(),
+    offerExpiresAt: timestamp("offer_expires_at", { withTimezone: true }),
+    // Verstuurde herinneringen ("7d", "1d", "1h") — maakt de job idempotent.
+    remindersSent: text("reminders_sent").array().default([]).notNull(),
+    // createdAt is ook de wachtlijstvolgorde; bij heraanmelden wordt hij gereset.
     createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (t) => [
     uniqueIndex("event_attendees_unique_idx").on(t.eventId, t.userId),
+    index("event_attendees_event_status_idx").on(t.eventId, t.status),
     index("event_attendees_event_id_idx").on(t.eventId),
     index("event_attendees_user_id_idx").on(t.userId),
   ],
@@ -491,6 +685,170 @@ export const eventCheckIns = pgTable(
   (t) => [
     uniqueIndex("event_check_ins_unique_idx").on(t.eventId, t.userId),
     index("event_check_ins_event_id_idx").on(t.eventId),
+  ],
+);
+
+// ── Tickets en betaling (events-plan fase 2) ──────────────────────────────────
+// Een event met minstens één tickettype is "ticketed": aanmelden gaat dan via een
+// bestelling en uitgegeven tickets i.p.v. via event_attendees.
+
+export const eventTickets = pgTable(
+  "event_tickets",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    kind: ticketKindEnum("kind").default("free").notNull(),
+    /** Incl. btw, in centen. Bij donation het minimum. */
+    priceCents: integer("price_cents").default(0).notNull(),
+    /** Btw in basispunten (900 = 9%, 2100 = 21%) — voor rapportage/facturen. */
+    vatBps: integer("vat_bps").default(2100).notNull(),
+    /** Aantal beschikbaar voor dit type; null = alleen de eventcapaciteit geldt. */
+    quantity: integer("quantity"),
+    maxPerOrder: integer("max_per_order").default(10).notNull(),
+    salesStart: timestamp("sales_start", { withTimezone: true }),
+    salesEnd: timestamp("sales_end", { withTimezone: true }),
+    isHidden: boolean("is_hidden").default(false).notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("event_tickets_event_idx").on(t.eventId)],
+);
+
+export const eventFormFields = pgTable(
+  "event_form_fields",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    type: formFieldTypeEnum("type").default("text").notNull(),
+    required: boolean("required").default(false).notNull(),
+    options: text("options").array().default([]).notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+  },
+  (t) => [index("event_form_fields_event_idx").on(t.eventId)],
+);
+
+export const eventOrders = pgTable(
+  "event_orders",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    buyerName: text("buyer_name").notNull(),
+    buyerEmail: text("buyer_email").notNull(),
+    status: eventOrderStatusEnum("status").default("pending").notNull(),
+    subtotalCents: integer("subtotal_cents").default(0).notNull(),
+    discountCents: integer("discount_cents").default(0).notNull(),
+    totalCents: integer("total_cents").default(0).notNull(),
+    platformFeeCents: integer("platform_fee_cents").default(0).notNull(),
+    currency: text("currency").default("eur").notNull(),
+    /** Aanmeldvragen: { [fieldId]: waarde } */
+    answers: jsonb("answers")
+      .$type<Record<string, string>>()
+      .default({})
+      .notNull(),
+    /** Geheim voor gasten om bestelling/tickets te openen zonder account. */
+    accessToken: text("access_token").notNull(),
+    stripeSessionId: text("stripe_session_id"),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    /** Connect-account waarnaar is doorbetaald (null = platform int zelf). */
+    stripeDestination: text("stripe_destination"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    refundedAt: timestamp("refunded_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("event_orders_event_status_idx").on(t.eventId, t.status),
+    index("event_orders_user_idx").on(t.userId),
+    index("event_orders_email_idx").on(t.buyerEmail),
+    uniqueIndex("event_orders_session_idx").on(t.stripeSessionId),
+  ],
+);
+
+export const eventOrderItems = pgTable(
+  "event_order_items",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    orderId: text("order_id")
+      .notNull()
+      .references(() => eventOrders.id, { onDelete: "cascade" }),
+    ticketId: text("ticket_id")
+      .notNull()
+      .references(() => eventTickets.id, { onDelete: "restrict" }),
+    quantity: integer("quantity").notNull(),
+    unitPriceCents: integer("unit_price_cents").notNull(),
+  },
+  (t) => [
+    index("event_order_items_order_idx").on(t.orderId),
+    index("event_order_items_ticket_idx").on(t.ticketId),
+  ],
+);
+
+export const eventIssuedTickets = pgTable(
+  "event_issued_tickets",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    orderId: text("order_id")
+      .notNull()
+      .references(() => eventOrders.id, { onDelete: "cascade" }),
+    ticketId: text("ticket_id")
+      .notNull()
+      .references(() => eventTickets.id, { onDelete: "restrict" }),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    holderName: text("holder_name").notNull(),
+    holderEmail: text("holder_email").notNull(),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    status: issuedTicketStatusEnum("status").default("valid").notNull(),
+    /** Geheime code: ticketlink en (fase 4) QR. */
+    code: text("code").notNull(),
+    transferredFromEmail: text("transferred_from_email"),
+    checkedInAt: timestamp("checked_in_at", { withTimezone: true }),
+    remindersSent: text("reminders_sent").array().default([]).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("event_issued_tickets_code_idx").on(t.code),
+    index("event_issued_tickets_event_status_idx").on(t.eventId, t.status),
+    index("event_issued_tickets_order_idx").on(t.orderId),
+    index("event_issued_tickets_user_idx").on(t.userId),
+    index("event_issued_tickets_email_idx").on(t.holderEmail),
   ],
 );
 
@@ -544,6 +902,11 @@ export const bookmarks = pgTable(
   (t) => [
     index("bookmarks_user_id_idx").on(t.userId),
     index("bookmarks_target_user_idx").on(t.targetUserId),
+    // A bookmark must point at either a user or a post — never neither.
+    check(
+      "bookmarks_target_present",
+      sql`${t.targetUserId} IS NOT NULL OR ${t.postId} IS NOT NULL`,
+    ),
   ],
 );
 
@@ -610,7 +973,11 @@ export const endorsements = pgTable(
       .notNull(),
   },
   (t) => [
-    uniqueIndex("endorsements_unique_idx").on(t.endorserId, t.targetId, t.skill),
+    uniqueIndex("endorsements_unique_idx").on(
+      t.endorserId,
+      t.targetId,
+      t.skill,
+    ),
     index("endorsements_target_idx").on(t.targetId),
     index("endorsements_endorser_idx").on(t.endorserId),
   ],
@@ -651,11 +1018,25 @@ export const cohorts = pgTable(
     createdBy: text("created_by")
       .notNull()
       .references(() => users.id),
+
+    // Leeromgeving: a cohort with a programId is an edition of that program.
+    programId: text("program_id").references(() => programs.id, {
+      onDelete: "cascade",
+    }),
+    startDate: timestamp("start_date", { withTimezone: true }),
+    endDate: timestamp("end_date", { withTimezone: true }),
+    capacity: integer("capacity"),
+    status: cohortStatusEnum("status").default("concept").notNull(),
+    completionRules: jsonb("completion_rules").$type<CompletionRules>(),
+
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
-  (t) => [uniqueIndex("cohorts_invite_code_idx").on(t.inviteCode)],
+  (t) => [
+    uniqueIndex("cohorts_invite_code_idx").on(t.inviteCode),
+    index("cohorts_program_id_idx").on(t.programId),
+  ],
 );
 
 export const cohortMembers = pgTable(
@@ -670,6 +1051,11 @@ export const cohortMembers = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    // Roles live on the membership, not the account: a user can teach one
+    // edition and follow another.
+    role: cohortRoleEnum("role").default("cursist").notNull(),
+    status: enrollmentStatusEnum("status").default("actief").notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
     joinedAt: timestamp("joined_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -678,6 +1064,146 @@ export const cohortMembers = pgTable(
     uniqueIndex("cohort_members_unique_idx").on(t.cohortId, t.userId),
     index("cohort_members_cohort_id_idx").on(t.cohortId),
     index("cohort_members_user_id_idx").on(t.userId),
+  ],
+);
+
+// =============================================
+// LEEROMGEVING — PROGRAMS, MODULES, LESSONS
+// =============================================
+
+export type CompletionRules = {
+  /** Percentage (0–100) of required lessons that must be completed. */
+  minLessonPercent?: number;
+};
+
+export type LessonContent = {
+  /** Markdown body (all types). */
+  body?: string;
+  /** YouTube/Vimeo URL for video lessons. */
+  videoUrl?: string;
+  /** Download for file lessons. */
+  fileUrl?: string;
+  fileName?: string;
+  /** Question for reflection lessons. */
+  prompt?: string;
+  /** Live session details. */
+  meetingUrl?: string;
+  startsAt?: string;
+};
+
+export const programs = pgTable(
+  "programs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    tagline: text("tagline"),
+    description: text("description"),
+    color: text("color").default("#2d6a4f").notNull(),
+    logoUrl: text("logo_url"),
+    coverImageUrl: text("cover_image_url"),
+    status: programStatusEnum("status").default("concept").notNull(),
+    // Price in cents; null = included in Pro.
+    priceCents: integer("price_cents"),
+    admissionMode: admissionModeEnum("admission_mode")
+      .default("uitnodiging")
+      .notNull(),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("programs_slug_idx").on(t.slug),
+    index("programs_status_idx").on(t.status),
+  ],
+);
+
+export const modules = pgTable(
+  "modules",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    programId: text("program_id")
+      .notNull()
+      .references(() => programs.id, { onDelete: "cascade" }),
+    position: integer("position").default(0).notNull(),
+    title: text("title").notNull(),
+    description: text("description"),
+    // Days relative to the edition's start date, so a copied edition
+    // shifts its schedule automatically.
+    startOffsetDays: integer("start_offset_days"),
+    endOffsetDays: integer("end_offset_days"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("modules_program_position_idx").on(t.programId, t.position)],
+);
+
+export const lessons = pgTable(
+  "lessons",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    moduleId: text("module_id")
+      .notNull()
+      .references(() => modules.id, { onDelete: "cascade" }),
+    position: integer("position").default(0).notNull(),
+    type: lessonTypeEnum("type").default("tekst").notNull(),
+    title: text("title").notNull(),
+    content: jsonb("content").$type<LessonContent>().default({}).notNull(),
+    durationMinutes: integer("duration_minutes"),
+    isRequired: boolean("is_required").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("lessons_module_position_idx").on(t.moduleId, t.position)],
+);
+
+export const lessonProgress = pgTable(
+  "lesson_progress",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lessonId: text("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    status: lessonProgressStatusEnum("status").default("bezig").notNull(),
+    note: text("note"),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("lesson_progress_unique_idx").on(
+      t.userId,
+      t.lessonId,
+      t.cohortId,
+    ),
+    index("lesson_progress_cohort_idx").on(t.cohortId),
+    index("lesson_progress_user_idx").on(t.userId),
   ],
 );
 
@@ -811,6 +1337,150 @@ export const scheduledContent = pgTable(
   ],
 );
 
+// =============================================
+// CRM
+// =============================================
+
+export const crmActivities = pgTable(
+  "crm_activities",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    // The contact (platform user) this activity is about.
+    contactId: text("contact_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // The admin who logged it (null for system-generated).
+    adminId: text("admin_id").references(() => users.id),
+    type: crmActivityTypeEnum("type").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("crm_activities_contact_id_idx").on(t.contactId),
+    index("crm_activities_created_at_idx").on(t.createdAt),
+  ],
+);
+
+export const emailCampaigns = pgTable(
+  "email_campaigns",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    subject: text("subject").notNull(),
+    // Markdown body; rendered to HTML at send time.
+    body: text("body").notNull(),
+    // Serialised segment filter (JSON).
+    segment: text("segment"),
+    status: emailCampaignStatusEnum("status").default("draft").notNull(),
+    recipientCount: integer("recipient_count").default(0).notNull(),
+    sentCount: integer("sent_count").default(0).notNull(),
+    failedCount: integer("failed_count").default(0).notNull(),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("email_campaigns_status_idx").on(t.status),
+    index("email_campaigns_created_at_idx").on(t.createdAt),
+  ],
+);
+
+export const emailCampaignRecipients = pgTable(
+  "email_campaign_recipients",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    campaignId: text("campaign_id")
+      .notNull()
+      .references(() => emailCampaigns.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    email: text("email").notNull(),
+    status: emailRecipientStatusEnum("status").default("pending").notNull(),
+    error: text("error"),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("email_recipients_campaign_id_idx").on(t.campaignId),
+    index("email_recipients_status_idx").on(t.status),
+  ],
+);
+
+// =============================================
+// COUPONS (mirror of Stripe coupons/promotion codes)
+// =============================================
+
+export const coupons = pgTable(
+  "coupons",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    code: text("code").notNull().unique(),
+    stripeCouponId: text("stripe_coupon_id"),
+    stripePromotionCodeId: text("stripe_promotion_code_id"),
+    description: text("description"),
+    discountType: couponDiscountTypeEnum("discount_type").notNull(),
+    // percent → 1–100, amount → cents
+    discountValue: integer("discount_value").notNull(),
+    currency: text("currency").default("eur").notNull(),
+    duration: couponDurationEnum("duration").default("once").notNull(),
+    durationInMonths: integer("duration_in_months"),
+    maxRedemptions: integer("max_redemptions"),
+    timesRedeemed: integer("times_redeemed").default(0).notNull(),
+    active: boolean("active").default(true).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("coupons_code_idx").on(t.code),
+    index("coupons_active_idx").on(t.active),
+  ],
+);
+
+export const couponRedemptions = pgTable(
+  "coupon_redemptions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    couponId: text("coupon_id")
+      .notNull()
+      .references(() => coupons.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    stripeSessionId: text("stripe_session_id"),
+    amountDiscounted: integer("amount_discounted"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("coupon_redemptions_coupon_id_idx").on(t.couponId),
+    index("coupon_redemptions_user_id_idx").on(t.userId),
+  ],
+);
+
 export const pushSubscriptions = pgTable(
   "push_subscriptions",
   {
@@ -861,8 +1531,16 @@ export const usersRelations = relations(users, ({ many }) => ({
 }));
 
 export const endorsementsRelations = relations(endorsements, ({ one }) => ({
-  endorser: one(users, { fields: [endorsements.endorserId], references: [users.id], relationName: "endorser" }),
-  target: one(users, { fields: [endorsements.targetId], references: [users.id], relationName: "target" }),
+  endorser: one(users, {
+    fields: [endorsements.endorserId],
+    references: [users.id],
+    relationName: "endorser",
+  }),
+  target: one(users, {
+    fields: [endorsements.targetId],
+    references: [users.id],
+    relationName: "target",
+  }),
 }));
 
 export const matchesRelations = relations(matches, ({ one, many }) => ({
@@ -892,10 +1570,109 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   }),
   attendees: many(eventAttendees),
   checkIns: many(eventCheckIns),
+  tickets: many(eventTickets),
+  formFields: many(eventFormFields),
+  orders: many(eventOrders),
 }));
 
-export const cohortsRelations = relations(cohorts, ({ many }) => ({
+export const eventTicketsRelations = relations(eventTickets, ({ one }) => ({
+  event: one(events, {
+    fields: [eventTickets.eventId],
+    references: [events.id],
+  }),
+}));
+
+export const eventFormFieldsRelations = relations(
+  eventFormFields,
+  ({ one }) => ({
+    event: one(events, {
+      fields: [eventFormFields.eventId],
+      references: [events.id],
+    }),
+  }),
+);
+
+export const eventOrdersRelations = relations(eventOrders, ({ one, many }) => ({
+  event: one(events, {
+    fields: [eventOrders.eventId],
+    references: [events.id],
+  }),
+  user: one(users, { fields: [eventOrders.userId], references: [users.id] }),
+  items: many(eventOrderItems),
+  issued: many(eventIssuedTickets),
+}));
+
+export const eventOrderItemsRelations = relations(
+  eventOrderItems,
+  ({ one }) => ({
+    order: one(eventOrders, {
+      fields: [eventOrderItems.orderId],
+      references: [eventOrders.id],
+    }),
+    ticket: one(eventTickets, {
+      fields: [eventOrderItems.ticketId],
+      references: [eventTickets.id],
+    }),
+  }),
+);
+
+export const eventIssuedTicketsRelations = relations(
+  eventIssuedTickets,
+  ({ one }) => ({
+    order: one(eventOrders, {
+      fields: [eventIssuedTickets.orderId],
+      references: [eventOrders.id],
+    }),
+    ticket: one(eventTickets, {
+      fields: [eventIssuedTickets.ticketId],
+      references: [eventTickets.id],
+    }),
+    event: one(events, {
+      fields: [eventIssuedTickets.eventId],
+      references: [events.id],
+    }),
+  }),
+);
+
+export const cohortsRelations = relations(cohorts, ({ one, many }) => ({
   members: many(cohortMembers),
+  program: one(programs, {
+    fields: [cohorts.programId],
+    references: [programs.id],
+  }),
+}));
+
+export const programsRelations = relations(programs, ({ many }) => ({
+  modules: many(modules),
+  cohorts: many(cohorts),
+}));
+
+export const modulesRelations = relations(modules, ({ one, many }) => ({
+  program: one(programs, {
+    fields: [modules.programId],
+    references: [programs.id],
+  }),
+  lessons: many(lessons),
+}));
+
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
+  module: one(modules, {
+    fields: [lessons.moduleId],
+    references: [modules.id],
+  }),
+  progress: many(lessonProgress),
+}));
+
+export const lessonProgressRelations = relations(lessonProgress, ({ one }) => ({
+  lesson: one(lessons, {
+    fields: [lessonProgress.lessonId],
+    references: [lessons.id],
+  }),
+  user: one(users, { fields: [lessonProgress.userId], references: [users.id] }),
+  cohort: one(cohorts, {
+    fields: [lessonProgress.cohortId],
+    references: [cohorts.id],
+  }),
 }));
 
 export const cohortMembersRelations = relations(cohortMembers, ({ one }) => ({
@@ -914,10 +1691,19 @@ export const questionsRelations = relations(questions, ({ one, many }) => ({
   answers: many(questionAnswers),
 }));
 
-export const questionAnswersRelations = relations(questionAnswers, ({ one }) => ({
-  question: one(questions, { fields: [questionAnswers.questionId], references: [questions.id] }),
-  author: one(users, { fields: [questionAnswers.authorId], references: [users.id] }),
-}));
+export const questionAnswersRelations = relations(
+  questionAnswers,
+  ({ one }) => ({
+    question: one(questions, {
+      fields: [questionAnswers.questionId],
+      references: [questions.id],
+    }),
+    author: one(users, {
+      fields: [questionAnswers.authorId],
+      references: [users.id],
+    }),
+  }),
+);
 
 export const messagesRelations = relations(messages, ({ one }) => ({
   match: one(matches, { fields: [messages.matchId], references: [matches.id] }),
@@ -925,13 +1711,19 @@ export const messagesRelations = relations(messages, ({ one }) => ({
 }));
 
 export const eventAttendeesRelations = relations(eventAttendees, ({ one }) => ({
-  event: one(events, { fields: [eventAttendees.eventId], references: [events.id] }),
+  event: one(events, {
+    fields: [eventAttendees.eventId],
+    references: [events.id],
+  }),
   user: one(users, { fields: [eventAttendees.userId], references: [users.id] }),
 }));
 
 export const postCommentsRelations = relations(postComments, ({ one }) => ({
   post: one(posts, { fields: [postComments.postId], references: [posts.id] }),
-  author: one(users, { fields: [postComments.authorId], references: [users.id] }),
+  author: one(users, {
+    fields: [postComments.authorId],
+    references: [users.id],
+  }),
 }));
 
 export const postReactionsRelations = relations(postReactions, ({ one }) => ({
@@ -941,13 +1733,25 @@ export const postReactionsRelations = relations(postReactions, ({ one }) => ({
 
 export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
   user: one(users, { fields: [bookmarks.userId], references: [users.id] }),
-  targetUser: one(users, { fields: [bookmarks.targetUserId], references: [users.id], relationName: "bookmarked" }),
+  targetUser: one(users, {
+    fields: [bookmarks.targetUserId],
+    references: [users.id],
+    relationName: "bookmarked",
+  }),
   post: one(posts, { fields: [bookmarks.postId], references: [posts.id] }),
 }));
 
 export const profileViewsRelations = relations(profileViews, ({ one }) => ({
-  viewer: one(users, { fields: [profileViews.viewerId], references: [users.id], relationName: "viewer" }),
-  profile: one(users, { fields: [profileViews.profileId], references: [users.id], relationName: "profile" }),
+  viewer: one(users, {
+    fields: [profileViews.viewerId],
+    references: [users.id],
+    relationName: "viewer",
+  }),
+  profile: one(users, {
+    fields: [profileViews.profileId],
+    references: [users.id],
+    relationName: "profile",
+  }),
 }));
 
 export const auditLogRelations = relations(auditLog, ({ one }) => ({
@@ -955,6 +1759,62 @@ export const auditLogRelations = relations(auditLog, ({ one }) => ({
 }));
 
 export const referralsRelations = relations(referrals, ({ one }) => ({
-  referrer: one(users, { fields: [referrals.referrerId], references: [users.id], relationName: "referrer" }),
-  referred: one(users, { fields: [referrals.referredId], references: [users.id], relationName: "referred" }),
+  referrer: one(users, {
+    fields: [referrals.referrerId],
+    references: [users.id],
+    relationName: "referrer",
+  }),
+  referred: one(users, {
+    fields: [referrals.referredId],
+    references: [users.id],
+    relationName: "referred",
+  }),
 }));
+
+export const couponsRelations = relations(coupons, ({ many }) => ({
+  redemptions: many(couponRedemptions),
+}));
+
+export const couponRedemptionsRelations = relations(
+  couponRedemptions,
+  ({ one }) => ({
+    coupon: one(coupons, {
+      fields: [couponRedemptions.couponId],
+      references: [coupons.id],
+    }),
+    user: one(users, {
+      fields: [couponRedemptions.userId],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const crmActivitiesRelations = relations(crmActivities, ({ one }) => ({
+  contact: one(users, {
+    fields: [crmActivities.contactId],
+    references: [users.id],
+    relationName: "crmContact",
+  }),
+  admin: one(users, {
+    fields: [crmActivities.adminId],
+    references: [users.id],
+    relationName: "crmAdmin",
+  }),
+}));
+
+export const emailCampaignsRelations = relations(
+  emailCampaigns,
+  ({ many }) => ({
+    recipients: many(emailCampaignRecipients),
+  }),
+);
+
+export const emailCampaignRecipientsRelations = relations(
+  emailCampaignRecipients,
+  ({ one }) => ({
+    campaign: one(emailCampaigns, {
+      fields: [emailCampaignRecipients.campaignId],
+      references: [emailCampaigns.id],
+    }),
+  }),
+);

@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import {
+  BadgeCheck,
+  Eye,
+  Globe,
+  ExternalLink,
+  Gift,
+  MapPin,
+  Pencil,
+  Settings,
+  Share2,
+} from "lucide-react";
 import { auth } from "@/server/auth/config";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardBody } from "@/components/ui/card";
-import { Pencil, Globe, ExternalLink, CheckCircle, Eye } from "lucide-react";
+import { buttonClasses } from "@/components/ui/button";
+import { ProgressBar } from "@/components/learning/progress-bar";
 import { CopyReferralButton } from "./copy-referral-button";
 
 export const metadata: Metadata = { title: "Mijn profiel" };
@@ -20,98 +29,116 @@ export default async function MyProfilePage() {
   if (!me) redirect("/dashboard");
 
   const completeness = me.profileCompleteness ?? 0;
+  const naam = me.naam ?? me.name ?? "Maker";
+  const section =
+    "flex flex-col gap-3 rounded-2xl bg-surface-container-lowest p-5 shadow-card";
+  const eyebrow = "text-label-sm uppercase text-secondary";
 
   return (
-    <div className="max-w-2xl space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-label-caps text-outline mb-1">JOUW PROFIEL</p>
-          <h1 className="text-headline-md text-on-surface truncate">{me.naam ?? me.name}</h1>
-        </div>
-        <Link href="/profiel/bewerken" className="shrink-0 mt-1">
-          <Button size="sm" variant="secondary">
-            <Pencil size={13} className="mr-1.5" />
-            Bewerken
-          </Button>
-        </Link>
-      </div>
-
-      {/* Profile card */}
-      <Card>
-        <CardBody>
-          <div className="flex gap-6">
-            <Avatar
-              src={me.avatarUrl}
-              naam={me.naam ?? me.name ?? "?"}
-              size="xl"
-              grayscale={false}
-            />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-xl font-black text-on-surface">
-                  {me.naam ?? me.name}
-                </h2>
-                {me.isVerified && (
-                  <CheckCircle size={16} className="text-primary shrink-0" />
-                )}
-                {me.subscriptionStatus === "active" && (
-                  <Badge variant="primary" size="sm">PRO</Badge>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {me.sector && <Badge variant="default" size="sm">{me.sector}</Badge>}
-                {me.regio && <Badge variant="default" size="sm">{me.regio}</Badge>}
-                {me.fase && (
-                  <Badge variant="default" size="sm">
-                    {me.fase.charAt(0).toUpperCase() + me.fase.slice(1)}
-                  </Badge>
-                )}
-              </div>
-              {me.missie && (
-                <p className="text-body-sm text-on-surface mt-3 italic">
-                  &ldquo;{me.missie}&rdquo;
-                </p>
-              )}
-            </div>
+    <div className="flex flex-col gap-5">
+      {completeness < 100 && (
+        <Link
+          href="/profiel/bewerken"
+          className="bg-surface-container-low shadow-card hover:shadow-elevated flex flex-col gap-2 rounded-2xl p-4 transition-shadow"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-title-md text-on-surface">
+              Profiel {completeness}% compleet
+            </span>
+            <span className="text-label-md text-primary">Afronden →</span>
           </div>
+          <ProgressBar percent={completeness} label="Profiel compleetheid" />
+          <p className="text-body-sm text-secondary">
+            Vul je profiel aan voor betere zichtbaarheid en meer matches.
+          </p>
+        </Link>
+      )}
 
+      <section className="bg-surface-container-lowest shadow-card flex flex-col gap-4 rounded-2xl p-5">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <Avatar src={me.avatarUrl} naam={naam} size="lg" />
+          <div className="flex items-center gap-1.5">
+            <h1 className="text-headline-md text-on-surface">{naam}</h1>
+            {me.isVerified && (
+              <BadgeCheck
+                size={20}
+                className="text-primary-container"
+                aria-label="Geverifieerd"
+              />
+            )}
+          </div>
+          {(me.sector || me.regio) && (
+            <p className="text-label-lg text-secondary flex items-center gap-1">
+              {me.sector}
+              {me.sector && me.regio && " · "}
+              {me.regio && (
+                <span className="inline-flex items-center gap-0.5">
+                  <MapPin size={14} /> {me.regio}
+                </span>
+              )}
+            </p>
+          )}
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {me.subscriptionStatus === "active" && (
+              <span className="bg-primary-fixed text-label-sm text-on-primary-fixed-variant rounded-full px-3 py-1 uppercase">
+                Pro-lid
+              </span>
+            )}
+            {me.fase && (
+              <span className="bg-tertiary-fixed text-label-sm text-on-tertiary-fixed-variant rounded-full px-3 py-1 uppercase">
+                {me.fase.charAt(0).toUpperCase() + me.fase.slice(1)}
+              </span>
+            )}
+          </div>
+          {me.missie && (
+            <p className="text-body-md text-on-surface-variant mt-1 max-w-md">
+              &ldquo;{me.missie}&rdquo;
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/profiel/bewerken"
+            className={buttonClasses("primary", "lg", "flex-1")}
+          >
+            <Pencil size={18} /> Profiel bewerken
+          </Link>
+          <Link
+            href={`/makers/${me.id}`}
+            aria-label="Bekijk je openbare profiel"
+            className={buttonClasses("tonal", "icon", "h-12 w-12")}
+          >
+            <Share2 size={20} />
+          </Link>
+        </div>
+      </section>
+
+      {(me.bio || me.ikZoek || me.website || me.linkedin) && (
+        <section className={section}>
+          <h2 className="text-headline-sm text-on-surface">Over mij</h2>
           {me.bio && (
-            <div className="mt-6 pt-6 hairline-t">
-              <p className="text-label-caps text-outline mb-2">BIO</p>
-              <p className="text-body text-on-surface-variant">{me.bio}</p>
-            </div>
+            <p className="text-body-md text-on-surface-variant whitespace-pre-line">
+              {me.bio}
+            </p>
           )}
-
           {me.ikZoek && (
-            <div className="mt-4">
-              <p className="text-label-caps text-outline mb-2">IK ZOEK</p>
-              <p className="text-body text-on-surface-variant">{me.ikZoek}</p>
+            <div className="bg-surface-container-low rounded-xl p-3">
+              <p className={eyebrow}>Ik zoek</p>
+              <p className="text-body-md text-on-surface-variant mt-1">
+                {me.ikZoek}
+              </p>
             </div>
           )}
-
-          {me.expertise && me.expertise.length > 0 && (
-            <div className="mt-4">
-              <p className="text-label-caps text-outline mb-2">EXPERTISE</p>
-              <div className="flex flex-wrap gap-2">
-                {me.expertise.map((tag) => (
-                  <Badge key={tag} variant="default" size="sm">{tag}</Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
           {(me.website || me.linkedin) && (
-            <div className="mt-4 flex gap-4">
+            <div className="flex flex-wrap gap-2">
               {me.website && (
                 <a
                   href={me.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-label-caps text-outline hover:text-primary transition-colors"
+                  className={buttonClasses("secondary", "sm")}
                 >
-                  <Globe size={14} />
-                  Website
+                  <Globe size={16} /> Website
                 </a>
               )}
               {me.linkedin && (
@@ -119,72 +146,73 @@ export default async function MyProfilePage() {
                   href={me.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-label-caps text-outline hover:text-primary transition-colors"
+                  className={buttonClasses("secondary", "sm")}
                 >
-                  <ExternalLink size={14} />
-                  LinkedIn
+                  <ExternalLink size={16} /> LinkedIn
                 </a>
               )}
             </div>
           )}
-        </CardBody>
-      </Card>
-
-      {/* Completeness */}
-      {completeness < 100 && (
-        <Card className="border-primary/20 bg-surface-container-low">
-          <CardBody className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-label-caps text-on-surface">PROFIEL COMPLEETHEID</p>
-              <span className="text-lg font-black text-primary">{completeness}%</span>
-            </div>
-            <div className="w-full bg-hairline h-1.5 mb-3">
-              <div
-                className="h-1.5 bg-primary transition-all"
-                style={{ width: `${completeness}%` }}
-              />
-            </div>
-            <p className="text-body-sm text-outline">
-              Vul je profiel verder aan voor betere zichtbaarheid en meer matches.
-            </p>
-          </CardBody>
-        </Card>
+        </section>
       )}
 
-      {/* Who viewed */}
-      <Card>
-        <CardBody className="p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Eye size={18} className="text-outline" />
-              <div>
-                <p className="text-label-caps text-on-surface">WIE BEKEEK MIJN PROFIEL</p>
-                {me.subscriptionStatus !== "active" && (
-                  <p className="text-body-sm text-outline mt-0.5">Pro-functie</p>
-                )}
-              </div>
-            </div>
-            <Link href="/profiel/wie-bekeek-mij">
-              <Button variant="secondary" size="sm">Bekijken</Button>
-            </Link>
+      {me.expertise && me.expertise.length > 0 && (
+        <section className={section}>
+          <h2 className="text-headline-sm text-on-surface">Expertise</h2>
+          <div className="flex flex-wrap gap-1.5">
+            {me.expertise.map((tag) => (
+              <span
+                key={tag}
+                className="bg-surface-container text-label-md text-on-surface rounded-full px-3 py-1"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
-        </CardBody>
-      </Card>
-
-      {/* Referral */}
-      {me.referralCode && (
-        <Card>
-          <CardBody className="p-5">
-            <p className="text-label-caps text-outline mb-2">JOUW REFERRAL CODE</p>
-            <div className="flex items-center gap-3">
-              <code className="font-mono text-lg font-black text-on-surface bg-surface-container px-4 py-2 flex-1">
-                {me.referralCode}
-              </code>
-              <CopyReferralButton code={me.referralCode} />
-            </div>
-          </CardBody>
-        </Card>
+        </section>
       )}
+
+      <Link
+        href="/profiel/wie-bekeek-mij"
+        className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex items-center gap-3 rounded-2xl p-4 transition-shadow"
+      >
+        <span className="bg-primary-container/10 text-primary-container flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+          <Eye size={20} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-title-md text-on-surface">
+            Wie bekeek mijn profiel
+          </p>
+          {me.subscriptionStatus !== "active" && (
+            <p className="text-body-sm text-secondary">Pro-functie</p>
+          )}
+        </div>
+        <span className="text-label-md text-primary-container">Bekijken</span>
+      </Link>
+
+      {me.referralCode && (
+        <section className={section}>
+          <div className="flex items-center gap-2">
+            <Gift size={20} className="text-primary-container" />
+            <h2 className="text-title-md text-on-surface">
+              Nodig een maker uit
+            </h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <code className="bg-surface-container-low text-title-md text-on-surface flex-1 rounded-xl px-4 py-2.5 font-mono">
+              {me.referralCode}
+            </code>
+            <CopyReferralButton code={me.referralCode} />
+          </div>
+        </section>
+      )}
+
+      <Link
+        href="/instellingen"
+        className={buttonClasses("secondary", "lg", "w-full")}
+      >
+        <Settings size={18} /> Instellingen
+      </Link>
     </div>
   );
 }

@@ -12,27 +12,34 @@ export default async function AdminContentPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-black text-on-surface">Content moderatie</h1>
+      <h1 className="text-headline-lg text-on-surface">Content moderatie</h1>
 
       {/* Posts awaiting approval */}
       <Card hover={false}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-label-caps text-on-surface">TE PUBLICEREN POSTS</h2>
+            <h2 className="text-headline-sm text-on-surface">
+              Te publiceren posts
+            </h2>
             <Badge variant="default">{unpublishedPosts.length}</Badge>
           </div>
         </CardHeader>
         <CardBody className="p-0">
           {unpublishedPosts.length === 0 ? (
-            <p className="text-sm text-outline px-6 py-8">Geen posts in de wachtrij</p>
+            <p className="text-secondary px-6 py-8 text-sm">
+              Geen posts in de wachtrij
+            </p>
           ) : (
-            <ul className="divide-y divide-hairline">
+            <ul className="divide-hairline divide-y">
               {unpublishedPosts.map((post) => (
                 <li key={post.id} className="flex items-center gap-4 px-6 py-4">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-on-surface text-sm truncate">{post.title}</p>
-                    <p className="text-xs text-outline mt-0.5">
-                      door {post.author.naam ?? post.author.name} · {post.category}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-on-surface truncate text-sm font-semibold">
+                      {post.title}
+                    </p>
+                    <p className="text-secondary mt-0.5 text-xs">
+                      door {post.author.naam ?? post.author.name} ·{" "}
+                      {post.category}
                     </p>
                   </div>
                   <ContentModerationActions type="post" id={post.id} />
@@ -47,20 +54,29 @@ export default async function AdminContentPage() {
       <Card hover={false}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-label-caps text-on-surface">TE PUBLICEREN EVENTS</h2>
+            <h2 className="text-headline-sm text-on-surface">
+              Te publiceren events
+            </h2>
             <Badge variant="default">{unpublishedEvents.length}</Badge>
           </div>
         </CardHeader>
         <CardBody className="p-0">
           {unpublishedEvents.length === 0 ? (
-            <p className="text-sm text-outline px-6 py-8">Geen events in de wachtrij</p>
+            <p className="text-secondary px-6 py-8 text-sm">
+              Geen events in de wachtrij
+            </p>
           ) : (
-            <ul className="divide-y divide-hairline">
+            <ul className="divide-hairline divide-y">
               {unpublishedEvents.map((event) => (
-                <li key={event.id} className="flex items-center gap-4 px-6 py-4">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-on-surface text-sm truncate">{event.title}</p>
-                    <p className="text-xs text-outline mt-0.5">
+                <li
+                  key={event.id}
+                  className="flex items-center gap-4 px-6 py-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-on-surface truncate text-sm font-semibold">
+                      {event.title}
+                    </p>
+                    <p className="text-secondary mt-0.5 text-xs">
                       door {event.organiser.naam ?? event.organiser.name}
                     </p>
                   </div>
@@ -76,7 +92,7 @@ export default async function AdminContentPage() {
       <Card hover={false}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-label-caps text-on-surface">MELDINGEN</h2>
+            <h2 className="text-headline-sm text-on-surface">Meldingen</h2>
             <Badge variant={pendingReports.length > 0 ? "primary" : "default"}>
               {pendingReports.length}
             </Badge>
@@ -84,14 +100,23 @@ export default async function AdminContentPage() {
         </CardHeader>
         <CardBody className="p-0">
           {pendingReports.length === 0 ? (
-            <p className="text-sm text-outline px-6 py-8">Geen openstaande meldingen</p>
+            <p className="text-secondary px-6 py-8 text-sm">
+              Geen openstaande meldingen
+            </p>
           ) : (
-            <ul className="divide-y divide-hairline">
+            <ul className="divide-hairline divide-y">
               {pendingReports.map((report) => (
-                <li key={report.id} className="flex items-center gap-4 px-6 py-4">
-                  <div className="flex-1 min-w-0">
-                    <Badge variant="default" size="sm" className="mb-1">{report.type}</Badge>
-                    <p className="text-xs text-outline">{report.description ?? "Geen omschrijving"}</p>
+                <li
+                  key={report.id}
+                  className="flex items-center gap-4 px-6 py-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <Badge variant="default" size="sm" className="mb-1">
+                      {report.type}
+                    </Badge>
+                    <p className="text-secondary text-xs">
+                      {report.description ?? "Geen omschrijving"}
+                    </p>
                   </div>
                   <ContentModerationActions type="report" id={report.id} />
                 </li>

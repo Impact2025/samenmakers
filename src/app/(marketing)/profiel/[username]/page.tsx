@@ -11,72 +11,75 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
-  const user = await api.users.byNaam({ naam: decodeURIComponent(username) }).catch(() => null);
+  const user = await api.users
+    .byNaam({ naam: decodeURIComponent(username) })
+    .catch(() => null);
   if (!user) return { title: "Profiel niet gevonden" };
   return {
-    title: `${user.naam ?? user.name} — Samenmakers`,
+    title: `${user.naam ?? user.name} — We Shape the Future`,
     description: user.missie ?? user.bio ?? undefined,
   };
 }
 
 export default async function PublicProfilePage({ params }: Props) {
   const { username } = await params;
-  const user = await api.users.byNaam({ naam: decodeURIComponent(username) }).catch(() => null);
+  const user = await api.users
+    .byNaam({ naam: decodeURIComponent(username) })
+    .catch(() => null);
 
   if (!user || user.profileVisibility === "members") notFound();
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="px-6 py-5 hairline-b">
-        <Link href="/" className="text-xl font-black tracking-tighter text-on-surface">
-          SAMENMAKERS
-        </Link>
-      </header>
-
-      <main className="max-w-2xl mx-auto px-6 py-16">
+    <>
+      <main className="mx-auto max-w-2xl px-5 py-10">
         {/* Profile header */}
-        <div className="flex items-start gap-6 mb-10">
-          <Avatar src={user.avatarUrl} naam={user.naam ?? user.name ?? "M"} size="xl" />
-          <div className="flex-1 min-w-0">
-            <h1 className="text-headline-md text-on-surface mb-1">
+        <div className="mb-10 flex items-start gap-6">
+          <Avatar
+            src={user.avatarUrl}
+            naam={user.naam ?? user.name ?? "M"}
+            size="xl"
+          />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-headline-lg text-on-surface mb-1">
               {user.naam ?? user.name}
             </h1>
             {user.sector && (
-              <p className="text-body-sm text-outline mb-2">{user.sector}</p>
+              <p className="text-body-md text-secondary mb-2">{user.sector}</p>
             )}
-            {user.regio && (
-              <Badge variant="default">{user.regio}</Badge>
-            )}
+            {user.regio && <Badge variant="default">{user.regio}</Badge>}
           </div>
         </div>
 
         {user.missie && (
           <div className="mb-8">
-            <p className="text-label-caps text-outline mb-2">MISSIE</p>
-            <p className="text-body text-on-surface">{user.missie}</p>
+            <p className="text-label-md text-secondary mb-2">Missie</p>
+            <p className="text-body-md text-on-surface">{user.missie}</p>
           </div>
         )}
 
         {user.bio && (
           <div className="mb-8">
-            <p className="text-label-caps text-outline mb-2">OVER</p>
-            <p className="text-body text-on-surface-variant">{user.bio}</p>
+            <p className="text-label-md text-secondary mb-2">Over</p>
+            <p className="text-body-md text-on-surface-variant">{user.bio}</p>
           </div>
         )}
 
         {user.ikZoek && (
-          <div className="mb-8 border border-hairline p-5 bg-surface-container-low">
-            <p className="text-label-caps text-outline mb-2">IK ZOEK</p>
-            <p className="text-body text-on-surface">{user.ikZoek}</p>
+          <div className="bg-surface-container-low mb-8 rounded-2xl p-5">
+            <p className="text-label-md text-secondary mb-2">Ik zoek</p>
+            <p className="text-body-md text-on-surface">{user.ikZoek}</p>
           </div>
         )}
 
         {user.expertise && user.expertise.length > 0 && (
           <div className="mb-8">
-            <p className="text-label-caps text-outline mb-3">EXPERTISE</p>
+            <p className="text-label-md text-secondary mb-3">Expertise</p>
             <div className="flex flex-wrap gap-2">
               {user.expertise.map((tag) => (
-                <span key={tag} className="px-3 py-1 border border-hairline text-sm text-on-surface-variant">
+                <span
+                  key={tag}
+                  className="text-on-surface-variant border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors"
+                >
                   {tag}
                 </span>
               ))}
@@ -87,15 +90,15 @@ export default async function PublicProfilePage({ params }: Props) {
         <div className="hairline-t pt-8">
           <Link
             href="/aanmelden"
-            className="inline-block px-8 py-3 bg-primary text-on-primary font-bold text-label-caps hover:bg-primary/90 transition-colors"
+            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 shadow-cta inline-block inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 font-bold transition-colors"
           >
-            Verbind op Samenmakers
+            Verbind op We Shape the Future
           </Link>
-          <p className="text-body-sm text-outline mt-3">
+          <p className="text-body-md text-secondary mt-3">
             Maak een gratis account aan om contact op te nemen.
           </p>
         </div>
       </main>
-    </div>
+    </>
   );
 }

@@ -7,7 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { SECTOREN, REGIO_S, FASEN, MENTORSHIP_ROLES, ZOEKT_NAAR_OPTIONS } from "@/lib/constants";
+import {
+  SECTOREN,
+  REGIO_S,
+  FASEN,
+  MENTORSHIP_ROLES,
+  ZOEKT_NAAR_OPTIONS,
+} from "@/lib/constants";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
@@ -24,7 +30,8 @@ export function OnboardingFlow({ user }: { user: Me }) {
     bio: user?.bio ?? "",
     missie: user?.missie ?? "",
     ikZoek: user?.ikZoek ?? "",
-    zoektNaar: (user as { zoektNaar?: string[] })?.zoektNaar ?? [] as string[],
+    zoektNaar:
+      (user as { zoektNaar?: string[] })?.zoektNaar ?? ([] as string[]),
     sector: user?.sector ?? "",
     regio: user?.regio ?? "",
     fase: user?.fase ?? "",
@@ -50,8 +57,8 @@ export function OnboardingFlow({ user }: { user: Me }) {
       update.mutate({ naam: form.naam, bio: form.bio || undefined });
     } else if (step === "context") {
       update.mutate({
-        sector: (form.sector as typeof SECTOREN[number]) || undefined,
-        regio: (form.regio as typeof REGIO_S[number]) || undefined,
+        sector: (form.sector as (typeof SECTOREN)[number]) || undefined,
+        regio: (form.regio as (typeof REGIO_S)[number]) || undefined,
         fase: (form.fase as "starter" | "groei" | "scale") || undefined,
       });
     } else if (step === "missie") {
@@ -62,41 +69,58 @@ export function OnboardingFlow({ user }: { user: Me }) {
       });
     } else {
       update.mutate({
-        mentorshipRole: form.mentorshipRole as "mentor" | "mentee" | "both" | "none",
+        mentorshipRole: form.mentorshipRole as
+          | "mentor"
+          | "mentee"
+          | "both"
+          | "none",
       });
     }
   }
 
   return (
-    <div className="border border-hairline bg-white">
+    <div className="bg-surface-container-lowest shadow-elevated rounded-3xl">
       {/* Progress */}
       <div className="px-8 pt-8 pb-0">
-        <div className="flex items-center justify-between text-label-caps text-outline mb-3">
-          <span>STAP {stepIndex + 1} VAN {STEPS.length}</span>
-          <span>{progress}%</span>
+        <div className="text-label-md text-secondary mb-3 flex items-center justify-between">
+          <span>
+            Stap {stepIndex + 1} van {STEPS.length}
+          </span>
+          <span className="text-primary-container">{progress}%</span>
         </div>
-        <div className="w-full bg-surface-container h-1 mb-8">
-          <div className="h-1 bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="bg-surface-container mb-8 h-2 w-full overflow-hidden rounded-full">
+          <div
+            className="bg-primary-container h-2 rounded-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
 
-      <div className="px-8 pb-8 space-y-5">
+      <div className="space-y-5 px-8 pb-8">
         {step === "basis" && (
           <>
-            <h2 className="text-headline-sm text-on-surface">Wie ben jij?</h2>
+            <h2 className="text-headline-md text-on-surface">Wie ben jij?</h2>
             <div>
-              <label className="text-label-caps text-outline block mb-2">NAAM *</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Naam *
+              </label>
               <Input
                 value={form.naam}
-                onChange={(e) => setForm((f) => ({ ...f, naam: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, naam: e.target.value }))
+                }
                 placeholder="Jouw naam"
               />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">BIO</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Bio
+              </label>
               <Textarea
                 value={form.bio}
-                onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, bio: e.target.value }))
+                }
                 placeholder="Vertel in een paar zinnen over jezelf en je onderneming"
                 rows={3}
               />
@@ -106,39 +130,61 @@ export function OnboardingFlow({ user }: { user: Me }) {
 
         {step === "context" && (
           <>
-            <h2 className="text-headline-sm text-on-surface">In welke context werk jij?</h2>
+            <h2 className="text-headline-md text-on-surface">
+              In welke context werk jij?
+            </h2>
             <div>
-              <label className="text-label-caps text-outline block mb-2">SECTOR</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Sector
+              </label>
               <select
                 value={form.sector}
-                onChange={(e) => setForm((f) => ({ ...f, sector: e.target.value }))}
-                className="w-full border border-hairline bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-on-surface"
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, sector: e.target.value }))
+                }
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Kies jouw sector</option>
-                {SECTOREN.map((s) => <option key={s} value={s}>{s}</option>)}
+                {SECTOREN.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">REGIO</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Regio
+              </label>
               <select
                 value={form.regio}
-                onChange={(e) => setForm((f) => ({ ...f, regio: e.target.value }))}
-                className="w-full border border-hairline bg-white px-3 py-2.5 text-sm focus:outline-none focus:border-on-surface"
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, regio: e.target.value }))
+                }
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
               >
                 <option value="">Kies jouw regio</option>
-                {REGIO_S.map((r) => <option key={r} value={r}>{r}</option>)}
+                {REGIO_S.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">FASE</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Fase
+              </label>
               <div className="flex gap-2">
                 {FASEN.map(({ value, label }) => (
                   <button
                     key={value}
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, fase: value }))}
-                    className={`flex-1 py-3 text-xs font-bold tracking-widest uppercase border transition-colors ${
-                      form.fase === value ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-outline hover:border-on-surface"
+                    className={`text-label-md flex-1 border py-3 transition-colors ${
+                      form.fase === value
+                        ? "bg-on-surface text-surface-container-lowest border-transparent"
+                        : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                     }`}
                   >
                     {label}
@@ -151,19 +197,29 @@ export function OnboardingFlow({ user }: { user: Me }) {
 
         {step === "missie" && (
           <>
-            <h2 className="text-headline-sm text-on-surface">Wat drijft jou?</h2>
+            <h2 className="text-headline-md text-on-surface">
+              Wat drijft jou?
+            </h2>
             <div>
-              <label className="text-label-caps text-outline block mb-2">MISSIE</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Missie
+              </label>
               <Textarea
                 value={form.missie}
-                onChange={(e) => setForm((f) => ({ ...f, missie: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, missie: e.target.value }))
+                }
                 placeholder="Wat is de missie van jouw onderneming?"
                 rows={3}
               />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">WAT ZOEK JE? *</label>
-              <p className="text-body-sm text-outline mb-3">Dit bepaalt wie je te zien krijgt.</p>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                WAT ZOEK JE? *
+              </label>
+              <p className="text-body-md text-secondary mb-3">
+                Dit bepaalt wie je te zien krijgt.
+              </p>
               <div className="flex flex-wrap gap-2">
                 {ZOEKT_NAAR_OPTIONS.map(({ value, label }) => {
                   const selected = form.zoektNaar.includes(value);
@@ -179,10 +235,10 @@ export function OnboardingFlow({ user }: { user: Me }) {
                             : [...f.zoektNaar, value],
                         }))
                       }
-                      className={`px-3 py-2 text-xs font-bold tracking-wide border transition-colors ${
+                      className={`text-label-md rounded-full border px-3 py-2 transition-colors ${
                         selected
                           ? "bg-primary text-on-primary border-primary"
-                          : "border-hairline text-outline hover:border-on-surface"
+                          : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                       }`}
                     >
                       {label}
@@ -192,10 +248,14 @@ export function OnboardingFlow({ user }: { user: Me }) {
               </div>
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">TOELICHTING (OPTIONEEL)</label>
+              <label className="text-label-lg text-on-surface mb-1.5 block">
+                Toelichting (optioneel)
+              </label>
               <Textarea
                 value={form.ikZoek}
-                onChange={(e) => setForm((f) => ({ ...f, ikZoek: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, ikZoek: e.target.value }))
+                }
                 placeholder="Vertel meer over wat je zoekt in een samenwerking"
                 rows={2}
               />
@@ -205,18 +265,23 @@ export function OnboardingFlow({ user }: { user: Me }) {
 
         {step === "mentorship" && (
           <>
-            <h2 className="text-headline-sm text-on-surface">Mentorschap</h2>
-            <p className="text-body-sm text-on-surface-variant">
-              Ben je beschikbaar als mentor voor andere ondernemers, of zoek je zelf een mentor?
+            <h2 className="text-headline-md text-on-surface">Mentorschap</h2>
+            <p className="text-body-md text-on-surface-variant">
+              Ben je beschikbaar als mentor voor andere ondernemers, of zoek je
+              zelf een mentor?
             </p>
             <div className="grid grid-cols-2 gap-3">
               {MENTORSHIP_ROLES.map(({ value, label }) => (
                 <button
                   key={value}
                   type="button"
-                  onClick={() => setForm((f) => ({ ...f, mentorshipRole: value }))}
-                  className={`py-4 text-label-caps border transition-colors ${
-                    form.mentorshipRole === value ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-outline hover:border-on-surface"
+                  onClick={() =>
+                    setForm((f) => ({ ...f, mentorshipRole: value }))
+                  }
+                  className={`text-label-md border py-4 transition-colors ${
+                    form.mentorshipRole === value
+                      ? "bg-on-surface text-surface-container-lowest border-transparent"
+                      : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
                   }`}
                 >
                   {label}
@@ -226,14 +291,30 @@ export function OnboardingFlow({ user }: { user: Me }) {
           </>
         )}
 
-        {update.error && <p className="text-sm text-red-600">{update.error.message}</p>}
+        {update.error && (
+          <p className="text-error text-sm">{update.error.message}</p>
+        )}
 
         <div className="flex gap-3 pt-2">
-          <Button variant="primary" onClick={handleNext} disabled={update.isPending} className="flex-1">
-            {update.isPending ? <Spinner /> : stepIndex < STEPS.length - 1 ? "Volgende stap →" : "Profiel opslaan →"}
+          <Button
+            variant="primary"
+            onClick={handleNext}
+            disabled={update.isPending}
+            className="flex-1"
+          >
+            {update.isPending ? (
+              <Spinner />
+            ) : stepIndex < STEPS.length - 1 ? (
+              "Volgende stap →"
+            ) : (
+              "Profiel opslaan →"
+            )}
           </Button>
           {stepIndex > 0 && (
-            <Button variant="secondary" onClick={() => setStep(STEPS[stepIndex - 1]!)}>
+            <Button
+              variant="secondary"
+              onClick={() => setStep(STEPS[stepIndex - 1]!)}
+            >
               Terug
             </Button>
           )}
@@ -241,7 +322,7 @@ export function OnboardingFlow({ user }: { user: Me }) {
 
         <button
           onClick={() => router.push("/dashboard")}
-          className="w-full text-center text-xs text-outline hover:text-on-surface transition-colors py-2"
+          className="text-secondary hover:text-on-surface w-full py-2 text-center text-xs transition-colors"
         >
           Nu overslaan, later invullen
         </button>

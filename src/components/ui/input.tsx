@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { type InputHTMLAttributes, forwardRef, useId } from "react";
+import { fieldClasses, labelClasses } from "@/components/ui/field-styles";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -15,30 +16,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? generatedId;
 
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="text-label-caps text-on-surface-variant"
-          >
+          <label htmlFor={inputId} className={labelClasses}>
             {label}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
+          aria-invalid={error ? true : undefined}
           className={cn(
-            "w-full bg-transparent border-b border-on-surface pb-2 text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-b-2 transition-all",
-            error && "border-error focus:border-error",
+            fieldClasses,
+            error && "border-error focus:border-error focus:ring-error/15",
             className,
           )}
           {...props}
         />
-        {error && (
-          <p className="text-body-sm text-error">{error}</p>
-        )}
+        {error && <p className="text-body-sm text-error">{error}</p>}
         {hint && !error && (
-          <p className="text-body-sm text-outline">{hint}</p>
+          <p className="text-body-sm text-secondary">{hint}</p>
         )}
       </div>
     );

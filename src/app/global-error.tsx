@@ -14,16 +14,31 @@ export default function GlobalError({ error, reset }: Props) {
 
   return (
     <html lang="nl">
-      <body className="min-h-screen flex flex-col items-center justify-center px-6 bg-white font-sans antialiased">
-        <div className="text-center max-w-sm">
-          <p className="text-label-caps text-outline mb-4">SAMENMAKERS</p>
-          <h1 className="text-2xl font-black text-on-surface mb-3">Er ging iets mis</h1>
-          <p className="text-sm text-on-surface-variant mb-8">
+      <body
+        style={{ background: "#f9f9ff", color: "#141b2b" }}
+        className="flex min-h-screen flex-col items-center justify-center px-6 font-sans antialiased"
+      >
+        <div className="max-w-sm text-center">
+          <p className="mb-4 text-sm font-bold" style={{ color: "#d8006e" }}>
+            We Shape the Future
+          </p>
+          <h1 className="text-on-surface mb-3 text-2xl font-extrabold">
+            Er ging iets mis
+          </h1>
+          <p className="text-on-surface-variant mb-8 text-sm">
             Er is een onverwachte fout opgetreden. Probeer het opnieuw.
           </p>
+          {process.env.NODE_ENV === "development" && (
+            <pre className="bg-error-container mb-4 max-h-32 overflow-auto rounded border border-red-200 p-3 text-left text-xs whitespace-pre-wrap">
+              {error.name}: {error.message}
+              {"\n"}
+              {error.digest && `Digest: ${error.digest}`}
+            </pre>
+          )}
           <button
             onClick={reset}
-            className="px-6 py-3 bg-primary text-white font-bold text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+            className="inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold text-white"
+            style={{ background: "#d8006e" }}
           >
             Opnieuw proberen
           </button>

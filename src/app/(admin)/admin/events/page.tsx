@@ -1,81 +1,130 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { api } from "@/trpc/server";
-import { formatDate } from "@/lib/date-utils";
+import { formatEventWhen, eventWhere } from "@/lib/event-format";
+import { PHASE_LABEL } from "@/server/events/status";
 
 export const metadata: Metadata = { title: "Admin — Events" };
 
-export default async function AdminEventsPage() {
-  const { items: events } = await api.events.list({ limit: 50 }).catch(() => ({
-    items: [],
-    nextCursor: undefined,
-  }));
+const TABS = [
+  { key: undefined, label: "Alle" },
+  { key: "published", label: "Gepubliceerd" },
+  { key: "draft", label: "Concept" },
+  { key: "cancelled", label: "Geannuleerd" },
+] as const;
+
+export default async function AdminEventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status: raw } = await searchParams;
+  const status =
+    raw === "published" || raw === "draft" || raw === "cancelled"
+      ? raw
+      : undefined;
+  const events = await api.events.adminList({
+    ...(status ? { status } : {}),
+    limit: 200,
+  });
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-label-caps text-outline mb-1">ADMIN</p>
-          <h1 className="text-headline-md text-on-surface">Events</h1>
+          <p className="text-label-md text-secondary mb-1">Admin</p>
+          <h1 className="text-headline-lg text-on-surface">Events</h1>
         </div>
         <Link
           href="/events/nieuw"
-          className="px-4 py-2 bg-primary text-on-primary text-sm font-bold hover:bg-primary/90 transition-colors"
+          className="bg-primary text-on-primary hover:bg-primary/90 shadow-cta inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-colors"
         >
           + Nieuw event
         </Link>
       </div>
 
-      <div className="border border-hairline">
+      <div className="mb-4 flex gap-2">
+        {TABS.map((t) => (
+          <Link
+            key={t.label}
+            href={t.key ? `/admin/events?status=${t.key}` : "/admin/events"}
+            className={`text-label-md rounded-full border px-4 py-1.5 ${status === t.key ? "bg-on-surface text-surface-container-lowest border-transparent" : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"}`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      <div className="border-hairline overflow-x-auto border">
         <table className="w-full text-sm">
           <thead>
             <tr className="hairline-b bg-surface-container-low">
-              <th className="text-left px-4 py-3 text-label-caps text-outline font-normal">TITEL</th>
-              <th className="text-left px-4 py-3 text-label-caps text-outline font-normal">DATUM</th>
-              <th className="text-left px-4 py-3 text-label-caps text-outline font-normal">LOCATIE</th>
-              <th className="text-left px-4 py-3 text-label-caps text-outline font-normal">STATUS</th>
-              <th className="px-4 py-3" />
+              {[
+                "Titel",
+                "Datum",
+                "Locatie",
+                "Organisator",
+                "Bezetting",
+                "Status",
+                "",
+              ].map((h) => (
+                <th
+                  key={h}
+                  className="text-label-md text-secondary px-4 py-3 text-left font-normal"
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {events.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-outline text-sm">
+                <td
+                  colSpan={7}
+                  className="text-secondary px-4 py-8 text-center text-sm"
+                >
                   Geen events gevonden.
                 </td>
               </tr>
             )}
-            {events.map((event) => {
-              const isPast = new Date(event.startAt) < new Date();
-              return (
-                <tr key={event.id} className="hairline-b last:border-0 hover:bg-surface-container-low transition-colors">
-                  <td className="px-4 py-3 font-medium text-on-surface">{event.title}</td>
-                  <td className="px-4 py-3 text-on-surface-variant">
-                    {formatDate(new Date(event.startAt))}
-                  </td>
-                  <td className="px-4 py-3 text-on-surface-variant">
-                    {event.isOnline ? "Online" : (event.location ?? "—")}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 border ${
-                      isPast
-                        ? "border-outline/30 text-outline"
-                        : "border-primary/30 text-primary"
-                    }`}>
-                      {isPast ? "Afgelopen" : "Aankomend"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/events/${event.id}`}
-                      className="text-xs text-primary hover:underline"
-                    >
-                      Bekijken →
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
+            {events.map((e) => (
+              <tr
+                key={e.id}
+                className="hairline-b hover:bg-surface-container-low transition-colors last:border-0"
+              >
+                <td className="text-on-surface px-4 py-3 font-medium">
+                  {e.title}
+                </td>
+                <td className="text-on-surface-variant px-4 py-3 whitespace-nowrap">
+                  {formatEventWhen(e.startAt, null, e.timezone)}
+                </td>
+                <td className="text-on-surface-variant px-4 py-3">
+                  {eventWhere(e)}
+                </td>
+                <td className="text-on-surface-variant px-4 py-3">
+                  {e.organiserNaam ?? e.organiserName ?? "—"}
+                </td>
+                <td className="text-on-surface-variant px-4 py-3 whitespace-nowrap">
+                  {e.seatsTaken}
+                  {e.maxAttendees ? ` / ${e.maxAttendees}` : ""}
+                  {e.waitlistCount > 0 ? ` (+${e.waitlistCount})` : ""}
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-on-surface-variant border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-colors">
+                    {PHASE_LABEL[e.phase]}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right whitespace-nowrap">
+                  <Link
+                    href={`/events/${e.slug}/beheer`}
+                    className="text-primary text-xs hover:underline"
+                  >
+                    Beheren →
+                  </Link>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

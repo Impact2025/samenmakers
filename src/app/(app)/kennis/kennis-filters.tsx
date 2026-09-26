@@ -1,44 +1,35 @@
-"use client";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { POST_CATEGORIES } from "@/lib/constants";
 
-export function KennisFilters({ activeCategory }: { activeCategory?: string }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  function setCategory(cat: string | null) {
-    const params = new URLSearchParams(searchParams.toString());
+export function KennisFilters({
+  activeCategory,
+  search,
+}: {
+  activeCategory?: string;
+  search?: string;
+}) {
+  const href = (cat: string | null) => {
+    const params = new URLSearchParams();
     if (cat) params.set("category", cat);
-    else params.delete("category");
-    router.push(`/kennis?${params.toString()}`);
-  }
+    if (search) params.set("search", search);
+    const s = params.toString();
+    return s ? `/kennis?${s}` : "/kennis";
+  };
 
   return (
-    <div className="flex gap-2 flex-wrap">
-      <button
-        onClick={() => setCategory(null)}
-        className={`px-4 py-2 text-label-caps border transition-colors ${
-          !activeCategory
-            ? "bg-on-surface text-on-primary border-on-surface"
-            : "border-hairline text-outline hover:border-on-surface"
-        }`}
-      >
+    <ChipRow>
+      <ChipLink href={href(null)} active={!activeCategory}>
         Alles
-      </button>
+      </ChipLink>
       {POST_CATEGORIES.map(({ value, label }) => (
-        <button
+        <ChipLink
           key={value}
-          onClick={() => setCategory(value)}
-          className={`px-4 py-2 text-label-caps border transition-colors ${
-            activeCategory === value
-              ? "bg-on-surface text-on-primary border-on-surface"
-              : "border-hairline text-outline hover:border-on-surface"
-          }`}
+          href={href(value)}
+          active={activeCategory === value}
         >
           {label}
-        </button>
+        </ChipLink>
       ))}
-    </div>
+    </ChipRow>
   );
 }

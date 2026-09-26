@@ -33,10 +33,7 @@ export function GrayscaleImage({
       {...imageProps}
       {...(priority ? { priority } : {})}
       {...(sizes ? { sizes } : {})}
-      className={cn(
-        "object-cover grayscale group-hover:grayscale-0 transition-all duration-500",
-        className,
-      )}
+      className={cn("object-cover", className)}
     />
   );
 }

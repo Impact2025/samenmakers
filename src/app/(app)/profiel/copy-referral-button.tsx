@@ -15,14 +15,14 @@ export function CopyReferralButton({ code }: { code: string }) {
   }
 
   return (
-    <Button variant="secondary" onClick={handleCopy}>
+    <Button variant="tonal" size="sm" onClick={() => void handleCopy()}>
       {copied ? (
         <>
-          <Check size={14} className="mr-1.5 text-primary" /> Gekopieerd
+          <Check size={16} /> Gekopieerd
         </>
       ) : (
         <>
-          <Copy size={14} className="mr-1.5" /> Kopieer
+          <Copy size={16} /> Kopieer link
         </>
       )}
     </Button>

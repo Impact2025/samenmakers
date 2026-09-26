@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, X, MessageSquare, Info, Sparkles } from "lucide-react";
+import { Heart, X, MessageCircle, Info, Sparkles, MapPin } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardBody } from "@/components/ui/card";
+import { Button, buttonClasses } from "@/components/ui/button";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SectionHeader } from "@/components/shared/section-header";
 import { Spinner } from "@/components/ui/spinner";
 import { ZOEKT_NAAR_OPTIONS } from "@/lib/constants";
 
@@ -19,7 +20,9 @@ type MatchResult = {
 export function MatchingClient() {
   const utils = trpc.useUtils();
 
-  const { data: deck, isLoading } = trpc.matches.swipeDeck.useQuery({ limit: 10 });
+  const { data: deck, isLoading } = trpc.matches.swipeDeck.useQuery({
+    limit: 10,
+  });
   const { data: myMatches } = trpc.matches.myMatches.useQuery();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,171 +49,221 @@ export function MatchingClient() {
     },
   });
 
-  if (isLoading) return <div className="flex justify-center py-20"><Spinner /></div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner />
+      </div>
+    );
 
   const profiles = deck ?? [];
   const current = profiles[currentIndex];
 
-  return (
-    <div className="max-w-lg mx-auto space-y-8">
-      {/* Match celebration overlay */}
-      {matchResult && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-          <div className="bg-white max-w-sm w-full p-8 text-center">
-            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-              <Sparkles size={28} className="text-on-primary" />
-            </div>
-            <h2 className="text-headline-sm text-on-surface mb-2">Het is een match!</h2>
-            <p className="text-body-sm text-on-surface-variant mb-4">
-              Jullie zijn beiden geïnteresseerd in contact.
-            </p>
+  const zoektNaar =
+    (current as { zoektNaar?: string[] } | undefined)?.zoektNaar ?? [];
 
+  return (
+    <div className="mx-auto flex max-w-lg flex-col gap-6">
+      {/* Match! */}
+      {matchResult && (
+        <div
+          className="bg-on-surface/40 fixed inset-0 z-[70] flex items-center justify-center p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="match-title"
+        >
+          <div className="bg-surface-container-lowest shadow-floating w-full max-w-sm rounded-3xl p-6 text-center">
+            <div className="relative mx-auto mb-4 w-fit">
+              <Avatar
+                src={matchResult.avatarUrl}
+                naam={matchResult.naam}
+                size="lg"
+                ring
+              />
+              <span className="bg-primary-container text-on-primary shadow-cta absolute -right-1 -bottom-1 flex h-9 w-9 items-center justify-center rounded-full">
+                <Sparkles size={18} />
+              </span>
+            </div>
+            <h2 id="match-title" className="text-headline-md text-on-surface">
+              Het is een match!
+            </h2>
+            <p className="text-body-md text-secondary mt-1">
+              Jij en {matchResult.naam} willen allebei contact.
+            </p>
             {matchResult.reasons.length > 0 && (
-              <div className="mb-6 space-y-1.5">
+              <div className="mt-4 flex flex-wrap justify-center gap-1.5">
                 {matchResult.reasons.map((reason) => (
-                  <div key={reason} className="flex items-center justify-center gap-2 text-xs text-on-surface">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  <span
+                    key={reason}
+                    className="bg-primary-fixed text-label-md text-on-primary-fixed rounded-full px-3 py-1"
+                  >
                     {reason}
-                  </div>
+                  </span>
                 ))}
               </div>
             )}
-
-            <div className="flex gap-3">
-              <Link href="/berichten" className="flex-1">
-                <button className="w-full py-3 bg-primary text-on-primary font-bold text-label-caps flex items-center justify-center gap-2">
-                  <MessageSquare size={16} />
-                  Bericht sturen
-                </button>
-              </Link>
-              <button
-                onClick={() => setMatchResult(null)}
-                className="flex-1 py-3 border border-hairline text-on-surface font-bold text-label-caps"
+            <div className="mt-6 flex flex-col gap-2">
+              <Link
+                href="/berichten"
+                className={buttonClasses("primary", "lg", "w-full")}
               >
-                Doorgaan
-              </button>
+                <MessageCircle size={18} /> Bericht sturen
+              </Link>
+              <Button variant="ghost" onClick={() => setMatchResult(null)}>
+                Verder swipen
+              </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Swipe card */}
       {!current || currentIndex >= profiles.length ? (
-        <div className="text-center py-16 space-y-4">
-          <p className="text-headline-sm text-on-surface">Geen nieuwe profielen</p>
-          <p className="text-body text-outline">
-            Kom later terug voor nieuwe makers in jouw netwerk.
-          </p>
-          <Link href="/ontdekken">
-            <button className="px-6 py-3 bg-primary text-on-primary font-bold text-label-caps">
+        <EmptyState
+          icon={<Heart size={22} />}
+          title="Geen nieuwe profielen"
+          description="Kom later terug voor nieuwe makers in jouw netwerk."
+          action={
+            <Link href="/ontdekken" className={buttonClasses("primary", "md")}>
               Ontdek makers
-            </button>
-          </Link>
-        </div>
+            </Link>
+          }
+        />
       ) : (
-        <div className="space-y-4">
-          <Card hover={false}>
-            <CardBody>
-              <div className="flex gap-5 mb-5">
-                <Avatar
-                  src={current.avatarUrl}
-                  naam={current.naam ?? current.name ?? "?"}
-                  size="xl"
-                  grayscale={false}
-                />
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-xl font-black text-on-surface">
-                    {current.naam ?? current.name}
-                  </h2>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {current.sector && <Badge variant="default" size="sm">{current.sector}</Badge>}
-                    {current.regio && <Badge variant="default" size="sm">{current.regio}</Badge>}
-                    {current.fase && (
-                      <Badge variant="default" size="sm">
-                        {current.fase.charAt(0).toUpperCase() + current.fase.slice(1)}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
+        <div className="flex flex-col gap-4">
+          <article className="bg-surface-container-lowest shadow-elevated overflow-hidden rounded-3xl">
+            <div className="from-primary-fixed via-surface-container-low to-tertiary-fixed/40 relative flex flex-col items-center bg-gradient-to-br px-5 pt-8 pb-5 text-center">
+              <span className="bg-surface-container-lowest/80 text-label-sm text-secondary absolute top-4 right-4 rounded-full px-2.5 py-1 backdrop-blur-md">
+                {currentIndex + 1} / {profiles.length}
+              </span>
+              <Avatar
+                src={current.avatarUrl}
+                naam={current.naam ?? current.name ?? "?"}
+                size="xl"
+                className="shadow-elevated rounded-full"
+              />
+              <h2 className="text-headline-md text-on-surface mt-3">
+                {current.naam ?? current.name}
+              </h2>
+              <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+                {current.sector && (
+                  <span className="bg-surface-container-lowest text-label-md text-primary-container rounded-full px-3 py-1">
+                    {current.sector}
+                  </span>
+                )}
+                {current.regio && (
+                  <span className="bg-surface-container-lowest text-label-md text-secondary flex items-center gap-1 rounded-full px-3 py-1">
+                    <MapPin size={12} /> {current.regio}
+                  </span>
+                )}
+                {current.fase && (
+                  <span className="bg-surface-container-lowest text-label-md text-secondary rounded-full px-3 py-1">
+                    {current.fase.charAt(0).toUpperCase() +
+                      current.fase.slice(1)}
+                  </span>
+                )}
               </div>
+            </div>
 
+            <div className="flex flex-col gap-4 p-5">
               {current.missie && (
-                <div className="mb-4">
-                  <p className="text-label-caps text-outline mb-1">MISSIE</p>
-                  <p className="text-body-sm text-on-surface italic">
-                    &ldquo;{current.missie}&rdquo;
-                  </p>
-                </div>
+                <p className="text-body-lg text-on-surface-variant italic">
+                  &ldquo;{current.missie}&rdquo;
+                </p>
               )}
 
-              {/* Structured zoektNaar tags */}
-              {(current as { zoektNaar?: string[] }).zoektNaar && (current as { zoektNaar?: string[] }).zoektNaar!.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-label-caps text-outline mb-2">OP ZOEK NAAR</p>
+              {zoektNaar.length > 0 ? (
+                <div>
+                  <p className="text-label-sm text-secondary mb-2 uppercase">
+                    Op zoek naar
+                  </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {(current as { zoektNaar?: string[] }).zoektNaar!.map((z) => {
-                      const label = ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z;
-                      return <Badge key={z} variant="primary" size="sm">{label}</Badge>;
-                    })}
+                    {zoektNaar.map((z) => (
+                      <span
+                        key={z}
+                        className="bg-primary-container/10 text-label-md text-primary-container rounded-full px-3 py-1"
+                      >
+                        {ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ??
+                          z}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              )}
-
-              {current.ikZoek && !(current as { zoektNaar?: string[] }).zoektNaar?.length && (
-                <div className="mb-4">
-                  <p className="text-label-caps text-outline mb-1">IK ZOEK</p>
-                  <p className="text-body-sm text-on-surface-variant">{current.ikZoek}</p>
-                </div>
+              ) : (
+                current.ikZoek && (
+                  <div>
+                    <p className="text-label-sm text-secondary mb-1 uppercase">
+                      Ik zoek
+                    </p>
+                    <p className="text-body-md text-on-surface-variant">
+                      {current.ikZoek}
+                    </p>
+                  </div>
+                )
               )}
 
               {current.expertise && current.expertise.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {current.expertise.map((tag) => (
-                    <Badge key={tag} variant="default" size="sm">{tag}</Badge>
-                  ))}
+                <div>
+                  <p className="text-label-sm text-secondary mb-2 uppercase">
+                    Expertise
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {current.expertise.map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-surface-container text-label-md text-on-surface rounded-full px-3 py-1"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              <div className="mt-4 pt-4 hairline-t flex justify-end">
-                <Link
-                  href={`/makers/${current.id}`}
-                  className="text-label-caps text-outline hover:text-primary transition-colors flex items-center gap-1"
-                >
-                  <Info size={12} />
-                  Volledig profiel
-                </Link>
-              </div>
-            </CardBody>
-          </Card>
+              <Link
+                href={`/makers/${current.id}`}
+                className="text-label-md text-secondary hover:text-primary-container flex items-center justify-center gap-1 transition-colors"
+              >
+                <Info size={14} /> Volledig profiel bekijken
+              </Link>
+            </div>
+          </article>
 
-          {/* Action buttons */}
           <div className="flex items-center justify-center gap-6">
             <button
-              onClick={() => swipe.mutate({ targetId: current.id, decision: "pass" })}
+              onClick={() =>
+                swipe.mutate({ targetId: current.id, decision: "pass" })
+              }
               disabled={swipe.isPending}
-              className="w-16 h-16 border border-hairline flex items-center justify-center text-outline hover:border-red-400 hover:text-red-400 active:scale-95 transition-all disabled:opacity-50"
+              className="bg-surface-container-lowest text-secondary shadow-elevated hover:text-error flex h-16 w-16 items-center justify-center rounded-full transition-all active:scale-95 disabled:opacity-50"
               aria-label="Sla over"
             >
-              <X size={24} />
+              <X size={26} />
             </button>
             <button
-              onClick={() => swipe.mutate({ targetId: current.id, decision: "like" })}
+              onClick={() =>
+                swipe.mutate({ targetId: current.id, decision: "like" })
+              }
               disabled={swipe.isPending}
-              className="w-20 h-20 bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-all disabled:opacity-50"
-              aria-label="Connect"
+              className="bg-primary-container text-on-primary shadow-cta flex h-20 w-20 items-center justify-center rounded-full transition-all hover:brightness-105 active:scale-95 disabled:opacity-50"
+              aria-label="Connectie maken"
             >
-              {swipe.isPending ? <Spinner /> : <Heart size={28} />}
+              {swipe.isPending ? (
+                <Spinner />
+              ) : (
+                <Heart size={30} fill="currentColor" />
+              )}
             </button>
           </div>
 
-          <p className="text-center text-label-caps text-outline">
-            {currentIndex + 1} / {profiles.length}
-          </p>
-
           {rateLimitError && (
-            <div className="border border-primary/30 bg-primary/5 px-4 py-3 text-center">
-              <p className="text-sm text-on-surface mb-2">{rateLimitError}</p>
-              <Link href="/instellingen/abonnement" className="text-label-caps text-primary hover:underline">
+            <div className="bg-primary-fixed/50 rounded-2xl px-4 py-3 text-center">
+              <p className="text-body-md text-on-surface mb-1">
+                {rateLimitError}
+              </p>
+              <Link
+                href="/instellingen/abonnement"
+                className="text-label-lg text-primary-container hover:underline"
+              >
                 Upgrade naar Pro →
               </Link>
             </div>
@@ -218,24 +271,34 @@ export function MatchingClient() {
         </div>
       )}
 
-      {/* My matches */}
       {myMatches && myMatches.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-label-caps text-on-surface">MIJN MATCHES ({myMatches.length})</h2>
-            <Link href="/berichten" className="text-label-caps text-primary">BERICHTEN →</Link>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            {myMatches.slice(0, 6).map((match) => {
-              const other = match.userId === current?.id ? match.target : match.user;
+        <section>
+          <SectionHeader
+            title="Mijn matches"
+            count={myMatches.length}
+            viewAllHref="/berichten"
+            viewAllLabel="Berichten"
+          />
+          <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0">
+            {myMatches.slice(0, 10).map((match) => {
+              const other =
+                match.userId === current?.id ? match.target : match.user;
+              const naam = other.naam ?? other.name ?? "?";
               return (
-                <Link key={match.id} href={`/berichten/${match.id}`}>
-                  <Avatar src={other.avatarUrl} naam={other.naam ?? other.name ?? "?"} size="lg" grayscale={false} />
+                <Link
+                  key={match.id}
+                  href={`/berichten/${match.id}`}
+                  className="flex w-16 shrink-0 flex-col items-center gap-1"
+                >
+                  <Avatar src={other.avatarUrl} naam={naam} size="md" ring />
+                  <span className="text-label-sm text-secondary w-full truncate text-center">
+                    {naam.split(" ")[0]}
+                  </span>
                 </Link>
               );
             })}
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

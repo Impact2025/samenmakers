@@ -17,7 +17,7 @@ export function Spinner({ size = "md", className }: SpinnerProps) {
       role="status"
       aria-label="Laden..."
       className={cn(
-        "rounded-full border-hairline border-t-on-surface animate-spin",
+        "animate-spin rounded-full border-current/20 border-t-current",
         sizes[size],
         className,
       )}

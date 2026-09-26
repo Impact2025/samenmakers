@@ -1,25 +1,35 @@
 export default function OntdekkenLoading() {
   return (
-    <div className="animate-pulse">
-      {/* Filter bar skeleton */}
-      <div className="flex gap-3 mb-6 flex-wrap">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-9 w-28 bg-surface-container-high" />
+    <div
+      className="flex animate-pulse flex-col gap-5"
+      aria-busy="true"
+      aria-label="Laden"
+    >
+      <div className="bg-surface-container h-8 w-56 rounded-xl" />
+      <div className="bg-surface-container-low h-[50px] rounded-xl" />
+      <div className="flex gap-2">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-surface-container-low h-8 w-24 shrink-0 rounded-full"
+          />
         ))}
       </div>
-      {/* Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[...Array(9)].map((_, i) => (
-          <div key={i} className="border border-hairline p-5 space-y-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-surface-container-lowest shadow-card flex flex-col gap-3 rounded-2xl p-4"
+          >
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-surface-container-high shrink-0" />
-              <div className="space-y-2 flex-1">
-                <div className="h-4 w-28 bg-surface-container-high" />
-                <div className="h-3 w-20 bg-surface-container-high" />
+              <div className="bg-surface-container h-12 w-12 shrink-0 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <div className="bg-surface-container h-4 w-32 rounded-full" />
+                <div className="bg-surface-container h-3 w-20 rounded-full" />
               </div>
             </div>
-            <div className="h-3 w-full bg-surface-container-high" />
-            <div className="h-3 w-4/5 bg-surface-container-high" />
+            <div className="bg-surface-container h-3 w-full rounded-full" />
+            <div className="bg-surface-container h-3 w-4/5 rounded-full" />
           </div>
         ))}
       </div>

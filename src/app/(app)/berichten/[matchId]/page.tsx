@@ -23,11 +23,10 @@ export default async function ChatPage({ params }: Props) {
   const match = matches.find((m) => m.id === matchId);
   if (!match) notFound();
 
-  const other =
-    match.userId === session.user.id ? match.target : match.user;
+  const other = match.userId === session.user.id ? match.target : match.user;
 
   return (
-    <div className="h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] flex flex-col max-w-2xl">
+    <div className="flex h-[calc(100dvh-13rem-env(safe-area-inset-bottom))] flex-col lg:h-[calc(100dvh-6.5rem)]">
       <ChatWindow
         matchId={matchId}
         myId={session.user.id}

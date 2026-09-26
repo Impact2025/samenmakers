@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CheckCircle } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -15,7 +14,11 @@ type Answer = {
   content: string;
   isAccepted: boolean;
   createdAt: Date;
-  author: { naam: string | null; name: string | null; avatarUrl: string | null };
+  author: {
+    naam: string | null;
+    name: string | null;
+    avatarUrl: string | null;
+  };
 };
 
 interface Props {
@@ -25,7 +28,12 @@ interface Props {
   isResolved: boolean;
 }
 
-export function AnswerSection({ questionId, answers, isAuthor, isResolved }: Props) {
+export function AnswerSection({
+  questionId,
+  answers,
+  isAuthor,
+  isResolved,
+}: Props) {
   const [answerText, setAnswerText] = useState("");
   const utils = trpc.useUtils();
 
@@ -41,72 +49,81 @@ export function AnswerSection({ questionId, answers, isAuthor, isResolved }: Pro
   });
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-label-caps text-on-surface">
-        ANTWOORDEN ({answers.length})
+    <section className="flex flex-col gap-3">
+      <h2 className="text-headline-sm text-on-surface">
+        {answers.length} {answers.length === 1 ? "reactie" : "reacties"}
       </h2>
 
-      {answers.map((answer) => (
-        <div
-          key={answer.id}
-          className={`border p-5 ${answer.isAccepted ? "border-primary bg-primary/5" : "border-hairline bg-white"}`}
-        >
-          {answer.isAccepted && (
-            <div className="flex items-center gap-2 mb-3">
-              <CheckCircle size={14} className="text-primary" />
-              <span className="text-label-caps text-primary">Geaccepteerd antwoord</span>
+      {answers.map((answer) => {
+        const naam = answer.author.naam ?? answer.author.name ?? "?";
+        return (
+          <article
+            key={answer.id}
+            className={
+              answer.isAccepted
+                ? "bg-tertiary-fixed/30 ring-tertiary/30 flex flex-col gap-3 rounded-2xl p-5 ring-2"
+                : "bg-surface-container-lowest shadow-card flex flex-col gap-3 rounded-2xl p-5"
+            }
+          >
+            <div className="flex items-center gap-2.5">
+              <Avatar src={answer.author.avatarUrl} naam={naam} size="xs" />
+              <div className="min-w-0 flex-1">
+                <p className="text-label-lg text-on-surface truncate">{naam}</p>
+                <p className="text-body-sm text-secondary">
+                  {formatDate(new Date(answer.createdAt))}
+                </p>
+              </div>
+              {answer.isAccepted && (
+                <span className="bg-tertiary text-label-sm text-on-tertiary flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1">
+                  <CheckCircle size={14} /> Beste antwoord
+                </span>
+              )}
             </div>
-          )}
-          <p className="text-body text-on-surface-variant mb-4">{answer.content}</p>
-          <div className="flex items-center gap-3">
-            <Avatar
-              src={answer.author.avatarUrl}
-              naam={answer.author.naam ?? answer.author.name ?? "?"}
-              size="xs"
-              grayscale={false}
-            />
-            <span className="text-xs text-outline">
-              {answer.author.naam ?? answer.author.name} · {formatDate(new Date(answer.createdAt))}
-            </span>
+            <p className="text-body-md text-on-surface-variant whitespace-pre-line">
+              {answer.content}
+            </p>
             {isAuthor && !isResolved && !answer.isAccepted && (
-              <button
-                onClick={() => acceptAnswer.mutate({ answerId: answer.id, questionId })}
+              <Button
+                variant="tonal"
+                size="sm"
+                className="self-start"
+                onClick={() =>
+                  acceptAnswer.mutate({ answerId: answer.id, questionId })
+                }
                 disabled={acceptAnswer.isPending}
-                className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
               >
-                <CheckCircle size={12} />
-                Accepteer antwoord
-              </button>
+                <CheckCircle size={16} /> Markeer als beste antwoord
+              </Button>
             )}
-          </div>
-        </div>
-      ))}
+          </article>
+        );
+      })}
 
       {!isResolved && (
-        <div className="border border-hairline bg-white p-5 space-y-3">
-          <p className="text-label-caps text-on-surface">GEEF EEN ANTWOORD</p>
+        <div className="bg-surface-container-lowest shadow-elevated flex flex-col gap-3 rounded-2xl p-5">
+          <p className="text-title-md text-on-surface">Denk mee</p>
           <Textarea
             value={answerText}
             onChange={(e) => setAnswerText(e.target.value)}
             placeholder="Deel je kennis en ervaring…"
             rows={4}
+            aria-label="Jouw reactie"
           />
           {addAnswer.error && (
-            <p className="text-sm text-red-600">{addAnswer.error.message}</p>
+            <p className="text-body-sm text-error">{addAnswer.error.message}</p>
           )}
           <Button
-            variant="primary"
+            className="self-end"
             onClick={() => {
-              if (answerText.trim()) {
+              if (answerText.trim())
                 addAnswer.mutate({ questionId, content: answerText.trim() });
-              }
             }}
             disabled={!answerText.trim() || addAnswer.isPending}
           >
-            {addAnswer.isPending ? <Spinner /> : "Antwoord plaatsen"}
+            {addAnswer.isPending ? <Spinner size="sm" /> : "Reactie plaatsen"}
           </Button>
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -1,39 +1,103 @@
 import type { Metadata } from "next";
+import {
+  CalendarDays,
+  Euro,
+  FileText,
+  GraduationCap,
+  Handshake,
+  MessageCircle,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { api } from "@/trpc/server";
-import { Card, CardBody, CardHeader } from "@/components/ui/card";
+import { StatCard } from "@/components/ui/stat-card";
+import { PageHeader } from "@/components/shared/page-header";
 
-export const metadata: Metadata = { title: "Admin — Dashboard" };
+export const metadata: Metadata = { title: "Beheer — dashboard" };
 
 export default async function AdminDashboardPage() {
   const stats = await api.admin.analytics();
 
-  const statCards = [
-    { label: "TOTAAL GEBRUIKERS", value: stats.totalUsers, sub: `+${stats.newUsersThisMonth} deze maand` },
-    { label: "MATCH RATE", value: `${stats.matchRate}%`, sub: "wederzijds geïnteresseerd" },
-    { label: "BERICHTEN", value: stats.totalMessages, sub: "totaal verzonden" },
-    { label: "ACTIEF DEZE WEEK", value: stats.activeUsersThisWeek, sub: "unieke gebruikers" },
-    { label: "POSTS", value: stats.totalPosts, sub: "gepubliceerde artikelen" },
-    { label: "EVENTS", value: stats.totalEvents, sub: "gepubliceerde events" },
-    { label: "PRO GEBRUIKERS", value: stats.proUsers, sub: "actieve abonnementen" },
-    { label: "MRR", value: `€${stats.mrr}`, sub: "maandelijkse omzet" },
+  const avgPerClub =
+    stats.totalCohorts > 0
+      ? Math.round((stats.totalCohortMembers / stats.totalCohorts) * 10) / 10
+      : 0;
+
+  const cards = [
+    {
+      label: `Totaal gebruikers · +${stats.newUsersThisMonth} deze maand`,
+      value: stats.totalUsers,
+      icon: <Users size={18} />,
+      tone: "primary" as const,
+    },
+    {
+      label: "Match rate · wederzijds geïnteresseerd",
+      value: `${stats.matchRate}%`,
+      icon: <Handshake size={18} />,
+      tone: "primary" as const,
+    },
+    {
+      label: "Actief deze week · unieke gebruikers",
+      value: stats.activeUsersThisWeek,
+      icon: <TrendingUp size={18} />,
+      tone: "tertiary" as const,
+    },
+    {
+      label: "Pro-gebruikers · actieve abonnementen",
+      value: stats.proUsers,
+      icon: <Sparkles size={18} />,
+      tone: "primary" as const,
+    },
+    {
+      label: "MRR · maandelijkse omzet",
+      value: `€${stats.mrr}`,
+      icon: <Euro size={18} />,
+      tone: "tertiary" as const,
+    },
+    {
+      label: "Berichten · totaal verzonden",
+      value: stats.totalMessages,
+      icon: <MessageCircle size={18} />,
+      tone: "neutral" as const,
+    },
+    {
+      label: "Posts · gepubliceerde artikelen",
+      value: stats.totalPosts,
+      icon: <FileText size={18} />,
+      tone: "neutral" as const,
+    },
+    {
+      label: "Events · gepubliceerd",
+      value: stats.totalEvents,
+      icon: <CalendarDays size={18} />,
+      tone: "neutral" as const,
+    },
+    {
+      label: `Cohorten · ${stats.totalCohortMembers} leden (gem. ${avgPerClub})`,
+      value: stats.totalCohorts,
+      icon: <GraduationCap size={18} />,
+      tone: "neutral" as const,
+    },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-black text-on-surface">Admin Dashboard</h1>
-        <p className="text-sm text-outline mt-1">Platform overzicht</p>
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map(({ label, value, sub }) => (
-          <Card key={label} hover={false}>
-            <CardBody className="p-5">
-              <p className="text-[10px] font-bold tracking-widest text-outline mb-2">{label}</p>
-              <p className="text-3xl font-black text-on-surface">{value}</p>
-              <p className="text-xs text-outline mt-1">{sub}</p>
-            </CardBody>
-          </Card>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        label="Beheer"
+        title="Platformoverzicht"
+        description="De belangrijkste cijfers in één oogopslag"
+        className="mb-0"
+      />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        {cards.map(({ label, value, icon, tone }) => (
+          <StatCard
+            key={label}
+            value={value}
+            label={label}
+            icon={icon}
+            tone={tone}
+          />
         ))}
       </div>
     </div>

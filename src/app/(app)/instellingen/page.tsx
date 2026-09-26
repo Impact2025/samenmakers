@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ChevronRight, User, CreditCard, Bell, Shield } from "lucide-react";
 import { auth } from "@/server/auth/config";
 import { api } from "@/trpc/server";
-import { Card, CardBody } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ChevronRight, User, CreditCard, Bell, Shield, LogOut } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/shared/page-header";
 import { SignOutButton } from "./sign-out-button";
 
 export const metadata: Metadata = { title: "Instellingen" };
@@ -16,6 +15,7 @@ export default async function InstellingenPage() {
   if (!session?.user) redirect("/inloggen");
 
   const me = await api.users.me();
+  const isPro = me?.subscriptionStatus === "active";
 
   const settingsSections = [
     {
@@ -27,13 +27,13 @@ export default async function InstellingenPage() {
     {
       icon: CreditCard,
       label: "Abonnement",
-      description: me?.subscriptionStatus === "active" ? "Pro — actief" : "Basis — gratis",
+      description: isPro ? "Pro — actief" : "Basis — gratis",
       href: "/instellingen/abonnement",
-      badge: me?.subscriptionStatus === "active" ? "PRO" : undefined,
+      badge: isPro ? "Pro" : undefined,
     },
     {
       icon: Bell,
-      label: "Notificaties",
+      label: "Meldingen & updates",
       description: "E-mail en push-instellingen",
       href: "/instellingen/notificaties",
     },
@@ -46,36 +46,56 @@ export default async function InstellingenPage() {
   ];
 
   return (
-    <div className="max-w-lg space-y-6">
-      <div>
-        <p className="text-label-caps text-outline mb-1">ACCOUNT</p>
-        <h1 className="text-headline-md text-on-surface">Instellingen</h1>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Instellingen"
+        description="Beheer je account en voorkeuren"
+        className="mb-0"
+      />
+
+      <div className="bg-surface-container-lowest shadow-card flex items-center gap-3 rounded-2xl p-4">
+        <Avatar
+          src={me?.avatarUrl}
+          naam={me?.naam ?? me?.name ?? "?"}
+          size="sm"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-title-md text-on-surface truncate">
+            {me?.naam ?? me?.name}
+          </p>
+          <p className="text-body-sm text-secondary truncate">{me?.email}</p>
+        </div>
+        {isPro && (
+          <span className="bg-primary-fixed text-label-sm text-on-primary-fixed-variant rounded-full px-3 py-1 uppercase">
+            Pro
+          </span>
+        )}
       </div>
 
-      <Card hover={false}>
-        <CardBody className="flex items-center gap-4">
-          <div className="flex-1">
-            <p className="font-semibold text-on-surface">{me?.naam ?? me?.name}</p>
-            <p className="text-body-sm text-outline">{me?.email}</p>
-          </div>
-          {me?.subscriptionStatus === "active" && (
-            <Badge variant="primary">PRO</Badge>
-          )}
-        </CardBody>
-      </Card>
-
-      <div className="border border-hairline bg-white divide-y divide-hairline">
-        {settingsSections.map(({ icon: Icon, label, description, href, badge }) => (
-          <Link key={href} href={href} className="flex items-center gap-4 px-5 py-4 hover:bg-surface-container-low transition-colors">
-            <Icon size={18} className="text-outline shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-on-surface text-sm">{label}</p>
-              <p className="text-xs text-outline mt-0.5">{description}</p>
-            </div>
-            {badge && <Badge variant="primary" size="sm">{badge}</Badge>}
-            <ChevronRight size={16} className="text-outline shrink-0" />
-          </Link>
-        ))}
+      <div className="bg-surface-container-lowest shadow-card flex flex-col gap-1 rounded-2xl p-1.5">
+        {settingsSections.map(
+          ({ icon: Icon, label, description, href, badge }) => (
+            <Link
+              key={href}
+              href={href}
+              className="hover:bg-surface-container-low flex items-center gap-3 rounded-xl px-3 py-3 transition-colors"
+            >
+              <span className="bg-surface-container text-primary-container flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+                <Icon size={20} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-label-lg text-on-surface">{label}</p>
+                <p className="text-body-sm text-secondary">{description}</p>
+              </div>
+              {badge && (
+                <span className="bg-primary-fixed text-label-sm text-on-primary-fixed-variant rounded-full px-2 py-0.5 uppercase">
+                  {badge}
+                </span>
+              )}
+              <ChevronRight size={18} className="text-secondary shrink-0" />
+            </Link>
+          ),
+        )}
       </div>
 
       <SignOutButton />

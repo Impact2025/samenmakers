@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { type TextareaHTMLAttributes, forwardRef, useId } from "react";
+import { labelClasses, textareaClasses } from "@/components/ui/field-styles";
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
@@ -15,17 +16,18 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const inputId = id ?? generatedId;
 
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         {label && (
-          <label htmlFor={inputId} className="text-label-caps text-on-surface-variant">
+          <label htmlFor={inputId} className={labelClasses}>
             {label}
           </label>
         )}
         <textarea
           ref={ref}
           id={inputId}
+          aria-invalid={error ? true : undefined}
           className={cn(
-            "w-full bg-transparent border-b border-on-surface pb-2 text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-b-2 transition-all resize-none",
+            textareaClasses,
             error && "border-error focus:border-error",
             className,
           )}
@@ -33,7 +35,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && <p className="text-body-sm text-error">{error}</p>}
-        {hint && !error && <p className="text-body-sm text-outline">{hint}</p>}
+        {hint && !error && (
+          <p className="text-body-sm text-secondary">{hint}</p>
+        )}
       </div>
     );
   },

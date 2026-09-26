@@ -39,7 +39,10 @@ export function NewPostForm() {
     try {
       const data = new FormData();
       data.append("file", file);
-      const res = await fetch("/api/upload/avatar", { method: "POST", body: data });
+      const res = await fetch("/api/upload/avatar", {
+        method: "POST",
+        body: data,
+      });
       const json = (await res.json()) as { url?: string };
       if (json.url) setForm((f) => ({ ...f, coverImageUrl: json.url! }));
     } finally {
@@ -63,17 +66,19 @@ export function NewPostForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="text-label-caps text-outline block mb-2">CATEGORIE *</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Categorie *
+        </label>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.value}
               type="button"
               onClick={() => setForm((f) => ({ ...f, category: cat.value }))}
-              className={`px-4 py-2 text-sm font-medium border transition-colors ${
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                 form.category === cat.value
-                  ? "border-primary bg-primary/5 text-primary"
-                  : "border-hairline text-on-surface-variant hover:border-on-surface"
+                  ? "bg-primary-container text-on-primary border-transparent shadow-sm"
+                  : "bg-surface-container-low text-secondary hover:text-on-surface border-transparent"
               }`}
             >
               {cat.label}
@@ -83,7 +88,9 @@ export function NewPostForm() {
       </div>
 
       <div>
-        <label className="text-label-caps text-outline block mb-2">TITEL *</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Titel *
+        </label>
         <Input
           value={form.title}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
@@ -91,11 +98,13 @@ export function NewPostForm() {
           maxLength={160}
           required
         />
-        <p className="text-xs text-outline mt-1">{form.title.length}/160</p>
+        <p className="text-secondary mt-1 text-xs">{form.title.length}/160</p>
       </div>
 
       <div>
-        <label className="text-label-caps text-outline block mb-2">SAMENVATTING</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Samenvatting
+        </label>
         <Textarea
           value={form.excerpt}
           onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
@@ -103,11 +112,13 @@ export function NewPostForm() {
           maxLength={300}
           rows={2}
         />
-        <p className="text-xs text-outline mt-1">{form.excerpt.length}/300</p>
+        <p className="text-secondary mt-1 text-xs">{form.excerpt.length}/300</p>
       </div>
 
       <div>
-        <label className="text-label-caps text-outline block mb-2">INHOUD *</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Inhoud *
+        </label>
         <Textarea
           value={form.content}
           onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
@@ -115,50 +126,79 @@ export function NewPostForm() {
           rows={14}
           required
         />
-        <p className={`text-xs mt-1 ${charCount < 50 ? "text-red-500" : "text-outline"}`}>
+        <p
+          className={`mt-1 text-xs ${charCount < 50 ? "text-error" : "text-secondary"}`}
+        >
           {charCount} tekens{charCount < 50 ? ` — minimaal 50 vereist` : ""}
         </p>
       </div>
 
       <div>
-        <label className="text-label-caps text-outline block mb-2">OMSLAGAFBEELDING</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Omslagafbeelding
+        </label>
         {form.coverImageUrl ? (
           <div className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={form.coverImageUrl} alt="Cover" className="w-full h-40 object-cover border border-hairline" />
+            <img
+              src={form.coverImageUrl}
+              alt="Cover"
+              className="h-40 w-full rounded-xl object-cover"
+            />
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, coverImageUrl: "" }))}
-              className="absolute top-2 right-2 px-2 py-1 bg-white border border-hairline text-xs font-medium hover:bg-surface-container"
+              className="hover:bg-surface-container border-surface-container bg-surface-container-lowest text-label-md absolute top-2 right-2 inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 transition-colors"
             >
               Verwijderen
             </button>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center w-full h-32 border border-dashed border-hairline cursor-pointer hover:border-on-surface transition-colors bg-surface-container-low">
+          <label className="hover:shadow-elevated bg-surface-container-low border-outline-variant flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-colors">
             {uploading ? (
               <Spinner />
             ) : (
               <>
-                <span className="text-sm text-outline">Klik om een afbeelding te uploaden</span>
-                <span className="text-xs text-outline mt-1">PNG, JPG · max 4 MB</span>
+                <span className="text-secondary text-sm">
+                  Klik om een afbeelding te uploaden
+                </span>
+                <span className="text-secondary mt-1 text-xs">
+                  PNG, JPG · max 4 MB
+                </span>
               </>
             )}
-            <input type="file" accept="image/*" className="sr-only" onChange={handleCoverUpload} disabled={uploading} />
+            <input
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => void handleCoverUpload(e)}
+              disabled={uploading}
+            />
           </label>
         )}
       </div>
 
-      <div className="hairline-t pt-6">
-        <p className="text-body-sm text-outline mb-4">
-          Je artikel wordt na indiening beoordeeld door het Samenmakers-team voordat het gepubliceerd wordt.
+      <div className="border-hairline flex flex-col gap-3 border-t pt-5">
+        <p className="text-body-md text-secondary mb-4">
+          Je artikel wordt na indiening beoordeeld door het We Shape the
+          Future-team voordat het gepubliceerd wordt.
         </p>
-        {create.error && <p className="text-sm text-red-600 mb-4">{create.error.message}</p>}
+        {create.error && (
+          <p className="text-error mb-4 text-sm">{create.error.message}</p>
+        )}
         <div className="flex gap-3">
-          <Button type="submit" variant="primary" disabled={create.isPending || uploading || charCount < 50}>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={create.isPending || uploading || charCount < 50}
+          >
             {create.isPending ? <Spinner /> : "Artikel indienen"}
           </Button>
-          <Button type="button" variant="secondary" onClick={() => router.back()}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.back()}
+          >
             Annuleren
           </Button>
         </div>

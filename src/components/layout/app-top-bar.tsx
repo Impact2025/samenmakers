@@ -1,112 +1,231 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Menu, X, LayoutGrid, Search, MessageSquare, Calendar, BookOpen, HelpCircle, Heart, GraduationCap, Settings } from "lucide-react";
+import { signOut } from "next-auth/react";
+import {
+  Bell,
+  Search,
+  MessageCircle,
+  X,
+  LogOut,
+  ShieldCheck,
+  ChevronRight,
+} from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
+import { Logo } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { href: "/dashboard", label: "DASHBOARD", icon: LayoutGrid },
-  { href: "/ontdekken", label: "ONTDEKKEN", icon: Search },
-  { href: "/matching", label: "MATCHING", icon: Heart },
-  { href: "/berichten", label: "BERICHTEN", icon: MessageSquare },
-  { href: "/events", label: "EVENTS", icon: Calendar },
-  { href: "/kennis", label: "KENNISBANK", icon: BookOpen },
-  { href: "/vragen", label: "Q&A", icon: HelpCircle },
-  { href: "/mentorship", label: "MENTORSHIP", icon: GraduationCap },
-  { href: "/instellingen", label: "INSTELLINGEN", icon: Settings },
-];
+import {
+  primaryNav,
+  secondaryNav,
+  accountNav,
+  isActive,
+  pageTitle,
+  type NavItem,
+} from "./nav-items";
 
 interface AppTopBarProps {
   user: {
     naam: string;
     avatarUrl?: string | null | undefined;
+    isAdmin?: boolean;
   } | null;
   unreadNotifications?: number;
+  unreadMessages?: number;
 }
 
-export function AppTopBar({ user, unreadNotifications = 0 }: AppTopBarProps) {
+const iconBtn =
+  "relative w-11 h-11 flex items-center justify-center rounded-full text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors";
+
+export function AppTopBar({
+  user,
+  unreadNotifications = 0,
+  unreadMessages = 0,
+}: AppTopBarProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const title = pageTitle(pathname);
+
+  // Menu sluiten bij navigatie
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <>
-      <header className="fixed top-0 w-full z-50 bg-white hairline-b flex justify-between items-center px-6 h-20">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setOpen(true)}
-            className="lg:hidden text-on-surface p-3 -ml-3"
-            aria-label="Menu openen"
+      <header className="pt-safe bg-surface-container-lowest/90 shadow-bar fixed inset-x-0 top-0 z-50 backdrop-blur-xl">
+        <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-6">
+          <Link
+            href="/dashboard"
+            aria-label="We Shape the Future — home"
+            className="justify-self-start"
           >
-            <Menu size={20} />
-          </button>
-          <Link href="/dashboard" className="text-xl font-black tracking-tighter text-on-surface">
-            SAMENMAKERS
+            <Logo />
           </Link>
-        </div>
 
-        <div className="flex items-center gap-4">
-          <Link href="/notificaties" className="relative p-3 -mr-1 text-outline hover:text-on-surface transition-colors">
-            <Bell size={20} />
-            {unreadNotifications > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-primary text-on-primary text-[9px] font-bold flex items-center justify-center px-0.5 leading-none">
-                {unreadNotifications > 99 ? "99+" : unreadNotifications}
-              </span>
-            )}
-          </Link>
-          {user && (
-            <Link href="/profiel" className="group">
-              <Avatar src={user.avatarUrl} naam={user.naam} size="sm" grayscale={false} />
+          <h1 className="text-title-md text-on-surface max-w-[140px] truncate text-center lg:hidden">
+            {title}
+          </h1>
+          <span className="hidden lg:block" />
+
+          <div className="flex items-center gap-1 justify-self-end">
+            <Link href="/ontdekken" aria-label="Zoeken" className={iconBtn}>
+              <Search size={22} />
             </Link>
-          )}
+            <Link
+              href="/berichten"
+              aria-label="Berichten"
+              className={cn(iconBtn, "hidden sm:flex")}
+            >
+              <MessageCircle size={22} />
+              {unreadMessages > 0 && (
+                <span className="bg-primary-container text-on-primary text-label-sm absolute top-1.5 right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-bold">
+                  {unreadMessages > 9 ? "9+" : unreadMessages}
+                </span>
+              )}
+            </Link>
+            <Link
+              href="/notificaties"
+              aria-label="Meldingen"
+              className={iconBtn}
+            >
+              <Bell size={22} />
+              {unreadNotifications > 0 && (
+                <span className="bg-primary-container ring-surface-container-lowest absolute top-2.5 right-2.5 h-2 w-2 rounded-full ring-2" />
+              )}
+            </Link>
+            {user && (
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-label="Menu openen"
+                aria-expanded={open}
+                className="ml-1 rounded-full focus-visible:outline-2"
+              >
+                <Avatar src={user.avatarUrl} naam={user.naam} size="xs" ring />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
-      {/* Mobile drawer overlay */}
-      {open && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      {/* Mobile drawer */}
+      {/* Menupaneel */}
       <div
         className={cn(
-          "fixed top-0 left-0 h-full w-72 bg-white z-50 flex flex-col transition-transform duration-300 ease-in-out lg:hidden",
-          open ? "translate-x-0" : "-translate-x-full",
+          "bg-on-surface/40 fixed inset-0 z-[60] transition-opacity",
+          open ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        className={cn(
+          "bg-surface shadow-floating fixed top-0 right-0 z-[60] flex h-full w-[85vw] max-w-sm flex-col rounded-l-3xl transition-transform duration-300 ease-out",
+          open ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between px-6 h-20 hairline-b shrink-0">
-          <span className="text-xl font-black tracking-tighter text-on-surface">SAMENMAKERS</span>
-          <button onClick={() => setOpen(false)} className="p-2 text-outline hover:text-on-surface" aria-label="Menu sluiten">
-            <X size={20} />
+        <div className="pt-safe">
+          <div className="flex h-16 items-center justify-between px-5">
+            <span className="text-title-md text-on-surface">Menu</span>
+            <button
+              onClick={() => setOpen(false)}
+              className={iconBtn}
+              aria-label="Menu sluiten"
+            >
+              <X size={22} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 pb-6">
+          {user && (
+            <Link
+              href="/profiel"
+              className="bg-surface-container-lowest shadow-card flex items-center gap-3 rounded-2xl p-4"
+            >
+              <Avatar src={user.avatarUrl} naam={user.naam} size="sm" />
+              <div className="min-w-0 flex-1">
+                <p className="text-title-md text-on-surface truncate">
+                  {user.naam}
+                </p>
+                <p className="text-body-sm text-secondary">Bekijk je profiel</p>
+              </div>
+              <ChevronRight size={18} className="text-secondary" />
+            </Link>
+          )}
+
+          <MenuGroup
+            items={[...primaryNav, ...secondaryNav]}
+            pathname={pathname}
+          />
+          <MenuGroup items={accountNav} pathname={pathname} />
+
+          {user?.isAdmin && (
+            <Link
+              href="/admin"
+              className="bg-inverse-surface text-inverse-on-surface text-label-lg flex h-12 items-center gap-3 rounded-2xl px-4"
+            >
+              <ShieldCheck size={20} />
+              Beheeromgeving
+            </Link>
+          )}
+
+          <button
+            type="button"
+            onClick={() => void signOut({ callbackUrl: "/" })}
+            className="bg-surface-container-lowest text-error shadow-card text-label-lg hover:bg-error-container hover:text-on-error-container flex h-12 items-center justify-center gap-2 rounded-full transition-colors"
+          >
+            <LogOut size={18} />
+            Uitloggen
           </button>
         </div>
-        <nav className="flex flex-col flex-1 overflow-y-auto py-4">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href || pathname.startsWith(href + "/");
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-4 py-4 px-8 transition-all duration-150",
-                  isActive
-                    ? "bg-surface-container-low text-primary border-l-2 border-primary"
-                    : "text-outline hover:bg-surface-container-low hover:text-on-surface",
-                )}
-              >
-                <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
-                <span className="text-label-caps">{label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+      </aside>
     </>
+  );
+}
+
+function MenuGroup({
+  items,
+  pathname,
+}: {
+  items: NavItem[];
+  pathname: string;
+}) {
+  return (
+    <nav className="bg-surface-container-lowest shadow-card flex flex-col rounded-2xl p-1.5">
+      {items.map((item) => {
+        const active = isActive(pathname, item);
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "text-label-lg flex h-11 items-center gap-3 rounded-xl px-3 transition-colors",
+              active
+                ? "bg-primary-fixed/60 text-primary-container"
+                : "text-on-surface hover:bg-surface-container-low",
+            )}
+          >
+            <Icon size={20} className={active ? "" : "text-secondary"} />
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }

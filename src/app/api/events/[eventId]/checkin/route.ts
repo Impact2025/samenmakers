@@ -1,6 +1,11 @@
 import { auth } from "@/server/auth/config";
 import { db } from "@/server/db";
-import { events, eventAttendees, eventCheckIns, users } from "@/server/db/schema";
+import {
+  events,
+  eventAttendees,
+  eventCheckIns,
+  users,
+} from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -29,7 +34,9 @@ export async function POST(
     return NextResponse.json({ error: "Event niet gevonden" }, { status: 404 });
   }
 
-  const me = await db.query.users.findFirst({ where: eq(users.id, session.user.id) });
+  const me = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+  });
   const isOrganiser = event.organiserId === session.user.id;
   const isAdmin = me?.role === "admin";
 
@@ -53,8 +60,21 @@ export async function POST(
     ),
   });
 
-  if (!attendee) {
-    return NextResponse.json({ error: "Gebruiker is niet aangemeld" }, { status: 400 });
+  // Alleen wie een bevestigde plek heeft; wachtlijst en open aanbiedingen niet.
+  if (
+    !attendee ||
+    (attendee.status !== "registered" && attendee.status !== "checked_in")
+  ) {
+    return NextResponse.json(
+      { error: "Gebruiker heeft geen bevestigde plek" },
+      { status: 400 },
+    );
+  }
+  if (event.status !== "published") {
+    return NextResponse.json(
+      { error: "Event is niet actief" },
+      { status: 400 },
+    );
   }
 
   // Mark checked in
@@ -70,7 +90,12 @@ export async function POST(
   await db
     .update(eventAttendees)
     .set({ status: "checked_in" })
-    .where(and(eq(eventAttendees.eventId, eventId), eq(eventAttendees.userId, userId)));
+    .where(
+      and(
+        eq(eventAttendees.eventId, eventId),
+        eq(eventAttendees.userId, userId),
+      ),
+    );
 
   return NextResponse.json({ success: true });
 }

@@ -3,14 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutGrid, Search, MessageSquare, User } from "lucide-react";
-
-const navItems = [
-  { href: "/dashboard", label: "DASHBOARD", icon: LayoutGrid },
-  { href: "/ontdekken", label: "ONTDEKKEN", icon: Search },
-  { href: "/berichten", label: "BERICHTEN", icon: MessageSquare },
-  { href: "/profiel", label: "PROFIEL", icon: User },
-];
+import { primaryNav, isActive } from "./nav-items";
 
 interface BottomNavProps {
   unreadCount?: number;
@@ -20,37 +13,41 @@ export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-white hairline-t z-50 flex justify-around items-stretch h-bottom-nav">
-      {navItems.map(({ href, label, icon: Icon }) => {
-        const isActive =
-          pathname === href || pathname.startsWith(href + "/");
-        const showBadge = href === "/berichten" && unreadCount > 0;
+    <nav
+      aria-label="Hoofdnavigatie"
+      className="pb-safe bg-surface-container-lowest/90 shadow-bar-up fixed inset-x-0 bottom-0 z-50 backdrop-blur-xl lg:hidden"
+    >
+      <div className="flex h-16 items-center justify-around px-1">
+        {primaryNav.map((item) => {
+          const active = isActive(pathname, item);
+          const Icon = item.icon;
+          const showBadge = item.href === "/berichten" && unreadCount > 0;
 
-        return (
-          <Link
-            key={href}
-            href={href}
-            className={cn(
-              "flex flex-col items-center justify-start flex-1 gap-1 pt-2 transition-colors relative",
-              isActive
-                ? "text-primary border-t-2 border-primary"
-                : "text-outline",
-            )}
-          >
-            <div className="relative">
-              <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />
-              {showBadge && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary-container text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex min-h-[44px] min-w-[56px] flex-col items-center justify-center py-1 transition-colors",
+                active
+                  ? "text-primary-container"
+                  : "text-secondary hover:text-on-surface",
               )}
-            </div>
-            <span className="text-[10px] font-bold tracking-widest uppercase leading-none">
-              {label}
-            </span>
-          </Link>
-        );
-      })}
+            >
+              <span className="relative">
+                <Icon size={24} strokeWidth={active ? 2.25 : 1.75} />
+                {showBadge && (
+                  <span className="bg-primary-container text-on-primary text-label-sm absolute -top-1 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 font-bold">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </span>
+              <span className="text-label-sm mt-0.5">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

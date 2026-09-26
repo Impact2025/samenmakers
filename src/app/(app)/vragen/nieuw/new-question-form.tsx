@@ -31,7 +31,9 @@ export function NewQuestionForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="text-label-caps text-outline block mb-2">VRAAG *</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Vraag *
+        </label>
         <Input
           value={form.title}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
@@ -42,7 +44,9 @@ export function NewQuestionForm() {
         />
       </div>
       <div>
-        <label className="text-label-caps text-outline block mb-2">TOELICHTING</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Toelichting
+        </label>
         <Textarea
           value={form.content}
           onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
@@ -51,19 +55,25 @@ export function NewQuestionForm() {
         />
       </div>
       <div>
-        <label className="text-label-caps text-outline block mb-2">SECTOR (OPTIONEEL)</label>
+        <label className="text-label-lg text-on-surface mb-1.5 block">
+          Sector (optioneel)
+        </label>
         <select
           value={form.sector}
           onChange={(e) => setForm((f) => ({ ...f, sector: e.target.value }))}
-          className="w-full border border-hairline bg-white px-3 py-2.5 text-sm text-on-surface focus:outline-none focus:border-on-surface"
+          className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2.5 text-sm outline-none focus:ring-[3px]"
         >
           <option value="">Alle sectoren</option>
           {SECTOREN.map((s) => (
-            <option key={s} value={s}>{s}</option>
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </select>
       </div>
-      {create.error && <p className="text-sm text-red-600">{create.error.message}</p>}
+      {create.error && (
+        <p className="text-error text-sm">{create.error.message}</p>
+      )}
       <div className="flex gap-3">
         <Button type="submit" variant="primary" disabled={create.isPending}>
           {create.isPending ? <Spinner /> : "Vraag plaatsen"}

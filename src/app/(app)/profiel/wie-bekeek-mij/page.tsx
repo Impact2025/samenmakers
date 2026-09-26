@@ -23,19 +23,24 @@ export default async function WieBekeekMijPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <p className="text-label-caps text-outline mb-1">PROFIEL</p>
-        <h1 className="text-headline-md text-on-surface">Wie bekeek mijn profiel</h1>
+        <p className="text-label-md text-secondary mb-1">Profiel</p>
+        <h1 className="text-headline-lg text-on-surface">
+          Wie bekeek mijn profiel
+        </h1>
       </div>
 
       {!isPro ? (
         <Card className="border-primary/20 bg-surface-container-low">
           <CardBody className="p-8 text-center">
-            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <div className="bg-primary/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center">
               <Lock size={20} className="text-primary" />
             </div>
-            <h2 className="text-headline-xs text-on-surface mb-2">Pro-functie</h2>
-            <p className="text-body text-on-surface-variant mb-6">
-              Upgrade naar Pro om te zien wie jouw profiel de afgelopen 30 dagen heeft bezocht.
+            <h2 className="text-headline-sm text-on-surface mb-2">
+              Pro-functie
+            </h2>
+            <p className="text-body-md text-on-surface-variant mb-6">
+              Upgrade naar Pro om te zien wie jouw profiel de afgelopen 30 dagen
+              heeft bezocht.
             </p>
             <Link href="/instellingen/abonnement">
               <Button variant="primary">Upgrade naar Pro</Button>
@@ -56,9 +61,10 @@ async function ProfileViewsList() {
     return (
       <Card>
         <CardBody className="p-8 text-center">
-          <Eye size={32} className="text-outline mx-auto mb-3" />
-          <p className="text-body text-on-surface-variant">
-            Nog niemand heeft je profiel bekeken. Vul je profiel verder aan voor meer zichtbaarheid.
+          <Eye size={32} className="text-secondary mx-auto mb-3" />
+          <p className="text-body-md text-on-surface-variant">
+            Nog niemand heeft je profiel bekeken. Vul je profiel verder aan voor
+            meer zichtbaarheid.
           </p>
         </CardBody>
       </Card>
@@ -67,7 +73,10 @@ async function ProfileViewsList() {
 
   return (
     <div className="space-y-3">
-      <p className="text-body-sm text-outline">{views.length} bezoek{views.length !== 1 ? "en" : ""} in de afgelopen periode</p>
+      <p className="text-body-md text-secondary">
+        {views.length} bezoek{views.length !== 1 ? "en" : ""} in de afgelopen
+        periode
+      </p>
       {views.map((view) => {
         const viewer = view.viewer;
         const naam = viewer?.naam ?? viewer?.name ?? "Onbekend";
@@ -82,28 +91,36 @@ async function ProfileViewsList() {
                   size="md"
                   grayscale={false}
                 />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Link
                       href={`/makers/${viewer?.id}`}
-                      className="font-bold text-on-surface hover:text-primary transition-colors"
+                      className="text-on-surface hover:text-primary font-bold transition-colors"
                     >
                       {naam}
                     </Link>
                     {viewer?.subscriptionStatus === "active" && (
-                      <Badge variant="primary" size="sm">PRO</Badge>
+                      <Badge variant="primary" size="sm">
+                        PRO
+                      </Badge>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-1 mt-1">
+                  <div className="mt-1 flex flex-wrap gap-1">
                     {viewer?.sector && (
-                      <span className="text-body-sm text-outline">{viewer.sector}</span>
+                      <span className="text-body-md text-secondary">
+                        {viewer.sector}
+                      </span>
                     )}
                     {viewer?.regio && (
-                      <span className="text-body-sm text-outline">· {viewer.regio}</span>
+                      <span className="text-body-md text-secondary">
+                        · {viewer.regio}
+                      </span>
                     )}
                   </div>
                 </div>
-                <span className="text-body-sm text-outline shrink-0">{timeAgo}</span>
+                <span className="text-body-md text-secondary shrink-0">
+                  {timeAgo}
+                </span>
               </div>
             </CardBody>
           </Card>
