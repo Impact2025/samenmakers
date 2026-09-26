@@ -34,7 +34,7 @@ export function SegmentedTabs({
       {tabs.map((t) => {
         const isActive = t.key === active;
         const cls = cn(
-          "flex-1 h-9 px-3 rounded-full text-label-md flex items-center justify-center gap-1.5 transition-all whitespace-nowrap",
+          "flex-1 shrink-0 h-9 px-3 rounded-full text-label-md flex items-center justify-center gap-1.5 transition-all whitespace-nowrap",
           isActive
             ? "bg-primary-container text-on-primary shadow-sm"
             : "text-secondary hover:text-on-surface",

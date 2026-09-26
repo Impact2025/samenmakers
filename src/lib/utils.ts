@@ -1,5 +1,34 @@
 import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+// Eigen letterschaal (globals.css) als font-size registreren, anders ziet
+// tailwind-merge "text-label-lg" als tekstkleur en gooit "text-on-primary" weg.
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [
+        {
+          text: [
+            "display-lg",
+            "headline-lg",
+            "headline-md",
+            "headline-sm",
+            "title-md",
+            "body-lg",
+            "body-md",
+            "body-sm",
+            "label-lg",
+            "label-md",
+            "label-sm",
+          ],
+        },
+      ],
+      shadow: [
+        { shadow: ["card", "elevated", "floating", "cta", "bar", "bar-up"] },
+      ],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

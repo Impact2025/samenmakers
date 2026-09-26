@@ -1,15 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  CalendarPlus,
+  CheckCircle2,
+  History,
+  Plus,
+  RefreshCw,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
 import { auth } from "@/server/auth/config";
 import { api } from "@/trpc/server";
 import { breadcrumbSchema } from "@/lib/seo-kit";
 import { FORMAT_LABEL } from "@/lib/event-format";
+import { SegmentedTabs } from "@/components/ui/segmented-tabs";
+import { ChipLink, ChipRow } from "@/components/ui/chip";
+import { buttonClasses } from "@/components/ui/button";
+import { fieldClasses } from "@/components/ui/field-styles";
+import { cn } from "@/lib/utils";
 import { EventsDiscover } from "./events-discover";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 
 export const metadata: Metadata = {
-  title: "Events voor impact-ondernemers",
+  title: "Evenementen voor impact-ondernemers",
   description:
     "Bijeenkomsten, workshops en netwerkevents voor sociaal en duurzaam ondernemers. Vind een event bij jou in de buurt of online en meld je direct aan.",
   alternates: { canonical: `${APP_URL}/events` },
@@ -49,6 +64,7 @@ export default async function EventsPage({
     ...(sp.regio ? { regio: sp.regio } : {}),
     ...(sp.thema ? { thema: sp.thema } : {}),
   };
+  const hasFilters = !!(sp.q || format || sp.regio || sp.thema);
 
   const [session, first, facets] = await Promise.all([
     auth(),
@@ -56,136 +72,216 @@ export default async function EventsPage({
     api.events.facets(),
   ]);
   const loggedIn = !!session?.user;
-  const tabHref = (tab: "komend" | "afgelopen") => {
+
+  const hrefWith = (patch: { [K in keyof Search]?: string | undefined }) => {
+    const merged: Record<string, string | undefined> = { ...sp, ...patch };
     const p = new URLSearchParams(
-      Object.entries({ ...sp, tab }).filter(([, v]) => !!v) as [
-        string,
-        string,
-      ][],
+      Object.entries(merged).filter(([, v]) => !!v) as [string, string][],
     );
-    if (tab === "komend") p.delete("tab");
     const s = p.toString();
     return s ? `/events?${s}` : "/events";
   };
 
   const crumbs = breadcrumbSchema([
     { name: "We Shape the Future", url: APP_URL },
-    { name: "Events", url: `${APP_URL}/events` },
+    { name: "Evenementen", url: `${APP_URL}/events` },
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-5">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
       />
 
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-label-md text-secondary mb-1">COMMUNITY</p>
-          <h1 className="text-headline-lg text-on-surface">Events</h1>
+          <h1 className="text-headline-lg text-on-surface">
+            Evenementen &amp; sessies
+          </h1>
+          <p className="text-body-md text-secondary mt-0.5">
+            Verdiep je kennis en ontmoet mede-ondernemers
+          </p>
         </div>
         {loggedIn && (
           <div className="flex shrink-0 gap-2">
             <Link
-              href="/events/mijn"
-              className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
+              href="/events/mijn#agenda"
+              aria-label="Agenda synchroniseren"
+              className="bg-secondary-container/60 text-on-secondary-container hover:bg-secondary-container flex h-10 w-10 items-center justify-center rounded-full transition-colors"
             >
-              Mijn events
+              <CalendarPlus size={20} />
             </Link>
             <Link
               href="/events/nieuw"
-              className="bg-primary-container text-on-primary text-label-md px-4 py-2"
+              aria-label="Nieuw event"
+              className={buttonClasses(
+                "primary",
+                "sm",
+                "hidden sm:inline-flex",
+              )}
             >
-              + Nieuw
+              <Plus size={16} /> Nieuw event
             </Link>
           </div>
         )}
       </div>
 
+      <SegmentedTabs
+        active={upcoming ? "komend" : "afgelopen"}
+        tabs={[
+          {
+            key: "komend",
+            label: "Aankomend",
+            icon: <Sparkles size={16} />,
+            href: hrefWith({ tab: undefined }),
+          },
+          ...(loggedIn
+            ? [
+                {
+                  key: "mijn",
+                  label: "Mijn aanmeldingen",
+                  icon: <CheckCircle2 size={16} />,
+                  href: "/events/mijn",
+                },
+              ]
+            : []),
+          {
+            key: "afgelopen",
+            label: "Afgelopen",
+            icon: <History size={16} />,
+            href: hrefWith({ tab: "afgelopen" }),
+          },
+        ]}
+      />
+
+      {facets.themas.length > 0 && (
+        <ChipRow>
+          <ChipLink href={hrefWith({ thema: undefined })} active={!sp.thema}>
+            Alle types
+          </ChipLink>
+          {facets.themas.map((t) => (
+            <ChipLink
+              key={t}
+              href={hrefWith({ thema: t })}
+              active={sp.thema === t}
+            >
+              {t}
+            </ChipLink>
+          ))}
+        </ChipRow>
+      )}
+
       {/* Werkt ook zonder JavaScript: een gewone GET-form. */}
       <form
         action="/events"
         method="get"
-        className="grid items-end gap-3 sm:grid-cols-[1fr_auto_auto_auto_auto]"
         role="search"
+        className="flex flex-col gap-3"
       >
         {!upcoming && <input type="hidden" name="tab" value="afgelopen" />}
-        <label className="flex flex-col gap-1">
-          <span className="text-label-md text-secondary">Zoeken</span>
-          <input
-            name="q"
-            defaultValue={sp.q ?? ""}
-            placeholder="Titel, plaats of onderwerp"
-            className="border-hairline focus:border-on-surface border bg-white px-3 py-2 text-sm focus:outline-none"
-          />
-        </label>
-        <Select
-          name="format"
-          label="Vorm"
-          value={format}
-          options={FORMATS.map((f) => [f, FORMAT_LABEL[f]])}
-        />
-        <Select
-          name="regio"
-          label="Regio"
-          value={sp.regio}
-          options={facets.regios.map((r) => [r, r])}
-        />
-        <Select
-          name="thema"
-          label="Thema"
-          value={sp.thema}
-          options={facets.themas.map((t) => [t, t])}
-        />
-        <button
-          type="submit"
-          className="bg-on-surface text-on-primary text-label-md h-[38px] px-5 py-2"
+        {sp.thema && <input type="hidden" name="thema" value={sp.thema} />}
+        <div className="flex gap-2">
+          <label className="relative flex-1">
+            <span className="sr-only">Zoeken</span>
+            <Search
+              size={20}
+              className="text-secondary pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
+            />
+            <input
+              name="q"
+              type="search"
+              defaultValue={sp.q ?? ""}
+              placeholder="Zoek op titel, plaats of onderwerp..."
+              className={cn(fieldClasses, "pl-12")}
+            />
+          </label>
+          <button
+            type="submit"
+            className={buttonClasses("dark", "icon", "h-[50px] w-[50px]")}
+            aria-label="Zoeken"
+          >
+            <Search size={20} />
+          </button>
+        </div>
+        <details
+          className="group bg-surface-container-low rounded-2xl"
+          open={!!(format || sp.regio)}
         >
-          Filter
-        </button>
+          <summary className="text-label-lg text-on-surface flex h-11 cursor-pointer list-none items-center gap-2 px-4">
+            <SlidersHorizontal size={18} className="text-secondary" />
+            Meer filters
+            {(format || sp.regio) && (
+              <span className="bg-primary-container h-2 w-2 rounded-full" />
+            )}
+          </summary>
+          <div className="grid gap-3 px-4 pb-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <Select
+              name="format"
+              label="Vorm"
+              value={format}
+              options={FORMATS.map((f) => [f, FORMAT_LABEL[f]])}
+            />
+            <Select
+              name="regio"
+              label="Regio"
+              value={sp.regio}
+              options={facets.regios.map((r) => [r, r])}
+            />
+            <button
+              type="submit"
+              className={buttonClasses("dark", "md", "h-[50px]")}
+            >
+              Toepassen
+            </button>
+          </div>
+        </details>
       </form>
-
-      <div className="flex gap-2" role="tablist">
-        <Link
-          href={tabHref("komend")}
-          role="tab"
-          aria-selected={upcoming}
-          className={`text-label-md border px-5 py-2 ${upcoming ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-secondary hover:border-on-surface"}`}
-        >
-          Komend
-        </Link>
-        <Link
-          href={tabHref("afgelopen")}
-          role="tab"
-          aria-selected={!upcoming}
-          className={`text-label-md border px-5 py-2 ${!upcoming ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-secondary hover:border-on-surface"}`}
-        >
-          Afgelopen
-        </Link>
-      </div>
 
       <EventsDiscover
         key={JSON.stringify(filters)}
         filters={filters}
         initial={first}
         allowNearMe={upcoming}
+        featureFirst={upcoming && !hasFilters}
       />
 
-      {!loggedIn && (
-        <div className="border-hairline flex flex-col justify-between gap-4 border bg-white p-6 sm:flex-row sm:items-center">
+      {loggedIn ? (
+        <div className="bg-surface-container flex items-center justify-between gap-3 rounded-2xl p-4">
+          <div className="flex items-center gap-3">
+            <span className="bg-surface-container-lowest text-primary-container shadow-card flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+              <RefreshCw size={20} />
+            </span>
+            <div>
+              <h2 className="text-title-md text-on-surface">
+                Synchroniseer je agenda
+              </h2>
+              <p className="text-body-sm text-secondary mt-0.5">
+                Zet je aanmeldingen automatisch in Google of Apple Agenda
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/events/mijn#agenda"
+            className={buttonClasses("secondary", "sm", "shrink-0")}
+          >
+            Koppel iCal
+          </Link>
+        </div>
+      ) : (
+        <div className="bg-surface-container-lowest shadow-elevated flex flex-col gap-4 rounded-2xl p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-on-surface font-extrabold">
+            <h2 className="text-headline-sm text-on-surface">
               Zelf een event organiseren?
-            </p>
-            <p className="text-body-md text-on-surface-variant">
+            </h2>
+            <p className="text-body-md text-secondary">
               Word lid van We Shape the Future en bereik impact-ondernemers in
               heel Nederland.
             </p>
           </div>
           <Link
             href="/aanmelden"
-            className="bg-primary-container text-on-primary text-label-md px-6 py-3 text-center"
+            className={buttonClasses("primary", "lg", "shrink-0")}
           >
             Gratis lid worden
           </Link>
@@ -207,12 +303,12 @@ function Select({
   options: [string, string][];
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="text-label-md text-secondary">{label}</span>
+    <label className="flex flex-col gap-1.5">
+      <span className="text-label-lg text-on-surface">{label}</span>
       <select
         name={name}
         defaultValue={value ?? ""}
-        className="border-hairline focus:border-on-surface h-[38px] border bg-white px-3 py-2 text-sm focus:outline-none"
+        className={cn(fieldClasses, "bg-surface-container-lowest")}
       >
         <option value="">Alle</option>
         {options.map(([v, l]) => (

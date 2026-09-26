@@ -55,12 +55,15 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 // ── Gedeelde selecties ──────────────────────────────────────────────────────
 
 /** Plekken bezet (RSVP, tickets, reserveringen, aanbiedingen), als subquery i.p.v. alle deelnemers laden. */
-const seatsTaken = seatsTakenSql(events.id);
+// Volledig gekwalificeerd: in een select vanuit één tabel rendert drizzle ${events.id}
+// als kaal "id", wat in de subqueries botst met hun eigen id-kolom (Postgres 42702).
+const EVENT_ID = sql.raw(`"events"."id"`);
+const seatsTaken = seatsTakenSql(EVENT_ID);
 /** Heeft het event tickettypes? Dan loopt aanmelden via een bestelling. */
-const ticketed = sql<boolean>`EXISTS (SELECT 1 FROM event_tickets tk WHERE tk.event_id = ${events.id})`;
+const ticketed = sql<boolean>`EXISTS (SELECT 1 FROM event_tickets tk WHERE tk.event_id = ${EVENT_ID})`;
 const waitlistCount = sql<number>`(
   SELECT count(*)::int FROM event_attendees a
-  WHERE a.event_id = ${events.id} AND a.status = 'waitlisted'
+  WHERE a.event_id = ${EVENT_ID} AND a.status = 'waitlisted'
 )`;
 
 const cardColumns = {

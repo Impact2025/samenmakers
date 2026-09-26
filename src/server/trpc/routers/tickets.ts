@@ -186,7 +186,7 @@ export const ticketsRouter = createTRPCRouter({
           orderBy: asc(eventFormFields.sortOrder),
         }),
         ctx.db
-          .select({ seats: seatsTakenSql(events.id) })
+          .select({ seats: seatsTakenSql(sql.raw(`"events"."id"`)) })
           .from(events)
           .where(eq(events.id, event.id)),
       ]);
@@ -295,7 +295,7 @@ export const ticketsRouter = createTRPCRouter({
 
       const [[counts], types, fields, organiser] = await Promise.all([
         ctx.db
-          .select({ seats: seatsTakenSql(events.id) })
+          .select({ seats: seatsTakenSql(sql.raw(`"events"."id"`)) })
           .from(events)
           .where(eq(events.id, event.id)),
         ctx.db.query.eventTickets.findMany({

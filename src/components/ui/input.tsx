@@ -2,18 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import { type InputHTMLAttributes, forwardRef, useId } from "react";
+import { fieldClasses, labelClasses } from "@/components/ui/field-styles";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
 }
-
-/** Gedeelde veldstijl: 50px, gevuld, magenta focusring. Ook voor <select>. */
-export const fieldClasses =
-  "w-full h-[50px] px-4 rounded-xl bg-surface-container-low text-body-md text-on-surface placeholder:text-secondary border border-transparent outline-none transition-all focus:bg-surface-container-lowest focus:border-primary-container focus:ring-[3px] focus:ring-primary-container/15 disabled:opacity-50";
-
-export const labelClasses = "text-label-lg text-on-surface";
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, hint, className, id, ...props }, ref) => {

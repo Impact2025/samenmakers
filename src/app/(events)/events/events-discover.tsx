@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { LocateFixed, X } from "lucide-react";
+import { CalendarX2, LocateFixed, X } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Spinner } from "@/components/ui/spinner";
-import { EventCard } from "@/components/events/event-card";
+import { EventCard, FeaturedEventCard } from "@/components/events/event-card";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
@@ -15,10 +17,13 @@ export function EventsDiscover({
   filters,
   initial,
   allowNearMe,
+  featureFirst = false,
 }: {
   filters: ListInput;
   initial: ListOutput;
   allowNearMe: boolean;
+  /** Eerste event groot uitlichten (standaardoverzicht zonder filters). */
+  featureFirst?: boolean;
 }) {
   const [near, setNear] = useState<{
     lat: number;
@@ -38,6 +43,8 @@ export function EventsDiscover({
   });
 
   const items = query.data?.pages.flatMap((p) => p.items) ?? [];
+  const [featured, ...rest] =
+    featureFirst && !near ? items : [undefined, ...items];
 
   function locate() {
     if (!("geolocation" in navigator)) {
@@ -64,19 +71,26 @@ export function EventsDiscover({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-5">
       {allowNearMe && (
         <div className="flex flex-wrap items-center gap-2">
           {near ? (
-            <>
-              <span className="text-body-md text-on-surface">Binnen</span>
+            <div className="bg-primary-fixed/60 flex h-10 items-center gap-2 rounded-full pr-1 pl-4">
+              <LocateFixed
+                size={16}
+                className="text-primary-container"
+                aria-hidden
+              />
+              <span className="text-label-md text-on-primary-fixed">
+                Binnen
+              </span>
               <select
                 aria-label="Straal"
                 value={near.radiusKm}
                 onChange={(e) =>
                   setNear({ ...near, radiusKm: Number(e.target.value) })
                 }
-                className="border-hairline border bg-white px-2 py-1 text-sm"
+                className="bg-surface-container-lowest text-label-md text-on-surface h-8 rounded-full px-2 outline-none"
               >
                 {[10, 25, 50, 100].map((km) => (
                   <option key={km} value={km}>
@@ -84,60 +98,105 @@ export function EventsDiscover({
                   </option>
                 ))}
               </select>
-              <span className="text-body-md text-on-surface">van jou</span>
+              <span className="text-label-md text-on-primary-fixed">
+                van jou
+              </span>
               <button
                 type="button"
                 onClick={() => setNear(null)}
-                className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-1"
+                aria-label="Locatiefilter wissen"
+                className="text-on-primary-fixed hover:bg-surface-container-lowest flex h-8 w-8 items-center justify-center rounded-full"
               >
-                <X size={12} aria-hidden /> Wissen
+                <X size={16} aria-hidden />
               </button>
-            </>
+            </div>
           ) : (
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={locate}
               disabled={locating}
-              className="border-hairline text-label-md text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2 disabled:opacity-40"
             >
-              {locating ? <Spinner /> : <LocateFixed size={14} aria-hidden />}{" "}
+              {locating ? (
+                <Spinner size="sm" />
+              ) : (
+                <LocateFixed size={16} aria-hidden />
+              )}
               In mijn buurt
-            </button>
+            </Button>
           )}
           {geoError && (
-            <span className="text-body-md text-error">{geoError}</span>
+            <span className="text-body-sm text-error">{geoError}</span>
           )}
         </div>
       )}
 
       {query.isLoading ? (
-        <div className="flex justify-center py-20">
+        <div className="text-primary-container flex justify-center py-20">
           <Spinner />
         </div>
       ) : items.length === 0 ? (
-        <div className="border-hairline border bg-white py-16 text-center">
-          <p className="text-on-surface-variant">
-            Geen events gevonden met deze filters.
-          </p>
-        </div>
+        <EmptyState
+          icon={<CalendarX2 size={22} />}
+          title="Geen evenementen gevonden"
+          description="Probeer een ander thema of verwijder een paar filters."
+        />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2" aria-live="polite">
-          {items.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </div>
+        <>
+          {featured && (
+            <section className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-label-sm text-primary uppercase">
+                  Uitgelicht evenement
+                </span>
+                {featured.format !== "in_person" && (
+                  <span className="text-label-sm text-tertiary flex items-center gap-1">
+                    <span className="bg-tertiary h-1.5 w-1.5 animate-pulse rounded-full" />{" "}
+                    Online te volgen
+                  </span>
+                )}
+              </div>
+              <FeaturedEventCard event={featured} />
+            </section>
+          )}
+          {rest.length > 0 && (
+            <section className="flex flex-col gap-3">
+              {featured && (
+                <div className="flex items-center justify-between">
+                  <h2 className="text-headline-sm text-on-surface">
+                    Binnenkort op de agenda
+                  </h2>
+                  <span className="text-label-sm text-secondary">
+                    {rest.length} evenementen
+                  </span>
+                </div>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2" aria-live="polite">
+                {rest.map(
+                  (event) =>
+                    event && <EventCard key={event.id} event={event} />,
+                )}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {query.hasNextPage && (
         <div className="flex justify-center">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => void query.fetchNextPage()}
             disabled={query.isFetchingNextPage}
-            className="border-on-surface text-label-md text-on-surface hover:bg-on-surface hover:text-on-primary border px-6 py-3 disabled:opacity-40"
           >
-            {query.isFetchingNextPage ? <Spinner /> : "Meer events"}
-          </button>
+            {query.isFetchingNextPage ? (
+              <Spinner size="sm" />
+            ) : (
+              "Meer evenementen"
+            )}
+          </Button>
         </div>
       )}
     </div>
