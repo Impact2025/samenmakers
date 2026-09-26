@@ -56,7 +56,7 @@ export default async function LessonPage({ params }: Props) {
       <div className="space-y-4">
         <Link
           href={`/leren/${cohort.id}`}
-          className="text-label-caps text-outline hover:text-on-surface inline-flex items-center gap-2"
+          className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-2"
         >
           <ArrowLeft size={14} /> {program.name}
         </Link>
@@ -68,13 +68,13 @@ export default async function LessonPage({ params }: Props) {
       </div>
 
       <header className="space-y-3">
-        <p className="text-label-caps text-primary-container flex items-center gap-2">
+        <p className="text-label-md text-primary-container flex items-center gap-2">
           <LessonIcon type={lesson.type} size={14} />
           {lesson.moduleTitle} · les {data.position.index} van{" "}
           {data.position.total}
         </p>
-        <h1 className="text-headline-md text-on-surface">{lesson.title}</h1>
-        <p className="text-body-sm text-outline">
+        <h1 className="text-headline-lg text-on-surface">{lesson.title}</h1>
+        <p className="text-body-md text-secondary">
           {LESSON_TYPE_LABELS[lesson.type]}
           {lesson.durationMinutes ? (
             <> · ca. {lesson.durationMinutes} minuten</>
@@ -101,7 +101,7 @@ export default async function LessonPage({ params }: Props) {
             href={c.videoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-label-caps text-primary inline-flex items-center gap-2 underline"
+            className="text-label-md text-primary inline-flex items-center gap-2 underline"
           >
             Bekijk de video <ExternalLink size={12} />
           </a>
@@ -112,9 +112,9 @@ export default async function LessonPage({ params }: Props) {
           <div className="flex items-center gap-3">
             <Radio size={20} className="text-primary" aria-hidden />
             <div>
-              <p className="text-label-caps text-outline">LIVE SESSIE</p>
+              <p className="text-label-md text-secondary">LIVE SESSIE</p>
               {c.startsAt && (
-                <p className="text-body text-on-surface font-semibold">
+                <p className="text-body-md text-on-surface font-semibold">
                   {formatDateTime(c.startsAt)}
                 </p>
               )}
@@ -125,7 +125,7 @@ export default async function LessonPage({ params }: Props) {
               href={meetingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-label-caps bg-primary-container text-on-primary inline-flex items-center gap-2 px-5 py-3"
+              className="text-label-md bg-primary-container text-on-primary inline-flex items-center gap-2 px-5 py-3"
             >
               Deelnemen <ExternalLink size={12} />
             </a>
@@ -148,7 +148,7 @@ export default async function LessonPage({ params }: Props) {
           className="border-hairline hover:border-on-surface flex items-center gap-4 border bg-white p-5 transition-colors"
         >
           <Download size={20} className="text-primary" aria-hidden />
-          <span className="text-body text-on-surface font-semibold">
+          <span className="text-body-md text-on-surface font-semibold">
             {c.fileName || "Download het bestand"}
           </span>
         </a>
@@ -156,7 +156,7 @@ export default async function LessonPage({ params }: Props) {
 
       {lesson.type === "reflectie" && c.prompt && (
         <blockquote className="border-primary-container bg-surface-container-low border-l-2 p-5">
-          <p className="text-label-caps text-outline mb-2">REFLECTIEVRAAG</p>
+          <p className="text-label-md text-secondary mb-2">REFLECTIEVRAAG</p>
           <p className="text-body-lg text-on-surface">{c.prompt}</p>
         </blockquote>
       )}

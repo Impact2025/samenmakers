@@ -102,7 +102,7 @@ export async function GET(
       updatedAt: e.updatedAt,
       cancelled: e.status === "cancelled",
     })),
-    { calendarName: "Samenmakers events" },
+    { calendarName: "We Shape the Future events" },
   );
 
   return new NextResponse(ics, {

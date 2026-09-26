@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "Bijeenkomsten, workshops en netwerkevents voor sociaal en duurzaam ondernemers. Vind een event bij jou in de buurt of online en meld je direct aan.",
   alternates: { canonical: `${APP_URL}/events` },
   openGraph: {
-    title: "Samenmakers events",
+    title: "We Shape the Future events",
     url: `${APP_URL}/events`,
     type: "website",
   },
@@ -69,7 +69,7 @@ export default async function EventsPage({
   };
 
   const crumbs = breadcrumbSchema([
-    { name: "Samenmakers", url: APP_URL },
+    { name: "We Shape the Future", url: APP_URL },
     { name: "Events", url: `${APP_URL}/events` },
   ]);
 
@@ -82,20 +82,20 @@ export default async function EventsPage({
 
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-label-caps text-outline mb-1">COMMUNITY</p>
-          <h1 className="text-headline-md text-on-surface">Events</h1>
+          <p className="text-label-md text-secondary mb-1">COMMUNITY</p>
+          <h1 className="text-headline-lg text-on-surface">Events</h1>
         </div>
         {loggedIn && (
           <div className="flex shrink-0 gap-2">
             <Link
               href="/events/mijn"
-              className="border-hairline text-label-caps text-on-surface hover:border-on-surface border px-4 py-2"
+              className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
             >
               Mijn events
             </Link>
             <Link
               href="/events/nieuw"
-              className="bg-primary-container text-on-primary text-label-caps px-4 py-2"
+              className="bg-primary-container text-on-primary text-label-md px-4 py-2"
             >
               + Nieuw
             </Link>
@@ -112,7 +112,7 @@ export default async function EventsPage({
       >
         {!upcoming && <input type="hidden" name="tab" value="afgelopen" />}
         <label className="flex flex-col gap-1">
-          <span className="text-label-caps text-outline">Zoeken</span>
+          <span className="text-label-md text-secondary">Zoeken</span>
           <input
             name="q"
             defaultValue={sp.q ?? ""}
@@ -140,7 +140,7 @@ export default async function EventsPage({
         />
         <button
           type="submit"
-          className="bg-on-surface text-on-primary text-label-caps h-[38px] px-5 py-2"
+          className="bg-on-surface text-on-primary text-label-md h-[38px] px-5 py-2"
         >
           Filter
         </button>
@@ -151,7 +151,7 @@ export default async function EventsPage({
           href={tabHref("komend")}
           role="tab"
           aria-selected={upcoming}
-          className={`text-label-caps border px-5 py-2 ${upcoming ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-outline hover:border-on-surface"}`}
+          className={`text-label-md border px-5 py-2 ${upcoming ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-secondary hover:border-on-surface"}`}
         >
           Komend
         </Link>
@@ -159,7 +159,7 @@ export default async function EventsPage({
           href={tabHref("afgelopen")}
           role="tab"
           aria-selected={!upcoming}
-          className={`text-label-caps border px-5 py-2 ${!upcoming ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-outline hover:border-on-surface"}`}
+          className={`text-label-md border px-5 py-2 ${!upcoming ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-secondary hover:border-on-surface"}`}
         >
           Afgelopen
         </Link>
@@ -175,17 +175,17 @@ export default async function EventsPage({
       {!loggedIn && (
         <div className="border-hairline flex flex-col justify-between gap-4 border bg-white p-6 sm:flex-row sm:items-center">
           <div>
-            <p className="text-on-surface font-black">
+            <p className="text-on-surface font-extrabold">
               Zelf een event organiseren?
             </p>
-            <p className="text-body-sm text-on-surface-variant">
-              Word lid van Samenmakers en bereik impact-ondernemers in heel
-              Nederland.
+            <p className="text-body-md text-on-surface-variant">
+              Word lid van We Shape the Future en bereik impact-ondernemers in
+              heel Nederland.
             </p>
           </div>
           <Link
             href="/aanmelden"
-            className="bg-primary-container text-on-primary text-label-caps px-6 py-3 text-center"
+            className="bg-primary-container text-on-primary text-label-md px-6 py-3 text-center"
           >
             Gratis lid worden
           </Link>
@@ -208,7 +208,7 @@ function Select({
 }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-label-caps text-outline">{label}</span>
+      <span className="text-label-md text-secondary">{label}</span>
       <select
         name={name}
         defaultValue={value ?? ""}

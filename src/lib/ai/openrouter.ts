@@ -24,7 +24,7 @@ export async function chatCompletion(opts: {
         "Content-Type": "application/json",
         // OpenRouter attribution headers (optional but recommended).
         "HTTP-Referer": appUrl,
-        "X-Title": "Samenmakers Admin",
+        "X-Title": "We Shape the Future Admin",
       },
       body: JSON.stringify({
         model,

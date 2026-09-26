@@ -8,8 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 export function CreateCohortForm() {
-  const [form, setForm] = useState({ name: "", description: "", isPublic: false });
-  const [created, setCreated] = useState<{ name: string; inviteCode: string | null } | null>(null);
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    isPublic: false,
+  });
+  const [created, setCreated] = useState<{
+    name: string;
+    inviteCode: string | null;
+  } | null>(null);
 
   const createCohort = trpc.admin.createCohort.useMutation({
     onSuccess: (data) => {
@@ -30,18 +37,24 @@ export function CreateCohortForm() {
   return (
     <div>
       {created && (
-        <div className="bg-primary/10 border border-primary/20 p-4 mb-6">
-          <p className="text-sm font-semibold text-primary mb-1">Cohort aangemaakt: {created.name}</p>
-          <p className="text-xs text-on-surface-variant">
+        <div className="bg-primary/10 border-primary/20 mb-6 border p-4">
+          <p className="text-primary mb-1 text-sm font-semibold">
+            Cohort aangemaakt: {created.name}
+          </p>
+          <p className="text-on-surface-variant text-xs">
             Invite code:{" "}
-            <code className="font-mono font-bold text-on-surface">{created.inviteCode}</code>
+            <code className="text-on-surface font-mono font-bold">
+              {created.inviteCode}
+            </code>
           </p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-label-caps text-outline block mb-2">NAAM *</label>
+          <label className="text-label-md text-secondary mb-2 block">
+            NAAM *
+          </label>
           <Input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -50,24 +63,36 @@ export function CreateCohortForm() {
           />
         </div>
         <div>
-          <label className="text-label-caps text-outline block mb-2">OMSCHRIJVING</label>
+          <label className="text-label-md text-secondary mb-2 block">
+            OMSCHRIJVING
+          </label>
           <Textarea
             value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, description: e.target.value }))
+            }
             placeholder="Beschrijf het doel van dit cohort"
             rows={3}
           />
         </div>
-        <label className="flex items-center gap-3 cursor-pointer">
+        <label className="flex cursor-pointer items-center gap-3">
           <input
             type="checkbox"
             checked={form.isPublic}
-            onChange={(e) => setForm((f) => ({ ...f, isPublic: e.target.checked }))}
-            className="w-4 h-4 accent-primary"
+            onChange={(e) =>
+              setForm((f) => ({ ...f, isPublic: e.target.checked }))
+            }
+            className="accent-primary h-4 w-4"
           />
-          <span className="text-sm text-on-surface">Publiek cohort (zichtbaar voor alle leden)</span>
+          <span className="text-on-surface text-sm">
+            Publiek cohort (zichtbaar voor alle leden)
+          </span>
         </label>
-        <Button type="submit" variant="primary" disabled={createCohort.isPending}>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={createCohort.isPending}
+        >
           {createCohort.isPending ? <Spinner /> : "Cohort aanmaken"}
         </Button>
       </form>

@@ -42,27 +42,32 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
   return (
     <div className="space-y-6">
       {/* Reactions */}
-      <div className="flex items-center gap-4 hairline-t pt-4">
+      <div className="hairline-t flex items-center gap-4 pt-4">
         <button
           onClick={() => react.mutate({ postId })}
           disabled={react.isPending}
-          className="flex items-center gap-2 text-outline hover:text-primary transition-colors"
+          className="text-secondary hover:text-primary flex items-center gap-2 transition-colors"
         >
-          <Heart size={18} className={react.data?.liked ? "fill-primary text-primary" : ""} />
-          <span className="text-label-caps">{reactionCount}</span>
+          <Heart
+            size={18}
+            className={react.data?.liked ? "fill-primary text-primary" : ""}
+          />
+          <span className="text-label-md">{reactionCount}</span>
         </button>
-        <div className="flex items-center gap-2 text-outline">
+        <div className="text-secondary flex items-center gap-2">
           <MessageSquare size={18} />
-          <span className="text-label-caps">{comments.length}</span>
+          <span className="text-label-md">{comments.length}</span>
         </div>
       </div>
 
       {/* Comments */}
       <div className="space-y-4">
-        <h3 className="text-label-caps text-on-surface">REACTIES</h3>
+        <h3 className="text-label-md text-on-surface">REACTIES</h3>
 
         {comments.length === 0 && (
-          <p className="text-body-sm text-outline">Nog geen reacties. Wees de eerste!</p>
+          <p className="text-body-md text-secondary">
+            Nog geen reacties. Wees de eerste!
+          </p>
         )}
 
         {comments.map((comment) => (
@@ -73,16 +78,18 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
               size="xs"
               grayscale={false}
             />
-            <div className="flex-1 bg-surface-container-low p-3">
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-xs font-semibold text-on-surface">
+            <div className="bg-surface-container-low flex-1 p-3">
+              <div className="mb-1 flex items-baseline gap-2">
+                <span className="text-on-surface text-xs font-semibold">
                   {comment.author.naam ?? comment.author.name}
                 </span>
-                <span className="text-[10px] text-outline">
+                <span className="text-secondary text-[10px]">
                   {formatRelative(new Date(comment.createdAt))}
                 </span>
               </div>
-              <p className="text-body-sm text-on-surface-variant">{comment.content}</p>
+              <p className="text-body-md text-on-surface-variant">
+                {comment.content}
+              </p>
             </div>
           </div>
         ))}
@@ -100,9 +107,13 @@ export function PostInteractions({ postId, reactionCount, comments }: Props) {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder="Schrijf een reactie…"
-            className="flex-1 border border-hairline bg-white px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface"
+            className="border-hairline text-on-surface placeholder:text-secondary focus:border-on-surface flex-1 border bg-white px-4 py-3 text-sm focus:outline-none"
           />
-          <Button type="submit" variant="primary" disabled={!commentText.trim() || addComment.isPending}>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={!commentText.trim() || addComment.isPending}
+          >
             {addComment.isPending ? <Spinner /> : "Plaatsen"}
           </Button>
         </form>

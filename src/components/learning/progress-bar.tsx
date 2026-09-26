@@ -21,10 +21,13 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={label ?? "Voortgang"}
-      className={cn("bg-surface-container h-1.5 w-full", className)}
+      className={cn(
+        "bg-surface-container h-2 w-full overflow-hidden rounded-full",
+        className,
+      )}
     >
       <div
-        className="bg-primary-container h-full transition-[width] duration-500"
+        className="bg-primary-container h-full rounded-full transition-[width] duration-700 ease-out"
         style={{
           width: `${value}%`,
           ...(color ? { backgroundColor: color } : {}),

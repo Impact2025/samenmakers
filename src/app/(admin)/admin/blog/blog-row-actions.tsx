@@ -34,7 +34,11 @@ export function BlogRowActions({
   return (
     <div className="flex items-center justify-end gap-3 text-xs">
       {isPublished && (
-        <Link href={`/kennis/${slug}`} className="text-outline hover:text-on-surface" target="_blank">
+        <Link
+          href={`/kennis/${slug}`}
+          className="text-secondary hover:text-on-surface"
+          target="_blank"
+        >
           Bekijk
         </Link>
       )}
@@ -42,7 +46,7 @@ export function BlogRowActions({
         type="button"
         disabled={busy}
         onClick={() => setPublished.mutate({ id, isPublished: !isPublished })}
-        className="font-semibold text-primary hover:underline disabled:opacity-40"
+        className="text-primary font-semibold hover:underline disabled:opacity-40"
       >
         {isPublished ? "Depubliceer" : "Publiceer"}
       </button>
@@ -50,9 +54,10 @@ export function BlogRowActions({
         type="button"
         disabled={busy}
         onClick={() => {
-          if (confirm("Dit artikel definitief verwijderen?")) remove.mutate({ id });
+          if (confirm("Dit artikel definitief verwijderen?"))
+            remove.mutate({ id });
         }}
-        className="font-semibold text-red-500 hover:underline disabled:opacity-40"
+        className="text-error font-semibold hover:underline disabled:opacity-40"
       >
         Verwijder
       </button>

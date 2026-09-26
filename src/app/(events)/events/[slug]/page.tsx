@@ -63,14 +63,14 @@ export default async function EventPage({ params }: Props) {
   if (data.access === "login_required") {
     return (
       <div className="border-hairline max-w-xl border bg-white p-8">
-        <p className="text-label-caps text-outline mb-2">ALLEEN VOOR LEDEN</p>
-        <h1 className="text-headline-md text-on-surface mb-4">{data.title}</h1>
-        <p className="text-body text-on-surface-variant mb-6">
+        <p className="text-label-md text-secondary mb-2">ALLEEN VOOR LEDEN</p>
+        <h1 className="text-headline-lg text-on-surface mb-4">{data.title}</h1>
+        <p className="text-body-md text-on-surface-variant mb-6">
           Log in om dit event te bekijken en je aan te melden.
         </p>
         <Link
           href={`/inloggen?next=${encodeURIComponent(`/events/${data.slug}`)}`}
-          className="bg-primary-container text-on-primary text-label-caps inline-block px-6 py-3"
+          className="bg-primary-container text-on-primary text-label-md inline-block px-6 py-3"
         >
           Inloggen
         </Link>
@@ -85,7 +85,8 @@ export default async function EventPage({ params }: Props) {
 
   const url = `${APP_URL}/events/${e.slug}`;
   const where = eventWhere(e);
-  const organiserNaam = organiser?.naam ?? organiser?.name ?? "Samenmakers";
+  const organiserNaam =
+    organiser?.naam ?? organiser?.name ?? "We Shape the Future";
   const links = calendarLinks({
     id: e.id,
     title: e.title,
@@ -121,7 +122,7 @@ export default async function EventPage({ params }: Props) {
       availability: e.phase === "sold_out" ? "SoldOut" : "InStock",
     }),
     breadcrumbSchema([
-      { name: "Samenmakers", url: APP_URL },
+      { name: "We Shape the Future", url: APP_URL },
       { name: "Events", url: `${APP_URL}/events` },
       { name: e.title, url },
     ]),
@@ -144,7 +145,7 @@ export default async function EventPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <nav aria-label="Kruimelpad" className="text-body-sm text-outline">
+      <nav aria-label="Kruimelpad" className="text-body-md text-secondary">
         <Link href="/events" className="hover:text-on-surface">
           Events
         </Link>{" "}
@@ -153,9 +154,11 @@ export default async function EventPage({ params }: Props) {
 
       {e.status === "cancelled" && (
         <div className="border-on-surface border bg-white p-4" role="status">
-          <p className="text-on-surface font-black">Dit event is geannuleerd</p>
+          <p className="text-on-surface font-extrabold">
+            Dit event is geannuleerd
+          </p>
           {e.cancellationReason && (
-            <p className="text-body-sm text-on-surface-variant mt-1">
+            <p className="text-body-md text-on-surface-variant mt-1">
               {e.cancellationReason}
             </p>
           )}
@@ -163,7 +166,7 @@ export default async function EventPage({ params }: Props) {
       )}
       {e.status === "draft" && (
         <div
-          className="border-outline text-body-sm text-on-surface-variant border border-dashed bg-white p-4"
+          className="border-outline text-body-md text-on-surface-variant border border-dashed bg-white p-4"
           role="status"
         >
           Dit is een concept en alleen zichtbaar voor jou. Publiceer het via
@@ -183,12 +186,12 @@ export default async function EventPage({ params }: Props) {
       )}
 
       <header className="space-y-4">
-        <div className="text-label-caps flex flex-wrap gap-2">
-          <span className="border-hairline text-outline border px-2 py-1">
+        <div className="text-label-md flex flex-wrap gap-2">
+          <span className="border-hairline text-secondary border px-2 py-1">
             {FORMAT_LABEL[e.format]}
           </span>
           {e.thema && (
-            <span className="border-hairline text-outline border px-2 py-1">
+            <span className="border-hairline text-secondary border px-2 py-1">
               {e.thema}
             </span>
           )}
@@ -198,10 +201,10 @@ export default async function EventPage({ params }: Props) {
             </span>
           )}
         </div>
-        <h1 className="text-headline-md sm:text-headline-lg text-on-surface">
+        <h1 className="text-headline-lg sm:text-display-lg text-on-surface">
           {e.title}
         </h1>
-        <dl className="text-body text-on-surface-variant grid gap-2">
+        <dl className="text-body-md text-on-surface-variant grid gap-2">
           <div className="flex items-start gap-2">
             <dt className="sr-only">Wanneer</dt>
             <Calendar size={16} className="mt-1 shrink-0" aria-hidden />
@@ -249,7 +252,7 @@ export default async function EventPage({ params }: Props) {
       <div className="flex flex-wrap gap-2">
         <a
           href={`/api/events/${e.id}/ics`}
-          className="border-hairline text-label-caps text-on-surface hover:border-on-surface border px-4 py-2"
+          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
         >
           Agenda (.ics)
         </a>
@@ -257,7 +260,7 @@ export default async function EventPage({ params }: Props) {
           href={links.google}
           target="_blank"
           rel="noopener noreferrer"
-          className="border-hairline text-label-caps text-on-surface hover:border-on-surface border px-4 py-2"
+          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
         >
           Google Agenda
         </a>
@@ -265,7 +268,7 @@ export default async function EventPage({ params }: Props) {
           href={links.outlook}
           target="_blank"
           rel="noopener noreferrer"
-          className="border-hairline text-label-caps text-on-surface hover:border-on-surface border px-4 py-2"
+          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
         >
           Outlook
         </a>
@@ -273,7 +276,7 @@ export default async function EventPage({ params }: Props) {
         {me?.canManage && (
           <Link
             href={`/events/${e.slug}/beheer`}
-            className="bg-on-surface text-on-primary text-label-caps inline-flex items-center gap-2 px-4 py-2"
+            className="bg-on-surface text-on-primary text-label-md inline-flex items-center gap-2 px-4 py-2"
           >
             <Settings size={14} aria-hidden /> Beheren
           </Link>
@@ -283,10 +286,10 @@ export default async function EventPage({ params }: Props) {
       {e.description && (
         <Card hover={false}>
           <CardBody>
-            <h2 className="text-label-caps text-outline mb-3">
+            <h2 className="text-label-md text-secondary mb-3">
               OVER DIT EVENT
             </h2>
-            <p className="text-body text-on-surface-variant whitespace-pre-line">
+            <p className="text-body-md text-on-surface-variant whitespace-pre-line">
               {e.description}
             </p>
           </CardBody>
@@ -296,8 +299,8 @@ export default async function EventPage({ params }: Props) {
       {mapBox && e.format !== "online" && (
         <Card hover={false}>
           <CardBody className="space-y-3">
-            <h2 className="text-label-caps text-outline">LOCATIE</h2>
-            <p className="text-body text-on-surface">{e.location}</p>
+            <h2 className="text-label-md text-secondary">LOCATIE</h2>
+            <p className="text-body-md text-on-surface">{e.location}</p>
             <iframe
               title={`Kaart: ${e.location ?? e.title}`}
               src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapBox}&layer=mapnik&marker=${e.latitude},${e.longitude}`}
@@ -308,7 +311,7 @@ export default async function EventPage({ params }: Props) {
               href={`https://www.openstreetmap.org/?mlat=${e.latitude}&mlon=${e.longitude}#map=16/${e.latitude}/${e.longitude}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-label-caps text-primary"
+              className="text-label-md text-primary"
             >
               Route plannen →
             </a>
@@ -318,7 +321,7 @@ export default async function EventPage({ params }: Props) {
 
       <Card hover={false}>
         <CardBody>
-          <h2 className="text-label-caps text-outline mb-3">ORGANISATOR</h2>
+          <h2 className="text-label-md text-secondary mb-3">ORGANISATOR</h2>
           <div className="flex items-center gap-3">
             <Avatar
               src={organiser?.avatarUrl ?? null}
@@ -329,7 +332,9 @@ export default async function EventPage({ params }: Props) {
             <div>
               <p className="text-on-surface font-semibold">{organiserNaam}</p>
               {organiser?.sector && (
-                <p className="text-body-sm text-outline">{organiser.sector}</p>
+                <p className="text-body-md text-secondary">
+                  {organiser.sector}
+                </p>
               )}
             </div>
           </div>
@@ -339,7 +344,7 @@ export default async function EventPage({ params }: Props) {
       {attendeesPreview.length > 0 && (
         <Card hover={false}>
           <CardBody>
-            <h2 className="text-label-caps text-outline mb-3">WIE KOMEN ER</h2>
+            <h2 className="text-label-md text-secondary mb-3">WIE KOMEN ER</h2>
             <div className="flex flex-wrap gap-2">
               {attendeesPreview.map((a) => (
                 <Avatar
@@ -351,7 +356,7 @@ export default async function EventPage({ params }: Props) {
                 />
               ))}
               {e.seatsTaken > attendeesPreview.length && (
-                <span className="text-body-sm text-outline self-center">
+                <span className="text-body-md text-secondary self-center">
                   +{e.seatsTaken - attendeesPreview.length}
                 </span>
               )}

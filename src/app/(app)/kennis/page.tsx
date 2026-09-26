@@ -19,7 +19,12 @@ export default async function KennisPage({ searchParams }: Props) {
   const { category, search } = await searchParams;
 
   const { items } = await api.posts.list({
-    category: category as "blog" | "kennisbank" | "tool" | "funding" | undefined,
+    category: category as
+      | "blog"
+      | "kennisbank"
+      | "tool"
+      | "funding"
+      | undefined,
     search,
     limit: 20,
   });
@@ -28,41 +33,52 @@ export default async function KennisPage({ searchParams }: Props) {
     <div>
       <div className="mb-8 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-label-caps text-outline mb-1">PLATFORM</p>
-          <h1 className="text-headline-md text-on-surface">Kennisbank</h1>
+          <p className="text-label-md text-secondary mb-1">PLATFORM</p>
+          <h1 className="text-headline-lg text-on-surface">Kennisbank</h1>
         </div>
-        <Link href="/kennis/nieuw" className="shrink-0 mt-1">
-          <Button size="sm" variant="primary">+ Artikel</Button>
+        <Link href="/kennis/nieuw" className="mt-1 shrink-0">
+          <Button size="sm" variant="primary">
+            + Artikel
+          </Button>
         </Link>
       </div>
 
       <KennisFilters {...(category ? { activeCategory: category } : {})} />
 
-      <div className="grid gap-4 mt-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.length === 0 ? (
-          <div className="col-span-full text-center py-20 border border-hairline">
+          <div className="border-hairline col-span-full border py-20 text-center">
             <p className="text-on-surface-variant">Geen artikelen gevonden</p>
           </div>
         ) : (
           items.map((post) => (
             <Link key={post.id} href={`/kennis/${post.slug}`}>
               <Card className="h-full">
-                <CardBody className="p-5 h-full flex flex-col">
-                  <div className="flex items-center gap-2 mb-3">
+                <CardBody className="flex h-full flex-col p-5">
+                  <div className="mb-3 flex items-center gap-2">
                     <Badge variant="default" size="sm">
-                      {POST_CATEGORIES.find((c) => c.value === post.category)?.label ?? post.category}
+                      {POST_CATEGORIES.find((c) => c.value === post.category)
+                        ?.label ?? post.category}
                     </Badge>
                   </div>
                   {post.coverImageUrl && (
-                    <div className="aspect-video w-full overflow-hidden mb-3 bg-surface-container">
-                      <img src={post.coverImageUrl} alt={post.title} className="w-full h-full object-cover" />
+                    <div className="bg-surface-container mb-3 aspect-video w-full overflow-hidden">
+                      <img
+                        src={post.coverImageUrl}
+                        alt={post.title}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                   )}
-                  <h3 className="font-black text-on-surface mb-2 flex-1 line-clamp-2">{post.title}</h3>
+                  <h3 className="text-on-surface mb-2 line-clamp-2 flex-1 font-extrabold">
+                    {post.title}
+                  </h3>
                   {post.excerpt && (
-                    <p className="text-body-sm text-on-surface-variant line-clamp-2 mb-3">{post.excerpt}</p>
+                    <p className="text-body-md text-on-surface-variant mb-3 line-clamp-2">
+                      {post.excerpt}
+                    </p>
                   )}
-                  <div className="flex items-center gap-2 mt-auto">
+                  <div className="mt-auto flex items-center gap-2">
                     <Avatar
                       src={post.author.avatarUrl}
                       naam={post.author.naam ?? post.author.name ?? "?"}
@@ -70,11 +86,13 @@ export default async function KennisPage({ searchParams }: Props) {
                       grayscale={false}
                     />
                     <div>
-                      <p className="text-xs font-semibold text-on-surface">
+                      <p className="text-on-surface text-xs font-semibold">
                         {post.author.naam ?? post.author.name}
                       </p>
                       {post.publishedAt && (
-                        <p className="text-[10px] text-outline">{formatDate(post.publishedAt)}</p>
+                        <p className="text-secondary text-[10px]">
+                          {formatDate(post.publishedAt)}
+                        </p>
                       )}
                     </div>
                   </div>

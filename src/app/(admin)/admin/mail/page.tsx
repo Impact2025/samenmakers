@@ -7,8 +7,8 @@ export default function AdminMailPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-black text-on-surface">Mailings</h1>
-        <p className="text-sm text-outline mt-1">
+        <h1 className="text-on-surface text-2xl font-extrabold">Mailings</h1>
+        <p className="text-secondary mt-1 text-sm">
           E-mailcampagnes naar segmenten — met AI-tekst en live bereik
         </p>
       </div>

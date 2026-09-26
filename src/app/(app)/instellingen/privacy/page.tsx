@@ -13,11 +13,15 @@ export default async function PrivacyPage() {
   return (
     <div className="max-w-lg space-y-8">
       <div>
-        <p className="text-label-caps text-outline mb-1">INSTELLINGEN</p>
-        <h1 className="text-headline-md text-on-surface">Privacy & beveiliging</h1>
+        <p className="text-label-md text-secondary mb-1">INSTELLINGEN</p>
+        <h1 className="text-headline-lg text-on-surface">
+          Privacy & beveiliging
+        </h1>
       </div>
       <PrivacySettings
-        profileVisibility={(me?.profileVisibility as "public" | "members") ?? "members"}
+        profileVisibility={
+          (me?.profileVisibility as "public" | "members") ?? "members"
+        }
         blockedUsers={blocked}
       />
     </div>

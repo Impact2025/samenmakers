@@ -2,23 +2,27 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white">
-      <div className="text-center max-w-sm">
-        <p className="text-[120px] font-black text-outline/10 leading-none select-none mb-6">404</p>
-        <h1 className="text-headline-sm text-on-surface mb-3">Pagina niet gevonden</h1>
-        <p className="text-body text-on-surface-variant mb-8">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
+      <div className="max-w-sm text-center">
+        <p className="text-secondary/10 mb-6 text-[120px] leading-none font-extrabold select-none">
+          404
+        </p>
+        <h1 className="text-headline-md text-on-surface mb-3">
+          Pagina niet gevonden
+        </h1>
+        <p className="text-body-md text-on-surface-variant mb-8">
           De pagina die je zoekt bestaat niet of is verplaatst.
         </p>
-        <div className="flex gap-3 justify-center">
+        <div className="flex justify-center gap-3">
           <Link
             href="/dashboard"
-            className="px-6 py-3 bg-primary text-on-primary font-bold text-label-caps hover:bg-primary/90 transition-colors"
+            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 px-6 py-3 font-bold transition-colors"
           >
             Dashboard
           </Link>
           <Link
             href="/"
-            className="px-6 py-3 border border-hairline text-on-surface font-bold text-label-caps hover:border-on-surface transition-colors"
+            className="border-hairline text-on-surface text-label-md hover:border-on-surface border px-6 py-3 font-bold transition-colors"
           >
             Home
           </Link>

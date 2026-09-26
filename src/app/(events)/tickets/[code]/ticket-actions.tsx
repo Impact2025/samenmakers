@@ -48,7 +48,7 @@ export function TicketActions({
   if (done)
     return (
       <p
-        className="border-hairline text-body-sm text-on-surface border bg-white p-4"
+        className="border-hairline text-body-md text-on-surface border bg-white p-4"
         role="status"
       >
         {done}
@@ -87,11 +87,11 @@ export function TicketActions({
             transfer.mutate({ code, name: name.trim(), email: email.trim() });
           }}
         >
-          <p className="text-body-sm text-on-surface-variant">
+          <p className="text-body-md text-on-surface-variant">
             Kun je zelf niet? Geef je ticket door aan een collega of vriend.
           </p>
           <label className="block">
-            <span className="text-label-caps text-outline mb-1 block">
+            <span className="text-label-md text-secondary mb-1 block">
               Naam
             </span>
             <input
@@ -103,7 +103,7 @@ export function TicketActions({
             />
           </label>
           <label className="block">
-            <span className="text-label-caps text-outline mb-1 block">
+            <span className="text-label-md text-secondary mb-1 block">
               E-mail
             </span>
             <input
@@ -115,7 +115,7 @@ export function TicketActions({
             />
           </label>
           {transfer.error && (
-            <p className="text-body-sm text-error" role="alert">
+            <p className="text-body-md text-error" role="alert">
               {transfer.error.message}
             </p>
           )}
@@ -137,12 +137,12 @@ export function TicketActions({
 
       {mode === "cancel" && (
         <div className="space-y-3">
-          <p className="text-body-sm text-on-surface">
+          <p className="text-body-md text-on-surface">
             Weet je het zeker? Je ticket vervalt en een betaald bedrag wordt
             teruggestort. Je plek gaat naar de wachtlijst.
           </p>
           {cancel.error && (
-            <p className="text-body-sm text-error" role="alert">
+            <p className="text-body-md text-error" role="alert">
               {cancel.error.message}
             </p>
           )}

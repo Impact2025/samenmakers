@@ -28,22 +28,22 @@ export default async function OrderPage({ params, searchParams }: Props) {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <nav aria-label="Kruimelpad" className="text-body-sm text-outline">
+      <nav aria-label="Kruimelpad" className="text-body-md text-secondary">
         <Link href={`/events/${e.slug}`} className="hover:text-on-surface">
           ← {e.title}
         </Link>
       </nav>
       <header>
-        <p className="text-label-caps text-outline mb-1">TICKETS</p>
-        <h1 className="text-headline-md text-on-surface">{e.title}</h1>
-        <p className="text-body-sm text-on-surface-variant mt-1">
+        <p className="text-label-md text-secondary mb-1">TICKETS</p>
+        <h1 className="text-headline-lg text-on-surface">{e.title}</h1>
+        <p className="text-body-md text-on-surface-variant mt-1">
           {formatEventWhen(e.startAt, e.endAt, e.timezone)} · {eventWhere(e)}
         </p>
       </header>
 
       {geannuleerd && (
         <p
-          className="border-hairline text-body-sm text-on-surface-variant border bg-white p-4"
+          className="border-hairline text-body-md text-on-surface-variant border bg-white p-4"
           role="status"
         >
           De betaling is afgebroken; er is niets afgeschreven. Je kunt het
@@ -62,7 +62,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
           allowTransfer={e.allowTransfer}
         />
       ) : (
-        <p className="border-hairline text-body text-on-surface-variant border bg-white p-5">
+        <p className="border-hairline text-body-md text-on-surface-variant border bg-white p-5">
           Bestellen is voor dit event niet meer mogelijk.
         </p>
       )}

@@ -63,12 +63,14 @@ export function CheckoutWithCoupon() {
     <div className="space-y-4">
       {/* Coupon field */}
       {applied ? (
-        <div className="flex items-center justify-between border border-primary/30 bg-primary/5 px-4 py-3">
+        <div className="border-primary/30 bg-primary/5 flex items-center justify-between border px-4 py-3">
           <div className="flex items-center gap-2">
             <CheckCircle size={16} className="text-primary" />
             <div>
-              <p className="font-bold text-on-surface text-sm">{applied.code}</p>
-              <p className="text-xs text-on-surface-variant">
+              <p className="text-on-surface text-sm font-bold">
+                {applied.code}
+              </p>
+              <p className="text-on-surface-variant text-xs">
                 {describe(applied)}
                 {applied.description ? ` — ${applied.description}` : ""}
               </p>
@@ -80,7 +82,7 @@ export function CheckoutWithCoupon() {
               setApplied(null);
               setCode("");
             }}
-            className="text-xs font-semibold text-outline hover:text-on-surface"
+            className="text-secondary hover:text-on-surface text-xs font-semibold"
           >
             Wijzig
           </button>
@@ -88,14 +90,14 @@ export function CheckoutWithCoupon() {
       ) : (
         <div className="flex items-end gap-2">
           <div className="flex-1">
-            <label className="text-label-caps text-outline mb-2 flex items-center gap-1">
+            <label className="text-label-md text-secondary mb-2 flex items-center gap-1">
               <Tag size={12} /> KORTINGSCODE
             </label>
             <input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="Heb je een code?"
-              className="w-full bg-transparent border-b border-on-surface pb-2 text-body-lg text-on-surface placeholder:text-outline outline-none focus:border-b-2 transition-all"
+              className="border-on-surface text-body-lg text-on-surface placeholder:text-secondary w-full border-b bg-transparent pb-2 transition-all outline-none focus:border-b-2"
             />
           </div>
           <Button
@@ -109,7 +111,7 @@ export function CheckoutWithCoupon() {
           </Button>
         </div>
       )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-error text-sm">{error}</p>}
 
       <Button
         variant="primary"

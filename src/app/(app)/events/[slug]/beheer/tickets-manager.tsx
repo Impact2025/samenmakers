@@ -19,8 +19,8 @@ type Manage = inferRouterOutputs<AppRouter>["tickets"]["manage"];
 type TicketRow = Manage["tickets"][number];
 
 const input =
-  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface";
-const label = "text-label-caps text-outline block mb-1";
+  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-secondary focus:outline-none focus:border-on-surface";
+const label = "text-label-md text-secondary block mb-1";
 
 const ORDER_STATUS: Record<string, string> = {
   paid: "Betaald",
@@ -52,14 +52,14 @@ export function TicketsManager({
   return (
     <div className="space-y-6">
       {!data.canSellPaid && (
-        <div className="border-on-surface text-body-sm text-on-surface flex flex-wrap items-center justify-between gap-3 border bg-white p-4">
+        <div className="border-on-surface text-body-md text-on-surface flex flex-wrap items-center justify-between gap-3 border bg-white p-4">
           <span>
             Wil je betaalde tickets verkopen? Koppel eerst je uitbetaalrekening
             via Stripe.
           </span>
           <Link
             href="/events/uitbetalingen"
-            className="bg-on-surface text-on-primary text-label-caps px-4 py-2"
+            className="bg-on-surface text-on-primary text-label-md px-4 py-2"
           >
             Uitbetalingen instellen
           </Link>
@@ -74,19 +74,19 @@ export function TicketsManager({
 
       <section className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-label-caps text-on-surface">TICKETTYPES</h3>
+          <h3 className="text-label-md text-on-surface">TICKETTYPES</h3>
           {editing === null && (
             <button
               type="button"
               onClick={() => setEditing("new")}
-              className="text-label-caps text-primary inline-flex items-center gap-1"
+              className="text-label-md text-primary inline-flex items-center gap-1"
             >
               <Plus size={14} aria-hidden /> Tickettype
             </button>
           )}
         </div>
         {data.tickets.length === 0 && editing === null && (
-          <p className="border-hairline text-body-sm text-outline border bg-white p-4">
+          <p className="border-hairline text-body-md text-secondary border bg-white p-4">
             Nog geen tickets: deelnemers melden zich gratis aan met één klik.
             Voeg een tickettype toe voor betaalde, vroegboek- of donatietickets,
             aanmeldvragen of gastbestellingen.
@@ -103,7 +103,7 @@ export function TicketsManager({
                   {t.name}
                   {t.isHidden && " (verborgen)"}
                 </p>
-                <p className="text-body-sm text-outline">
+                <p className="text-body-md text-secondary">
                   {t.kind === "free"
                     ? "Gratis"
                     : t.kind === "donation"
@@ -118,7 +118,7 @@ export function TicketsManager({
                 type="button"
                 aria-label={`${t.name} bewerken`}
                 onClick={() => setEditing(t)}
-                className="text-outline hover:text-on-surface p-2"
+                className="text-secondary hover:text-on-surface p-2"
               >
                 <Pencil size={14} />
               </button>
@@ -155,8 +155,8 @@ export function TicketsManager({
 function Stat({ label: l, value }: { label: string; value: string }) {
   return (
     <div className="border-hairline border bg-white p-4">
-      <p className="text-label-caps text-outline">{l}</p>
-      <p className="text-headline-sm text-on-surface">{value}</p>
+      <p className="text-label-md text-secondary">{l}</p>
+      <p className="text-headline-md text-on-surface">{value}</p>
     </div>
   );
 }
@@ -178,7 +178,7 @@ function DeleteTicket({
       aria-label={`${ticket.name} verwijderen`}
       disabled={del.isPending}
       onClick={() => del.mutate({ eventId, id: ticket.id })}
-      className="text-outline hover:text-error p-2 disabled:opacity-40"
+      className="text-secondary hover:text-error p-2 disabled:opacity-40"
       title={
         ticket.taken > 0
           ? "Wordt verborgen (er zijn al tickets verkocht)"
@@ -257,7 +257,7 @@ function TicketForm({
         });
       }}
     >
-      <p className="text-label-caps text-on-surface">
+      <p className="text-label-md text-on-surface">
         {ticket ? "Tickettype bewerken" : "Nieuw tickettype"}
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -366,7 +366,7 @@ function TicketForm({
             value={f.salesEnd}
             onChange={(e) => set("salesEnd", e.target.value)}
           />
-          <span className="text-outline text-[11px]">
+          <span className="text-secondary text-[11px]">
             Vroegboek: zet hier de einddatum.
           </span>
         </label>
@@ -381,14 +381,14 @@ function TicketForm({
         Verbergen (niet te koop)
       </label>
       {paidBlocked && (
-        <p className="text-body-sm text-error">
+        <p className="text-body-md text-error">
           {!isPro
             ? "Betaalde tickets zijn beschikbaar met Pro."
             : "Koppel eerst je uitbetaalrekening om betaalde tickets te verkopen."}
         </p>
       )}
       {save.error && (
-        <p className="text-body-sm text-error" role="alert">
+        <p className="text-body-md text-error" role="alert">
           {save.error.message}
         </p>
       )}
@@ -426,9 +426,7 @@ function SettingsForm({
   const save = trpc.tickets.updateSettings.useMutation({ onSuccess: onDone });
   return (
     <section className="border-hairline space-y-3 border bg-white p-5">
-      <h3 className="text-label-caps text-on-surface">
-        ANNULEREN EN DOORGEVEN
-      </h3>
+      <h3 className="text-label-md text-on-surface">ANNULEREN EN DOORGEVEN</h3>
       <div className="grid items-end gap-3 sm:grid-cols-2">
         <label className="block">
           <span className={label}>
@@ -472,7 +470,7 @@ function SettingsForm({
           {save.isPending ? <Spinner /> : "Opslaan"}
         </Button>
         {save.isSuccess && (
-          <span className="text-body-sm text-outline">Opgeslagen</span>
+          <span className="text-body-md text-secondary">Opgeslagen</span>
         )}
       </div>
     </section>
@@ -511,8 +509,8 @@ function FieldsEditor({
 
   return (
     <section className="border-hairline space-y-3 border bg-white p-5">
-      <h3 className="text-label-caps text-on-surface">AANMELDVRAGEN</h3>
-      <p className="text-body-sm text-outline">
+      <h3 className="text-label-md text-on-surface">AANMELDVRAGEN</h3>
+      <p className="text-body-md text-secondary">
         Bijvoorbeeld dieetwensen, toegankelijkheid of motivatie. Vraag niet meer
         dan je nodig hebt.
       </p>
@@ -554,7 +552,7 @@ function FieldsEditor({
             type="button"
             aria-label="Vraag verwijderen"
             onClick={() => setFields((fs) => fs.filter((_, j) => j !== i))}
-            className="text-outline hover:text-error p-2"
+            className="text-secondary hover:text-error p-2"
           >
             <Trash2 size={14} />
           </button>
@@ -570,7 +568,7 @@ function FieldsEditor({
         </div>
       ))}
       {save.error && (
-        <p className="text-body-sm text-error" role="alert">
+        <p className="text-body-md text-error" role="alert">
           {save.error.message}
         </p>
       )}
@@ -583,7 +581,7 @@ function FieldsEditor({
               { label: "", type: "text", required: false, options: "" },
             ])
           }
-          className="text-label-caps text-primary inline-flex items-center gap-1"
+          className="text-label-md text-primary inline-flex items-center gap-1"
         >
           <Plus size={14} aria-hidden /> Vraag
         </button>
@@ -612,7 +610,7 @@ function FieldsEditor({
           {save.isPending ? <Spinner /> : "Vragen opslaan"}
         </Button>
         {save.isSuccess && (
-          <span className="text-body-sm text-outline">Opgeslagen</span>
+          <span className="text-body-md text-secondary">Opgeslagen</span>
         )}
       </div>
     </section>
@@ -684,7 +682,7 @@ function OrdersList({
   return (
     <section className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-label-caps text-on-surface">
+        <h3 className="text-label-md text-on-surface">
           BESTELLINGEN · {validTickets.filter((t) => t.checkedInAt).length} /{" "}
           {validTickets.length} ingecheckt
         </h3>
@@ -699,19 +697,19 @@ function OrdersList({
           <button
             type="button"
             onClick={exportCsv}
-            className="border-hairline text-label-caps inline-flex items-center gap-1 border px-3 py-1.5"
+            className="border-hairline text-label-md inline-flex items-center gap-1 border px-3 py-1.5"
           >
             <Download size={14} aria-hidden /> CSV
           </button>
         </div>
       </div>
       {(refund.error ?? checkIn.error) && (
-        <p className="text-body-sm text-error" role="alert">
+        <p className="text-body-md text-error" role="alert">
           {(refund.error ?? checkIn.error)!.message}
         </p>
       )}
       {orders.length === 0 ? (
-        <p className="border-hairline text-body-sm text-outline border bg-white p-4">
+        <p className="border-hairline text-body-md text-secondary border bg-white p-4">
           Nog geen bestellingen.
         </p>
       ) : (
@@ -724,13 +722,13 @@ function OrdersList({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-on-surface font-semibold">{o.buyerName}</p>
-                  <p className="text-body-sm text-outline">
+                  <p className="text-body-md text-secondary">
                     {o.buyerEmail} ·{" "}
                     {new Date(o.createdAt).toLocaleString("nl-NL")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-body-sm">
+                  <span className="text-body-md">
                     {o.totalCents > 0 ? formatEuro(o.totalCents) : "Gratis"} ·{" "}
                     {ORDER_STATUS[o.status] ?? o.status}
                   </span>
@@ -756,10 +754,10 @@ function OrdersList({
                 </div>
               </div>
               {Object.keys(o.answers).length > 0 && (
-                <dl className="text-body-sm text-on-surface-variant grid gap-x-3 sm:grid-cols-[auto_1fr]">
+                <dl className="text-body-md text-on-surface-variant grid gap-x-3 sm:grid-cols-[auto_1fr]">
                   {Object.entries(o.answers).map(([k, v]) => (
                     <div key={k} className="contents">
-                      <dt className="text-outline">
+                      <dt className="text-secondary">
                         {fieldLabel.get(k) ?? "Vraag"}
                       </dt>
                       <dd>{v}</dd>
@@ -775,10 +773,10 @@ function OrdersList({
                   >
                     <span className="text-on-surface flex-1 text-sm">
                       {t.holderName}{" "}
-                      <span className="text-outline">· {t.name}</span>
+                      <span className="text-secondary">· {t.name}</span>
                     </span>
                     {t.status !== "valid" ? (
-                      <span className="text-outline text-xs">
+                      <span className="text-secondary text-xs">
                         {t.status === "refunded"
                           ? "Terugbetaald"
                           : "Geannuleerd"}
@@ -813,7 +811,7 @@ function OrdersList({
                                   ticketIds: [t.id],
                                 });
                             }}
-                            className="text-outline hover:text-error text-xs"
+                            className="text-secondary hover:text-error text-xs"
                           >
                             {o.status === "paid" ? "Terugbetalen" : "Annuleren"}
                           </button>

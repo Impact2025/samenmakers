@@ -9,7 +9,11 @@ import type { inferRouterOutputs } from "@trpc/server";
 
 type Matches = inferRouterOutputs<AppRouter>["matches"]["myMatches"];
 
-export function ConversationList({ initialMatches }: { initialMatches: Matches }) {
+export function ConversationList({
+  initialMatches,
+}: {
+  initialMatches: Matches;
+}) {
   const { data: matches } = trpc.matches.myMatches.useQuery(undefined, {
     initialData: initialMatches,
   });
@@ -17,9 +21,9 @@ export function ConversationList({ initialMatches }: { initialMatches: Matches }
 
   if (!matches || matches.length === 0) {
     return (
-      <div className="text-center py-20 border border-hairline">
+      <div className="border-hairline border py-20 text-center">
         <p className="text-on-surface-variant mb-2">Nog geen gesprekken</p>
-        <p className="text-body-sm text-outline">
+        <p className="text-body-md text-secondary">
           Maak matches via de{" "}
           <Link href="/matching" className="text-primary underline">
             Matching pagina
@@ -31,7 +35,7 @@ export function ConversationList({ initialMatches }: { initialMatches: Matches }
   }
 
   return (
-    <div className="border border-hairline divide-y divide-hairline">
+    <div className="border-hairline divide-hairline divide-y border">
       {matches.map((match) => {
         const other = match.userId === me?.id ? match.target : match.user;
         const lastMsg = match.messages[0];
@@ -41,7 +45,7 @@ export function ConversationList({ initialMatches }: { initialMatches: Matches }
           <Link
             key={match.id}
             href={`/berichten/${match.id}`}
-            className="flex items-center gap-4 px-5 py-4 hover:bg-surface-container-low transition-colors"
+            className="hover:bg-surface-container-low flex items-center gap-4 px-5 py-4 transition-colors"
           >
             <Avatar
               src={other.avatarUrl}
@@ -49,16 +53,18 @@ export function ConversationList({ initialMatches }: { initialMatches: Matches }
               size="md"
               grayscale={false}
             />
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="font-semibold text-on-surface text-sm">{displayName}</p>
+                <p className="text-on-surface text-sm font-semibold">
+                  {displayName}
+                </p>
                 {lastMsg && (
-                  <span className="text-[10px] text-outline shrink-0">
+                  <span className="text-secondary shrink-0 text-[10px]">
                     {formatRelative(new Date(lastMsg.createdAt))}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-outline truncate mt-0.5">
+              <p className="text-secondary mt-0.5 truncate text-xs">
                 {lastMsg?.content ?? "Stuur een eerste bericht"}
               </p>
             </div>

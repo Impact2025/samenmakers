@@ -47,7 +47,7 @@ export function PayoutActions({
         )}
       </div>
       {error && (
-        <p className="text-body-sm text-error" role="alert">
+        <p className="text-body-md text-error" role="alert">
           {error.message}
         </p>
       )}

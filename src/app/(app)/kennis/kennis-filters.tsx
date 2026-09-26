@@ -15,13 +15,13 @@ export function KennisFilters({ activeCategory }: { activeCategory?: string }) {
   }
 
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex flex-wrap gap-2">
       <button
         onClick={() => setCategory(null)}
-        className={`px-4 py-2 text-label-caps border transition-colors ${
+        className={`text-label-md border px-4 py-2 transition-colors ${
           !activeCategory
             ? "bg-on-surface text-on-primary border-on-surface"
-            : "border-hairline text-outline hover:border-on-surface"
+            : "border-hairline text-secondary hover:border-on-surface"
         }`}
       >
         Alles
@@ -30,10 +30,10 @@ export function KennisFilters({ activeCategory }: { activeCategory?: string }) {
         <button
           key={value}
           onClick={() => setCategory(value)}
-          className={`px-4 py-2 text-label-caps border transition-colors ${
+          className={`text-label-md border px-4 py-2 transition-colors ${
             activeCategory === value
               ? "bg-on-surface text-on-primary border-on-surface"
-              : "border-hairline text-outline hover:border-on-surface"
+              : "border-hairline text-secondary hover:border-on-surface"
           }`}
         >
           {label}

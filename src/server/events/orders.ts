@@ -220,7 +220,7 @@ async function sendOrderConfirmation(db: Database, orderId: string) {
       subject: `Je tickets: ${e.title}`,
       heading: `Je bent erbij, ${order.buyerName.split(" ")[0]}!`,
       intro: guest
-        ? "Hieronder je tickets; neem ze mee op je telefoon. Maak gratis een Samenmakers-profiel aan om na afloop in contact te blijven met de andere deelnemers."
+        ? "Hieronder je tickets; neem ze mee op je telefoon. Maak gratis een We Shape the Future-profiel aan om na afloop in contact te blijven met de andere deelnemers."
         : "Hieronder je tickets; neem ze mee op je telefoon. Je vindt ze ook terug onder Mijn events.",
       event: {
         title: e.title,

@@ -45,7 +45,7 @@ export async function generateBlogDraft(
         .join("\n")
     : "(nog geen bestaande artikelen — verwijs niet naar interne links)";
 
-  const system = `Je bent een Nederlandse SEO-copywriter van wereldklasse voor Samenmakers,
+  const system = `Je bent een Nederlandse SEO-copywriter van wereldklasse voor We Shape the Future,
 een platform voor impact-ondernemers. Je schrijft heldere, autoritaire, E-E-A-T-waardige
 artikelen die hoog ranken in Google. Je antwoordt UITSLUITEND met geldige JSON, zonder
 extra uitleg en zonder markdown-codefences.`;
@@ -102,8 +102,12 @@ Antwoord met exact dit JSON-schema:
     excerpt: parsed.excerpt ?? "",
     keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
     content: parsed.content ?? "",
-    internalLinks: Array.isArray(parsed.internalLinks) ? parsed.internalLinks : [],
-    externalLinks: Array.isArray(parsed.externalLinks) ? parsed.externalLinks : [],
+    internalLinks: Array.isArray(parsed.internalLinks)
+      ? parsed.internalLinks
+      : [],
+    externalLinks: Array.isArray(parsed.externalLinks)
+      ? parsed.externalLinks
+      : [],
     faq: Array.isArray(parsed.faq) ? parsed.faq : [],
   };
 }

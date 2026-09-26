@@ -7,8 +7,8 @@ export default function AdminCouponsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-black text-on-surface">Coupons</h1>
-        <p className="text-sm text-outline mt-1">
+        <h1 className="text-on-surface text-2xl font-extrabold">Coupons</h1>
+        <p className="text-secondary mt-1 text-sm">
           Kortingscodes — gespiegeld naar Stripe, met live redemption-tracking
         </p>
       </div>

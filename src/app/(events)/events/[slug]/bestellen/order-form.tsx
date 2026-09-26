@@ -30,7 +30,7 @@ interface Field {
 }
 
 const input =
-  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface";
+  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-secondary focus:outline-none focus:border-on-surface";
 
 function dateShort(d: Date) {
   return new Intl.DateTimeFormat("nl-NL", {
@@ -123,7 +123,7 @@ export function OrderForm({
   return (
     <form onSubmit={submit} className="space-y-6">
       <section aria-labelledby="t-kies" className="space-y-2">
-        <h2 id="t-kies" className="text-label-caps text-on-surface">
+        <h2 id="t-kies" className="text-label-md text-on-surface">
           1 · Kies je tickets
         </h2>
         <ul className="border-hairline divide-hairline divide-y border bg-white">
@@ -139,11 +139,11 @@ export function OrderForm({
                 <div className="min-w-[12rem] flex-1">
                   <p className="text-on-surface font-semibold">{t.name}</p>
                   {t.description && (
-                    <p className="text-body-sm text-on-surface-variant">
+                    <p className="text-body-md text-on-surface-variant">
                       {t.description}
                     </p>
                   )}
-                  <p className="text-body-sm text-outline mt-1">
+                  <p className="text-body-md text-secondary mt-1">
                     {t.state === "not_started" && t.salesStart
                       ? `Verkoop start ${dateShort(t.salesStart)}`
                       : t.state === "ended"
@@ -158,7 +158,7 @@ export function OrderForm({
                   </p>
                 </div>
                 <div className="min-w-[5rem] text-right">
-                  <p className="text-on-surface font-black">
+                  <p className="text-on-surface font-extrabold">
                     {t.kind === "free"
                       ? "Gratis"
                       : t.kind === "donation"
@@ -166,7 +166,7 @@ export function OrderForm({
                         : formatEuro(t.priceCents)}
                   </p>
                   {t.kind === "paid" && (
-                    <p className="text-outline text-[11px]">incl. btw</p>
+                    <p className="text-secondary text-[11px]">incl. btw</p>
                   )}
                 </div>
                 <div
@@ -200,7 +200,7 @@ export function OrderForm({
                   </button>
                 </div>
                 {t.kind === "donation" && q > 0 && (
-                  <label className="text-body-sm text-on-surface-variant flex w-full items-center gap-2">
+                  <label className="text-body-md text-on-surface-variant flex w-full items-center gap-2">
                     Bedrag per ticket €
                     <input
                       inputMode="decimal"
@@ -223,12 +223,12 @@ export function OrderForm({
       </section>
 
       <section aria-labelledby="t-gegevens" className="space-y-3">
-        <h2 id="t-gegevens" className="text-label-caps text-on-surface">
+        <h2 id="t-gegevens" className="text-label-md text-on-surface">
           2 · Jouw gegevens
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="text-label-caps text-outline mb-1 block">
+            <span className="text-label-md text-secondary mb-1 block">
               Naam *
             </span>
             <input
@@ -241,7 +241,7 @@ export function OrderForm({
             />
           </label>
           <label className="block">
-            <span className="text-label-caps text-outline mb-1 block">
+            <span className="text-label-md text-secondary mb-1 block">
               E-mail *
             </span>
             <input
@@ -255,7 +255,7 @@ export function OrderForm({
           </label>
         </div>
         {!buyer && (
-          <p className="text-body-sm text-outline">
+          <p className="text-body-md text-secondary">
             Bestellen kan zonder account; je tickets komen per mail.{" "}
             <Link
               href={`/inloggen?next=${encodeURIComponent(`/events/${slug}/bestellen`)}`}
@@ -294,7 +294,7 @@ export function OrderForm({
               </>
             ) : (
               <>
-                <span className="text-label-caps text-outline mb-1 block">
+                <span className="text-label-md text-secondary mb-1 block">
                   {f.label}
                   {f.required && " *"}
                 </span>
@@ -346,11 +346,11 @@ export function OrderForm({
         aria-labelledby="t-afrekenen"
         className="border-on-surface space-y-4 border bg-white p-5"
       >
-        <h2 id="t-afrekenen" className="text-label-caps text-on-surface">
+        <h2 id="t-afrekenen" className="text-label-md text-on-surface">
           3 · {total > 0 ? "Afrekenen" : "Bevestigen"}
         </h2>
         {lines.length > 0 && (
-          <ul className="text-body-sm text-on-surface-variant space-y-1">
+          <ul className="text-body-md text-on-surface-variant space-y-1">
             {lines.map((l) => (
               <li key={l.t.id} className="flex justify-between gap-4">
                 <span>
@@ -364,12 +364,12 @@ export function OrderForm({
           </ul>
         )}
         <div className="border-hairline flex items-baseline justify-between border-t pt-3">
-          <span className="text-label-caps text-outline">Totaal</span>
-          <span className="text-headline-sm text-on-surface">
+          <span className="text-label-md text-secondary">Totaal</span>
+          <span className="text-headline-md text-on-surface">
             {total === 0 ? "Gratis" : formatEuro(total)}
           </span>
         </div>
-        <label className="text-body-sm text-on-surface-variant flex items-start gap-2">
+        <label className="text-body-md text-on-surface-variant flex items-start gap-2">
           <input
             type="checkbox"
             className="accent-primary mt-1"
@@ -394,7 +394,7 @@ export function OrderForm({
           </span>
         </label>
         {checkout.error && (
-          <p className="text-body-sm text-error" role="alert">
+          <p className="text-body-md text-error" role="alert">
             {checkout.error.message}
           </p>
         )}
@@ -415,7 +415,7 @@ export function OrderForm({
           )}
         </Button>
         {total > 0 && (
-          <p className="text-outline text-center text-[11px]">
+          <p className="text-secondary text-center text-[11px]">
             Veilig betalen via Stripe. Kortingscode? Die vul je in bij het
             betalen.
           </p>

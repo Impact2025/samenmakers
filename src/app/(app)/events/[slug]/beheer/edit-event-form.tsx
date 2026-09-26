@@ -40,7 +40,7 @@ export function EditEventForm({
         }
       />
       {saved && (
-        <p className="text-body-sm text-on-surface mt-3" role="status">
+        <p className="text-body-md text-on-surface mt-3" role="status">
           Opgeslagen.
         </p>
       )}

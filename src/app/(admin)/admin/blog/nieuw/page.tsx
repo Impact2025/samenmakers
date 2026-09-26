@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Admin — Nieuw artikel" };
 export default function NewBlogPage() {
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-black text-on-surface">Nieuw artikel</h1>
+      <h1 className="text-on-surface text-2xl font-extrabold">Nieuw artikel</h1>
       <BlogEditor />
     </div>
   );

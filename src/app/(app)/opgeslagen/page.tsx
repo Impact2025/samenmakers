@@ -12,20 +12,22 @@ export default async function OpgeslagenPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <p className="text-label-caps text-outline mb-1">NETWERK</p>
-        <h1 className="text-headline-md text-on-surface">Opgeslagen makers</h1>
-        <p className="text-body-sm text-outline mt-1">{bookmarks.length} opgeslagen</p>
+        <p className="text-label-md text-secondary mb-1">NETWERK</p>
+        <h1 className="text-headline-lg text-on-surface">Opgeslagen makers</h1>
+        <p className="text-body-md text-secondary mt-1">
+          {bookmarks.length} opgeslagen
+        </p>
       </div>
 
       {bookmarks.length === 0 ? (
-        <div className="text-center py-20 border border-hairline">
+        <div className="border-hairline border py-20 text-center">
           <p className="text-on-surface-variant mb-2">Nog niets opgeslagen</p>
-          <p className="text-body-sm text-outline mb-6">
+          <p className="text-body-md text-secondary mb-6">
             Sla makers op via hun profielpagina om ze hier terug te vinden.
           </p>
           <Link
             href="/ontdekken"
-            className="px-6 py-3 bg-primary text-on-primary font-bold text-label-caps hover:bg-primary/90 transition-colors"
+            className="bg-primary text-on-primary text-label-md hover:bg-primary/90 px-6 py-3 font-bold transition-colors"
           >
             Makers ontdekken
           </Link>
@@ -39,23 +41,32 @@ export default async function OpgeslagenPage() {
               <Link
                 key={b.id}
                 href={`/makers/${b.user.id}`}
-                className="flex items-center gap-4 p-4 border border-hairline hover:border-on-surface transition-colors bg-white"
+                className="border-hairline hover:border-on-surface flex items-center gap-4 border bg-white p-4 transition-colors"
               >
-                <Avatar src={b.user.avatarUrl} naam={naam} size="md" grayscale={false} />
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-on-surface">{naam}</p>
+                <Avatar
+                  src={b.user.avatarUrl}
+                  naam={naam}
+                  size="md"
+                  grayscale={false}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-on-surface font-bold">{naam}</p>
                   {b.user.sector && (
-                    <p className="text-body-sm text-outline">{b.user.sector}</p>
+                    <p className="text-body-md text-secondary">
+                      {b.user.sector}
+                    </p>
                   )}
                   {b.user.missie && (
-                    <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                    <p className="text-body-md text-on-surface-variant mt-0.5 line-clamp-1">
                       {b.user.missie}
                     </p>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-1 justify-end shrink-0">
+                <div className="flex shrink-0 flex-wrap justify-end gap-1">
                   {b.user.regio && (
-                    <Badge variant="default" size="sm">{b.user.regio}</Badge>
+                    <Badge variant="default" size="sm">
+                      {b.user.regio}
+                    </Badge>
                   )}
                 </div>
               </Link>

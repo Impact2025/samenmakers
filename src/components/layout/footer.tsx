@@ -1,37 +1,39 @@
 import Link from "next/link";
-import { Hairline } from "@/components/ui/hairline";
+import { Logo } from "@/components/shared/logo";
 
 const navigation = [
+  { href: "/over", label: "Over ons" },
+  { href: "/events", label: "Evenementen" },
+  { href: "/faq", label: "Veelgestelde vragen" },
   { href: "/privacy", label: "Privacy" },
   { href: "/voorwaarden", label: "Voorwaarden" },
-  { href: "/over", label: "Over ons" },
 ];
 
 export function Footer() {
   return (
-    <footer className="bg-white pt-20 pb-10 px-6">
-      <Hairline className="mb-10" />
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-        <div className="flex flex-col gap-2">
-          <span className="text-xl font-black tracking-tighter text-on-surface">
-            SAMENMAKERS
-          </span>
-          <p className="text-label-caps text-outline">
-            © {new Date().getFullYear()} SAMENMAKERS. REDUCTIVE FUNCTIONALISM.
+    <footer className="bg-surface-container-low mt-16 px-5 pt-12 pb-10">
+      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row">
+        <div className="flex max-w-xs flex-col gap-3">
+          <Logo wordmark="always" />
+          <p className="text-body-md text-secondary">
+            Voor sociale vernieuwers met daadkracht.
           </p>
         </div>
-        <nav className="flex gap-8">
+        <nav className="flex flex-wrap gap-x-6 gap-y-3">
           {navigation.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="text-label-caps text-outline hover:text-on-surface transition-colors"
+              className="text-label-lg text-secondary hover:text-primary-container transition-colors"
             >
               {label}
             </Link>
           ))}
         </nav>
       </div>
+      <p className="text-body-sm text-secondary mx-auto mt-10 max-w-6xl">
+        © {new Date().getFullYear()} We Shape the Future
+      </p>
     </footer>
   );
 }

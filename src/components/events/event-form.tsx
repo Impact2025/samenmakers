@@ -44,8 +44,8 @@ export interface EventFormInitial {
 }
 
 const field =
-  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface";
-const label = "text-label-caps text-outline block mb-2";
+  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-secondary focus:outline-none focus:border-on-surface";
+const label = "text-label-md text-secondary block mb-2";
 
 /**
  * Eén formulier voor aanmaken en wijzigen. Tijden worden ingevoerd in de tijdzone
@@ -144,7 +144,7 @@ export function EventForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <fieldset className="space-y-5">
-        <legend className="text-label-caps text-on-surface mb-2">
+        <legend className="text-label-md text-on-surface mb-2">
           1 · Basis
         </legend>
         <div>
@@ -219,7 +219,7 @@ export function EventForm({
                 />
                 <button
                   type="button"
-                  className="text-label-caps text-outline hover:text-on-surface"
+                  className="text-label-md text-secondary hover:text-on-surface"
                   onClick={() => set("coverImageUrl", "")}
                 >
                   Verwijderen
@@ -227,14 +227,14 @@ export function EventForm({
               </div>
             )}
             {uploadError && (
-              <p className="text-body-sm text-error mt-1">{uploadError}</p>
+              <p className="text-body-md text-error mt-1">{uploadError}</p>
             )}
           </div>
         </div>
       </fieldset>
 
       <fieldset className="space-y-5">
-        <legend className="text-label-caps text-on-surface mb-2">
+        <legend className="text-label-md text-on-surface mb-2">
           2 · Tijd en plek
         </legend>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -265,7 +265,7 @@ export function EventForm({
             />
           </div>
         </div>
-        <p className="text-body-sm text-outline -mt-2">
+        <p className="text-body-md text-secondary -mt-2">
           Tijden in {tz.replace("_", " ")}.
         </p>
 
@@ -283,7 +283,7 @@ export function EventForm({
           ).map(([value, text]) => (
             <label
               key={value}
-              className={`text-label-caps cursor-pointer border px-4 py-2 ${form.format === value ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-on-surface hover:border-on-surface"}`}
+              className={`text-label-md cursor-pointer border px-4 py-2 ${form.format === value ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-on-surface hover:border-on-surface"}`}
             >
               <input
                 type="radio"
@@ -312,7 +312,7 @@ export function EventForm({
                 placeholder="Straat en huisnummer, plaats"
                 required
               />
-              <p className="text-body-sm text-outline mt-1">
+              <p className="text-body-md text-secondary mt-1">
                 Een volledig adres zet het event op de kaart en in &ldquo;In
                 mijn buurt&rdquo;.
               </p>
@@ -350,7 +350,7 @@ export function EventForm({
               onChange={(e) => set("meetingUrl", e.target.value)}
               placeholder="https://meet.google.com/…"
             />
-            <p className="text-body-sm text-outline mt-1">
+            <p className="text-body-md text-secondary mt-1">
               Alleen zichtbaar voor aangemelde deelnemers.
             </p>
           </div>
@@ -358,7 +358,7 @@ export function EventForm({
       </fieldset>
 
       <fieldset className="space-y-5">
-        <legend className="text-label-caps text-on-surface mb-2">
+        <legend className="text-label-md text-on-surface mb-2">
           3 · Aanmelden
         </legend>
         <div className="grid gap-4 sm:grid-cols-2">

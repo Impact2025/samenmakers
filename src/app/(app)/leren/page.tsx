@@ -33,15 +33,15 @@ export default async function LerenPage() {
           href={`/leren/${focus.cohort.id}/les/${focus.nextLesson.id}`}
           className="group border-on-surface hover:bg-on-surface hover:text-on-primary block border bg-white p-6 transition-colors lg:p-8"
         >
-          <p className="text-label-caps mb-3 opacity-70">
+          <p className="text-label-md mb-3 opacity-70">
             VOLGENDE STAP · {focus.program.name}
           </p>
           <div className="flex items-center justify-between gap-6">
             <div className="min-w-0">
-              <p className="text-headline-sm truncate">
+              <p className="text-headline-md truncate">
                 {focus.nextLesson.title}
               </p>
-              <p className="text-body-sm mt-1 flex items-center gap-2 opacity-70">
+              <p className="text-body-md mt-1 flex items-center gap-2 opacity-70">
                 <LessonIcon type={focus.nextLesson.type} size={14} />
                 {focus.nextLesson.moduleTitle}
                 {focus.currentModule?.endsAt && (
@@ -58,14 +58,14 @@ export default async function LerenPage() {
       )}
 
       <section className="space-y-4">
-        <h2 className="text-label-caps text-outline">MIJN PROGRAMMA&apos;S</h2>
+        <h2 className="text-label-md text-secondary">MIJN PROGRAMMA&apos;S</h2>
         {learning.length === 0 ? (
           <Card hover={false}>
             <CardBody className="space-y-2">
-              <p className="text-headline-xs text-on-surface">
+              <p className="text-headline-sm text-on-surface">
                 Je volgt nog geen programma
               </p>
-              <p className="text-body-sm text-on-surface-variant">
+              <p className="text-body-md text-on-surface-variant">
                 Heb je een uitnodigingscode van je opleider gekregen? Vul hem
                 hieronder in.
               </p>
@@ -87,10 +87,10 @@ export default async function LerenPage() {
                   <CardBody className="space-y-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-headline-xs text-on-surface">
+                        <p className="text-headline-sm text-on-surface">
                           {e.program.name}
                         </p>
-                        <p className="text-body-sm text-outline">
+                        <p className="text-body-md text-secondary">
                           {e.cohort.name}
                         </p>
                       </div>
@@ -106,13 +106,13 @@ export default async function LerenPage() {
                         percent={e.progress.percent}
                         color={e.program.color}
                       />
-                      <p className="text-body-sm text-on-surface-variant">
+                      <p className="text-body-md text-on-surface-variant">
                         {e.progress.done} van {e.progress.total} lessen klaar ·{" "}
                         {e.progress.percent}%
                       </p>
                     </div>
                     {e.cohort.startDate && (
-                      <p className="text-body-sm text-outline">
+                      <p className="text-body-md text-secondary">
                         {formatDate(e.cohort.startDate)}
                         {e.cohort.endDate && (
                           <> – {formatDate(e.cohort.endDate)}</>
@@ -129,7 +129,7 @@ export default async function LerenPage() {
 
       {teaching.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-label-caps text-outline">
+          <h2 className="text-label-md text-secondary">
             MIJN EDITIES (BEGELEIDING)
           </h2>
           <div className="divide-hairline border-hairline divide-y border bg-white">
@@ -139,23 +139,23 @@ export default async function LerenPage() {
                 className="flex flex-wrap items-center justify-between gap-4 p-5"
               >
                 <div className="min-w-0">
-                  <p className="text-body text-on-surface font-semibold">
+                  <p className="text-body-md text-on-surface font-semibold">
                     {e.program.name} · {e.cohort.name}
                   </p>
-                  <p className="text-body-sm text-outline">
+                  <p className="text-body-md text-secondary">
                     {COHORT_ROLE_LABELS[e.role]} · {e.lessonCount} lessen
                   </p>
                 </div>
                 <div className="flex gap-4">
                   <Link
                     href={`/leren/${e.cohort.id}`}
-                    className="text-label-caps text-on-surface underline underline-offset-4"
+                    className="text-label-md text-on-surface underline underline-offset-4"
                   >
                     Leerpad
                   </Link>
                   <Link
                     href={`/leren/${e.cohort.id}/deelnemers`}
-                    className="text-label-caps text-primary flex items-center gap-1 underline underline-offset-4"
+                    className="text-label-md text-primary flex items-center gap-1 underline underline-offset-4"
                   >
                     <Users size={12} /> Cursisten
                   </Link>
@@ -167,7 +167,7 @@ export default async function LerenPage() {
       )}
 
       <section className="max-w-md space-y-4">
-        <h2 className="text-label-caps text-outline">DEELNEMEN MET CODE</h2>
+        <h2 className="text-label-md text-secondary">DEELNEMEN MET CODE</h2>
         <JoinByCode />
       </section>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StickyNote, Check } from "lucide-react";
 import { trpc } from "@/trpc/client";
 
@@ -16,16 +16,21 @@ export function ConnectionNote({ targetUserId }: { targetUserId: string }) {
     },
   });
 
-  useEffect(() => {
-    if (note?.content) setContent(note.content);
-  }, [note]);
+  // Opgeslagen notitie één keer overnemen zodra hij binnen is.
+  const [loadedNote, setLoadedNote] = useState<string | null>(null);
+  if (note?.content && note.content !== loadedNote) {
+    setLoadedNote(note.content);
+    setContent(note.content);
+  }
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-2">
-        <StickyNote size={14} className="text-outline" />
-        <p className="text-label-caps text-outline">PRIVÉNOTITIE</p>
-        <span className="text-body-sm text-outline ml-auto">{content.length}/1000</span>
+      <div className="mb-2 flex items-center gap-2">
+        <StickyNote size={14} className="text-secondary" />
+        <p className="text-label-md text-secondary">PRIVÉNOTITIE</p>
+        <span className="text-body-md text-secondary ml-auto">
+          {content.length}/1000
+        </span>
       </div>
       <textarea
         value={content}
@@ -33,13 +38,13 @@ export function ConnectionNote({ targetUserId }: { targetUserId: string }) {
         maxLength={1000}
         rows={3}
         placeholder="Noteer iets over deze maker... (alleen zichtbaar voor jou)"
-        className="w-full bg-surface-container border border-hairline px-3 py-2 text-body text-on-surface placeholder:text-outline resize-none focus:outline-none focus:border-primary transition-colors"
+        className="bg-surface-container border-hairline text-body-md text-on-surface placeholder:text-secondary focus:border-primary w-full resize-none border px-3 py-2 transition-colors focus:outline-none"
       />
-      <div className="flex justify-end mt-2">
+      <div className="mt-2 flex justify-end">
         <button
           onClick={() => saveNote.mutate({ targetUserId, content })}
           disabled={saveNote.isPending}
-          className="flex items-center gap-1.5 text-label-caps text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+          className="text-label-md text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors disabled:opacity-50"
         >
           {saved ? (
             <>

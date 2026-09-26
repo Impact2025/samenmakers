@@ -56,17 +56,17 @@ function DefaultErrorFallback({ error }: { error: Error | null }) {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-20">
       <div className="max-w-sm text-center">
-        <p className="text-outline/10 mb-4 text-[80px] leading-none font-black select-none">
+        <p className="text-secondary/10 mb-4 text-[80px] leading-none font-extrabold select-none">
           !
         </p>
-        <h2 className="text-on-surface mb-2 text-xl font-black">
+        <h2 className="text-on-surface mb-2 text-xl font-extrabold">
           Er ging iets mis
         </h2>
         <p className="text-on-surface-variant mb-4 text-sm">
           Dit onderdeel kon niet worden geladen. Probeer de pagina te verversen.
         </p>
         {process.env.NODE_ENV === "development" && error && (
-          <pre className="mb-4 max-h-32 overflow-auto rounded border border-red-200 bg-red-50 p-3 text-left text-xs">
+          <pre className="bg-error-container mb-4 max-h-32 overflow-auto rounded border border-red-200 p-3 text-left text-xs">
             {error.name}: {error.message}
           </pre>
         )}

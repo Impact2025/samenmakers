@@ -23,7 +23,7 @@ export function MakerActions({ userId }: { userId: string }) {
   const block = trpc.reports.block.useMutation();
 
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex flex-wrap gap-3">
       <Button
         variant="primary"
         onClick={() => swipe.mutate({ targetId: userId, decision: "like" })}
@@ -52,9 +52,9 @@ export function MakerActions({ userId }: { userId: string }) {
         </Button>
 
         {showMore && (
-          <div className="absolute right-0 top-full mt-1 bg-white border border-hairline shadow-sm z-10 min-w-44">
+          <div className="border-hairline absolute top-full right-0 z-10 mt-1 min-w-44 border bg-white shadow-sm">
             <button
-              className="w-full text-left px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2"
+              className="text-on-surface hover:bg-surface-container-low flex w-full items-center gap-2 px-4 py-3 text-left text-sm"
               onClick={() => {
                 report.mutate({ targetUserId: userId, type: "other" });
                 setShowMore(false);
@@ -64,7 +64,7 @@ export function MakerActions({ userId }: { userId: string }) {
               Rapporteer gebruiker
             </button>
             <button
-              className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-surface-container-low flex items-center gap-2"
+              className="text-error hover:bg-surface-container-low flex w-full items-center gap-2 px-4 py-3 text-left text-sm"
               onClick={() => {
                 block.mutate({ targetId: userId });
                 setShowMore(false);

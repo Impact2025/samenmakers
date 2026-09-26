@@ -120,7 +120,7 @@ export function EventCheckinPanel({
 
   if (attendees.length === 0) {
     return (
-      <p className="border-hairline text-body-sm text-outline border bg-white p-5">
+      <p className="border-hairline text-body-md text-secondary border bg-white p-5">
         Nog geen aanmeldingen.
       </p>
     );
@@ -134,22 +134,22 @@ export function EventCheckinPanel({
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Zoek op naam of e-mail…"
           aria-label="Zoek deelnemer"
-          className="border-hairline text-on-surface placeholder:text-outline focus:border-on-surface min-w-[12rem] flex-1 border px-3 py-2 text-sm focus:outline-none"
+          className="border-hairline text-on-surface placeholder:text-secondary focus:border-on-surface min-w-[12rem] flex-1 border px-3 py-2 text-sm focus:outline-none"
         />
         <button
           type="button"
           onClick={exportCsv}
-          className="border-hairline text-label-caps text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2"
+          className="border-hairline text-label-md text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2"
         >
           <Download size={14} aria-hidden /> CSV
         </button>
       </div>
 
-      <p className="text-label-caps text-outline mb-3" aria-live="polite">
+      <p className="text-label-md text-secondary mb-3" aria-live="polite">
         {checkedIn.size} / {totalSeated} ingecheckt
       </p>
       {error && (
-        <p className="text-body-sm text-error mb-3" role="alert">
+        <p className="text-body-md text-error mb-3" role="alert">
           {error}
         </p>
       )}
@@ -174,7 +174,7 @@ export function EventCheckinPanel({
                     {name(a)}
                   </p>
                   {a.user.email && (
-                    <p className="text-outline truncate text-xs">
+                    <p className="text-secondary truncate text-xs">
                       {a.user.email}
                     </p>
                   )}
@@ -201,7 +201,7 @@ export function EventCheckinPanel({
 
       {pending.length > 0 && (
         <div className="mt-5">
-          <p className="text-label-caps text-outline mb-2">
+          <p className="text-label-md text-secondary mb-2">
             WACHTLIJST ({pending.length})
           </p>
           <ol className="space-y-2">
@@ -219,7 +219,7 @@ export function EventCheckinPanel({
                 <span className="text-on-surface-variant truncate text-sm">
                   {name(a)}
                 </span>
-                <span className="text-outline ml-auto shrink-0 text-xs">
+                <span className="text-secondary ml-auto shrink-0 text-xs">
                   {STATUS_LABEL[a.status]}
                 </span>
               </li>

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardBody } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-utils";
 import { POST_CATEGORIES } from "@/lib/constants";
 import { renderMarkdown } from "@/lib/markdown";
@@ -61,8 +60,11 @@ export default async function PostPage({ params }: Props) {
     image: post.ogImageUrl ?? post.coverImageUrl ?? undefined,
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt?.toISOString(),
-    author: { "@type": "Person", name: post.author.naam ?? post.author.name ?? "Samenmakers" },
-    publisher: { "@type": "Organization", name: "Samenmakers" },
+    author: {
+      "@type": "Person",
+      name: post.author.naam ?? post.author.name ?? "We Shape the Future",
+    },
+    publisher: { "@type": "Organization", name: "We Shape the Future" },
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
     keywords: post.keywords.join(", ") || undefined,
   };
@@ -74,16 +76,21 @@ export default async function PostPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {post.coverImageUrl && (
-        <div className="aspect-video w-full overflow-hidden border border-hairline">
-          <img src={post.coverImageUrl} alt={post.title} className="w-full h-full object-cover" />
+        <div className="border-hairline aspect-video w-full overflow-hidden border">
+          <img
+            src={post.coverImageUrl}
+            alt={post.title}
+            className="h-full w-full object-cover"
+          />
         </div>
       )}
 
       <div>
         <Badge variant="default" className="mb-4">
-          {POST_CATEGORIES.find((c) => c.value === post.category)?.label ?? post.category}
+          {POST_CATEGORIES.find((c) => c.value === post.category)?.label ??
+            post.category}
         </Badge>
-        <h1 className="text-headline-md text-on-surface mb-4">{post.title}</h1>
+        <h1 className="text-headline-lg text-on-surface mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-3">
           <Avatar
@@ -93,11 +100,13 @@ export default async function PostPage({ params }: Props) {
             grayscale={false}
           />
           <div>
-            <p className="font-semibold text-on-surface text-sm">
+            <p className="text-on-surface text-sm font-semibold">
               {post.author.naam ?? post.author.name}
             </p>
             {post.publishedAt && (
-              <p className="text-xs text-outline">{formatDate(post.publishedAt)}</p>
+              <p className="text-secondary text-xs">
+                {formatDate(post.publishedAt)}
+              </p>
             )}
           </div>
         </div>
@@ -105,7 +114,7 @@ export default async function PostPage({ params }: Props) {
 
       {/* Content */}
       <div
-        className="prose prose-sm max-w-none text-on-surface-variant prose-headings:text-on-surface prose-a:text-primary prose-strong:text-on-surface"
+        className="prose prose-sm text-on-surface-variant prose-headings:text-on-surface prose-a:text-primary prose-strong:text-on-surface max-w-none"
         dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
       />
 

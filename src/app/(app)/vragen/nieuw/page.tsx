@@ -7,8 +7,8 @@ export default function NieuweVraagPage() {
   return (
     <div className="max-w-xl">
       <div className="mb-8">
-        <p className="text-label-caps text-outline mb-1">Q&A</p>
-        <h1 className="text-headline-md text-on-surface">Stel een vraag</h1>
+        <p className="text-label-md text-secondary mb-1">Q&A</p>
+        <h1 className="text-headline-lg text-on-surface">Stel een vraag</h1>
       </div>
       <NewQuestionForm />
     </div>

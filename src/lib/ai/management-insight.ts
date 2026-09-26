@@ -11,7 +11,7 @@ export async function generateManagementInsight(
   metrics: PlatformMetrics,
 ): Promise<string | null> {
   const system =
-    "Je bent een ervaren data-analist en groeistrateeg voor Samenmakers, " +
+    "Je bent een ervaren data-analist en groeistrateeg voor We Shape the Future, " +
     "een Nederlands platform dat impact-ondernemers met elkaar matcht. " +
     "Je schrijft beknopt, zakelijk en in het Nederlands. Geen markdown-koppen, " +
     "gebruik korte alinea's en eventueel een genummerde lijst.";

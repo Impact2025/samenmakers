@@ -30,25 +30,25 @@ export default async function MyEventsPage() {
     <div className="space-y-10">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-label-caps text-outline mb-1">
+          <p className="text-label-md text-secondary mb-1">
             <Link href="/events" className="hover:text-on-surface">
               EVENTS
             </Link>
           </p>
-          <h1 className="text-headline-md text-on-surface">Mijn events</h1>
+          <h1 className="text-headline-lg text-on-surface">Mijn events</h1>
         </div>
         <Link
           href="/events/nieuw"
-          className="bg-primary-container text-on-primary text-label-caps shrink-0 px-4 py-2"
+          className="bg-primary-container text-on-primary text-label-md shrink-0 px-4 py-2"
         >
           + Nieuw
         </Link>
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-label-caps text-on-surface">IK GA</h2>
+        <h2 className="text-label-md text-on-surface">IK GA</h2>
         {registrations.length === 0 ? (
-          <p className="border-hairline text-body-sm text-outline border bg-white p-5">
+          <p className="border-hairline text-body-md text-secondary border bg-white p-5">
             Je bent nog nergens voor aangemeld.{" "}
             <Link href="/events" className="underline underline-offset-4">
               Ontdek events
@@ -63,7 +63,7 @@ export default async function MyEventsPage() {
         )}
         {tickets.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-label-caps text-outline">MIJN TICKETS</h3>
+            <h3 className="text-label-md text-secondary">MIJN TICKETS</h3>
             <ul className="border-hairline divide-hairline divide-y border bg-white">
               {tickets.map((t) => (
                 <li key={t.code}>
@@ -75,13 +75,13 @@ export default async function MyEventsPage() {
                       <span className="text-on-surface block truncate font-semibold">
                         {t.eventTitle}
                       </span>
-                      <span className="text-body-sm text-outline block">
+                      <span className="text-body-md text-secondary block">
                         {formatEventWhen(t.startAt, t.endAt, t.timezone)} ·{" "}
                         {t.ticketName} · {t.holderName}
                         {t.eventStatus === "cancelled" && " · geannuleerd"}
                       </span>
                     </span>
-                    <span className="text-label-caps text-primary shrink-0">
+                    <span className="text-label-md text-primary shrink-0">
                       Ticket →
                     </span>
                   </Link>
@@ -95,18 +95,18 @@ export default async function MyEventsPage() {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-label-caps text-on-surface">IK ORGANISEER</h2>
+          <h2 className="text-label-md text-on-surface">IK ORGANISEER</h2>
           {features.eventTickets && (
             <Link
               href="/events/uitbetalingen"
-              className="text-label-caps text-primary"
+              className="text-label-md text-primary"
             >
               Uitbetalingen →
             </Link>
           )}
         </div>
         {organisedUpcoming.length === 0 ? (
-          <p className="border-hairline text-body-sm text-outline border bg-white p-5">
+          <p className="border-hairline text-body-md text-secondary border bg-white p-5">
             Geen komende events.
           </p>
         ) : (
@@ -122,7 +122,7 @@ export default async function MyEventsPage() {
         )}
         {organisedPast.length > 0 && (
           <details className="border-hairline border bg-white">
-            <summary className="text-label-caps text-outline cursor-pointer px-5 py-3">
+            <summary className="text-label-md text-secondary cursor-pointer px-5 py-3">
               Afgelopen en geannuleerd ({organisedPast.length})
             </summary>
             <div className="grid gap-3 p-3 sm:grid-cols-2">

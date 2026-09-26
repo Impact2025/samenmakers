@@ -31,49 +31,64 @@ export default async function AuditLogPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-label-caps text-outline mb-1">ADMIN</p>
-        <h1 className="text-headline-md text-on-surface">Audit log</h1>
+        <p className="text-label-md text-secondary mb-1">ADMIN</p>
+        <h1 className="text-headline-lg text-on-surface">Audit log</h1>
       </div>
 
       {entries.length === 0 ? (
         <Card>
           <CardBody className="p-8 text-center">
-            <p className="text-body text-on-surface-variant">Nog geen audit-log entries.</p>
+            <p className="text-body-md text-on-surface-variant">
+              Nog geen audit-log entries.
+            </p>
           </CardBody>
         </Card>
       ) : (
         <Card>
-          <div className="divide-y divide-hairline">
+          <div className="divide-hairline divide-y">
             {entries.map((entry) => {
               const label = ACTION_LABELS[entry.action] ?? entry.action;
               const color = ACTION_COLORS[entry.action] ?? "default";
-              const adminName = entry.admin?.naam ?? entry.admin?.name ?? entry.adminId;
-              const details = entry.details ? tryParseJson(String(entry.details)) : null;
-              const timestamp = new Date(entry.createdAt).toLocaleString("nl-NL", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+              const adminName =
+                entry.admin?.naam ?? entry.admin?.name ?? entry.adminId;
+              const details = entry.details
+                ? tryParseJson(String(entry.details))
+                : null;
+              const timestamp = new Date(entry.createdAt).toLocaleString(
+                "nl-NL",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                },
+              );
 
               return (
                 <div key={entry.id} className="px-5 py-4">
                   <div className="flex items-start gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <Badge variant={color} size="sm">{label}</Badge>
-                        <span className="text-body-sm text-outline">
-                          door <span className="text-on-surface font-medium">{adminName}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex flex-wrap items-center gap-2">
+                        <Badge variant={color} size="sm">
+                          {label}
+                        </Badge>
+                        <span className="text-body-md text-secondary">
+                          door{" "}
+                          <span className="text-on-surface font-medium">
+                            {adminName}
+                          </span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 text-body-sm text-outline">
+                      <div className="text-body-md text-secondary flex items-center gap-3">
                         <span>
                           {entry.targetType && (
                             <>
-                              <span className="capitalize">{entry.targetType}</span>
+                              <span className="capitalize">
+                                {entry.targetType}
+                              </span>
                               {entry.targetId && (
-                                <span className="font-mono ml-1 text-xs bg-surface-container px-1 py-0.5">
+                                <span className="bg-surface-container ml-1 px-1 py-0.5 font-mono text-xs">
                                   {entry.targetId.slice(0, 8)}…
                                 </span>
                               )}
@@ -81,13 +96,13 @@ export default async function AuditLogPage() {
                           )}
                         </span>
                         {details !== null && (
-                          <span className="text-xs font-mono text-outline/70">
+                          <span className="text-secondary/70 font-mono text-xs">
                             {details}
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className="text-body-sm text-outline shrink-0 whitespace-nowrap">
+                    <span className="text-body-md text-secondary shrink-0 whitespace-nowrap">
                       {timestamp}
                     </span>
                   </div>
@@ -102,5 +117,9 @@ export default async function AuditLogPage() {
 }
 
 function tryParseJson(str: string): string | null {
-  try { return JSON.stringify(JSON.parse(str)); } catch { return null; }
+  try {
+    return JSON.stringify(JSON.parse(str));
+  } catch {
+    return null;
+  }
 }

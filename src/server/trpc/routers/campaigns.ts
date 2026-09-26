@@ -8,16 +8,18 @@ import {
   emailCampaignRecipients,
   auditLog,
 } from "@/server/db/schema";
-import { segmentSchema, buildSegmentConditions, type Segment } from "@/server/admin/segment";
+import {
+  segmentSchema,
+  buildSegmentConditions,
+  type Segment,
+} from "@/server/admin/segment";
 import { renderCampaignHtml, sendCampaignBatch } from "@/lib/email";
 import { chatCompletion } from "@/lib/ai/openrouter";
+import type { db as DbClient } from "@/server/db";
 
 const MAX_RECIPIENTS = 1000;
 
-async function resolveRecipients(
-  db: typeof import("@/server/db").db,
-  segment: Segment,
-) {
+async function resolveRecipients(db: typeof DbClient, segment: Segment) {
   const where = buildSegmentConditions(segment);
   return db
     .select({ id: users.id, email: users.email })
@@ -49,12 +51,13 @@ export const campaignsRouter = createTRPCRouter({
     }),
 
   // Live recipient-count preview for a segment.
-  preview: adminProcedure
-    .input(segmentSchema)
-    .query(async ({ ctx, input }) => {
-      const recipients = await resolveRecipients(ctx.db, input);
-      return { count: recipients.length, capped: recipients.length >= MAX_RECIPIENTS };
-    }),
+  preview: adminProcedure.input(segmentSchema).query(async ({ ctx, input }) => {
+    const recipients = await resolveRecipients(ctx.db, input);
+    return {
+      count: recipients.length,
+      capped: recipients.length >= MAX_RECIPIENTS,
+    };
+  }),
 
   // AI: draft a newsletter via OpenRouter.
   generate: adminProcedure
@@ -62,7 +65,7 @@ export const campaignsRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const raw = await chatCompletion({
         system:
-          "Je bent een Nederlandse e-mailmarketeer voor Samenmakers, een platform voor " +
+          "Je bent een Nederlandse e-mailmarketeer voor We Shape the Future, een platform voor " +
           "impact-ondernemers. Schrijf wervende, persoonlijke nieuwsbrieven. Antwoord UITSLUITEND met geldige JSON.",
         user: `Schrijf een nieuwsbrief over: ${input.topic}.
 Toon: ${input.tone ?? "warm, activerend, beknopt"}.
@@ -80,10 +83,19 @@ Antwoord met exact: { "subject": string, "body": string }`,
       const start = raw.indexOf("{");
       const end = raw.lastIndexOf("}");
       if (start === -1 || end === -1) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Onverwacht AI-antwoord." });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Onverwacht AI-antwoord.",
+        });
       }
-      const parsed = JSON.parse(raw.slice(start, end + 1)) as { subject?: string; body?: string };
-      return { subject: parsed.subject ?? input.topic, body: parsed.body ?? "" };
+      const parsed = JSON.parse(raw.slice(start, end + 1)) as {
+        subject?: string;
+        body?: string;
+      };
+      return {
+        subject: parsed.subject ?? input.topic,
+        body: parsed.body ?? "",
+      };
     }),
 
   create: adminProcedure
@@ -117,13 +129,21 @@ Antwoord met exact: { "subject": string, "body": string }`,
       });
       if (!campaign) throw new TRPCError({ code: "NOT_FOUND" });
       if (campaign.status !== "draft") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Campagne is al verzonden." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Campagne is al verzonden.",
+        });
       }
 
-      const segment = (campaign.segment ? JSON.parse(campaign.segment) : {}) as Segment;
+      const segment = (
+        campaign.segment ? JSON.parse(campaign.segment) : {}
+      ) as Segment;
       const recipients = await resolveRecipients(ctx.db, segment);
       if (recipients.length === 0) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Geen ontvangers in dit segment." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Geen ontvangers in dit segment.",
+        });
       }
 
       await ctx.db
@@ -188,7 +208,10 @@ Antwoord met exact: { "subject": string, "body": string }`,
         action: "send_campaign",
         targetType: "email_campaign",
         targetId: input.id,
-        details: JSON.stringify({ sent: okEmails.length, failed: failedEmails.length }),
+        details: JSON.stringify({
+          sent: okEmails.length,
+          failed: failedEmails.length,
+        }),
       });
 
       return { sent: okEmails.length, failed: failedEmails.length };
@@ -197,7 +220,9 @@ Antwoord met exact: { "subject": string, "body": string }`,
   remove: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(emailCampaigns).where(eq(emailCampaigns.id, input.id));
+      await ctx.db
+        .delete(emailCampaigns)
+        .where(eq(emailCampaigns.id, input.id));
       return { success: true };
     }),
 });

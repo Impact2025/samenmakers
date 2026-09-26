@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -50,20 +49,24 @@ export default async function MakerProfilePage({ params }: Props) {
               size="xl"
               grayscale={false}
             />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-black text-on-surface">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-on-surface text-xl font-extrabold">
                   {user.naam ?? user.name}
                 </h1>
                 {user.isVerified && (
-                  <CheckCircle size={16} className="text-primary shrink-0" aria-label="Geverifieerd" />
+                  <CheckCircle
+                    size={16}
+                    className="text-primary shrink-0"
+                    aria-label="Geverifieerd"
+                  />
                 )}
                 {user.linkedin && (
                   <a
                     href={user.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#0A66C2] hover:opacity-80 transition-opacity shrink-0 text-xs font-bold tracking-wide flex items-center gap-1"
+                    className="flex shrink-0 items-center gap-1 text-xs font-bold tracking-wide text-[#0A66C2] transition-opacity hover:opacity-80"
                     aria-label="LinkedIn profiel"
                   >
                     <ExternalLink size={12} />
@@ -71,13 +74,23 @@ export default async function MakerProfilePage({ params }: Props) {
                   </a>
                 )}
                 {user.subscriptionStatus === "active" && (
-                  <Badge variant="primary" size="sm">PRO</Badge>
+                  <Badge variant="primary" size="sm">
+                    PRO
+                  </Badge>
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {user.sector && <Badge variant="default" size="sm">{user.sector}</Badge>}
-                {user.regio && <Badge variant="default" size="sm">{user.regio}</Badge>}
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {user.sector && (
+                  <Badge variant="default" size="sm">
+                    {user.sector}
+                  </Badge>
+                )}
+                {user.regio && (
+                  <Badge variant="default" size="sm">
+                    {user.regio}
+                  </Badge>
+                )}
                 {user.fase && (
                   <Badge variant="default" size="sm">
                     {user.fase.charAt(0).toUpperCase() + user.fase.slice(1)}
@@ -87,14 +100,17 @@ export default async function MakerProfilePage({ params }: Props) {
 
               {/* Mutual connections */}
               {mutualCount > 0 && (
-                <div className="flex items-center gap-1.5 mt-2 text-xs text-outline">
+                <div className="text-secondary mt-2 flex items-center gap-1.5 text-xs">
                   <Users size={12} />
-                  <span>{mutualCount} maker{mutualCount === 1 ? "" : "s"} ken{mutualCount === 1 ? "t" : "nen"} jullie beiden</span>
+                  <span>
+                    {mutualCount} maker{mutualCount === 1 ? "" : "s"} ken
+                    {mutualCount === 1 ? "t" : "nen"} jullie beiden
+                  </span>
                 </div>
               )}
 
               {user.missie && (
-                <p className="text-body-sm text-on-surface mt-3 italic">
+                <p className="text-body-md text-on-surface mt-3 italic">
                   &ldquo;{user.missie}&rdquo;
                 </p>
               )}
@@ -102,30 +118,35 @@ export default async function MakerProfilePage({ params }: Props) {
           </div>
 
           {/* Actions */}
-          <div className="mt-6 pt-6 hairline-t">
+          <div className="hairline-t mt-6 pt-6">
             <MakerActions userId={user.id} />
           </div>
 
           {/* Private note */}
-          <div className="mt-6 pt-6 hairline-t">
+          <div className="hairline-t mt-6 pt-6">
             <ConnectionNote targetUserId={user.id} />
           </div>
 
           {user.bio && (
-            <div className="mt-6 pt-6 hairline-t">
-              <p className="text-label-caps text-outline mb-2">BIO</p>
-              <p className="text-body text-on-surface-variant">{user.bio}</p>
+            <div className="hairline-t mt-6 pt-6">
+              <p className="text-label-md text-secondary mb-2">BIO</p>
+              <p className="text-body-md text-on-surface-variant">{user.bio}</p>
             </div>
           )}
 
           {/* What they're looking for */}
           {zoektNaar.length > 0 && (
             <div className="mt-4">
-              <p className="text-label-caps text-outline mb-2">OP ZOEK NAAR</p>
+              <p className="text-label-md text-secondary mb-2">OP ZOEK NAAR</p>
               <div className="flex flex-wrap gap-1.5">
                 {zoektNaar.map((z) => {
-                  const label = ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z;
-                  return <Badge key={z} variant="primary" size="sm">{label}</Badge>;
+                  const label =
+                    ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z;
+                  return (
+                    <Badge key={z} variant="primary" size="sm">
+                      {label}
+                    </Badge>
+                  );
                 })}
               </div>
             </div>
@@ -133,15 +154,19 @@ export default async function MakerProfilePage({ params }: Props) {
 
           {user.ikZoek && (
             <div className="mt-4">
-              <p className="text-label-caps text-outline mb-2">{zoektNaar.length > 0 ? "TOELICHTING" : "IK ZOEK"}</p>
-              <p className="text-body text-on-surface-variant">{user.ikZoek}</p>
+              <p className="text-label-md text-secondary mb-2">
+                {zoektNaar.length > 0 ? "TOELICHTING" : "IK ZOEK"}
+              </p>
+              <p className="text-body-md text-on-surface-variant">
+                {user.ikZoek}
+              </p>
             </div>
           )}
 
           {/* Expertise with endorsements */}
           {user.expertise && user.expertise.length > 0 && (
             <div className="mt-4">
-              <p className="text-label-caps text-outline mb-2">EXPERTISE</p>
+              <p className="text-label-md text-secondary mb-2">EXPERTISE</p>
               <ExpertiseEndorsements
                 targetUserId={user.id}
                 expertise={user.expertise}
@@ -151,7 +176,7 @@ export default async function MakerProfilePage({ params }: Props) {
 
           {user.mentorshipRole && user.mentorshipRole !== "none" && (
             <div className="mt-4">
-              <p className="text-label-caps text-outline mb-2">MENTORSCHAP</p>
+              <p className="text-label-md text-secondary mb-2">MENTORSCHAP</p>
               <Badge variant="default">
                 {user.mentorshipRole === "mentor"
                   ? "Beschikbaar als mentor"
@@ -169,7 +194,7 @@ export default async function MakerProfilePage({ params }: Props) {
                   href={user.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-label-caps text-outline hover:text-primary transition-colors"
+                  className="text-label-md text-secondary hover:text-primary flex items-center gap-1.5 transition-colors"
                 >
                   <Globe size={13} />
                   Website
@@ -180,7 +205,7 @@ export default async function MakerProfilePage({ params }: Props) {
                   href={user.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-label-caps text-[#0A66C2] hover:opacity-80 transition-opacity"
+                  className="text-label-md flex items-center gap-1.5 text-[#0A66C2] transition-opacity hover:opacity-80"
                 >
                   <ExternalLink size={13} />
                   LinkedIn

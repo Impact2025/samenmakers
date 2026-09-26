@@ -26,20 +26,20 @@ export default async function PayoutsPage({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <p className="text-label-caps text-outline mb-1">
+        <p className="text-label-md text-secondary mb-1">
           <Link href="/events/mijn" className="hover:text-on-surface">
             MIJN EVENTS
           </Link>
         </p>
-        <h1 className="text-headline-md text-on-surface">Uitbetalingen</h1>
-        <p className="text-body-sm text-on-surface-variant mt-1">
+        <h1 className="text-headline-lg text-on-surface">Uitbetalingen</h1>
+        <p className="text-body-md text-on-surface-variant mt-1">
           De opbrengst van je ticketverkoop komt via Stripe rechtstreeks op je
           eigen rekening.
         </p>
       </div>
 
       {status.isAdmin && (
-        <p className="border-hairline text-body-sm text-on-surface-variant border bg-white p-4">
+        <p className="border-hairline text-body-md text-on-surface-variant border bg-white p-4">
           Als beheerder komen betalingen voor jouw events op de platformrekening
           binnen; een eigen koppeling is niet nodig.
         </p>
@@ -48,18 +48,18 @@ export default async function PayoutsPage({
       <section className="border-on-surface space-y-4 border bg-white p-6">
         {status.state === "ready" ? (
           <>
-            <p className="text-on-surface font-black">
+            <p className="text-on-surface font-extrabold">
               ✓ Je uitbetaalrekening is gekoppeld
             </p>
-            <p className="text-body-sm text-on-surface-variant">
+            <p className="text-body-md text-on-surface-variant">
               Je kunt betaalde tickets verkopen. Uitbetalingen, bankgegevens en
               overzichten beheer je in je Stripe-dashboard.
             </p>
           </>
         ) : status.state === "pending" ? (
           <>
-            <p className="text-on-surface font-black">Nog niet compleet</p>
-            <p className="text-body-sm text-on-surface-variant">
+            <p className="text-on-surface font-extrabold">Nog niet compleet</p>
+            <p className="text-body-md text-on-surface-variant">
               {terug
                 ? "Bedankt! Stripe controleert je gegevens; dat duurt meestal een paar minuten. Ververs deze pagina straks."
                 : "Stripe heeft nog gegevens nodig voordat je betalingen kunt ontvangen."}
@@ -67,8 +67,8 @@ export default async function PayoutsPage({
           </>
         ) : (
           <>
-            <p className="text-on-surface font-black">Koppel je rekening</p>
-            <ul className="text-body-sm text-on-surface-variant list-disc space-y-1 pl-5">
+            <p className="text-on-surface font-extrabold">Koppel je rekening</p>
+            <ul className="text-body-md text-on-surface-variant list-disc space-y-1 pl-5">
               <li>
                 Eenmalig: KvK- of persoonsgegevens en IBAN via Stripe (ca. 5
                 minuten).
@@ -83,7 +83,7 @@ export default async function PayoutsPage({
         )}
         <PayoutActions state={status.state} canStart={isPro} />
         {!isPro && status.state === "none" && (
-          <p className="text-body-sm text-outline">
+          <p className="text-body-md text-secondary">
             Betaalde tickets zijn beschikbaar met{" "}
             <Link
               href="/instellingen/abonnement"

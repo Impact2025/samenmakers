@@ -5,7 +5,7 @@ import { events } from "@/server/db/schema";
 import { eventWhere, formatEventWhen } from "@/lib/event-format";
 
 export const runtime = "nodejs";
-export const alt = "Samenmakers event";
+export const alt = "We Shape the Future event";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -88,7 +88,7 @@ export default async function EventOgImage({
             color: "#191c1a",
           }}
         >
-          SAMENMAKERS
+          WE SHAPE THE FUTURE
         </span>
       </div>
     </div>,

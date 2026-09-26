@@ -48,7 +48,7 @@ export default async function LeerpadPage({ params }: Props) {
     <div className="space-y-10">
       <Link
         href="/leren"
-        className="text-label-caps text-outline hover:text-on-surface inline-flex items-center gap-2"
+        className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-2"
       >
         <ArrowLeft size={14} /> Mijn leren
       </Link>
@@ -59,10 +59,10 @@ export default async function LeerpadPage({ params }: Props) {
           style={{ backgroundColor: program.color }}
         />
         <div>
-          <p className="text-label-caps text-primary-container mb-2">
+          <p className="text-label-md text-primary-container mb-2">
             {cohort.name}
           </p>
-          <h1 className="text-headline-md lg:text-headline-lg text-on-surface">
+          <h1 className="text-headline-lg lg:text-display-lg text-on-surface">
             {program.name}
           </h1>
           {program.tagline && (
@@ -77,7 +77,7 @@ export default async function LeerpadPage({ params }: Props) {
             color={program.color}
             label="Voortgang programma"
           />
-          <p className="text-body-sm text-on-surface-variant">
+          <p className="text-body-md text-on-surface-variant">
             {progress.done} van {progress.total} lessen klaar ·{" "}
             {progress.percent}%
             {cohort.startDate && (
@@ -93,7 +93,7 @@ export default async function LeerpadPage({ params }: Props) {
           {nextLessonId && (
             <Link
               href={`/leren/${cohort.id}/les/${nextLessonId}`}
-              className="text-label-caps bg-primary-container text-on-primary inline-flex items-center gap-2 px-6 py-3"
+              className="text-label-md bg-primary-container text-on-primary inline-flex items-center gap-2 px-6 py-3"
             >
               {progress.done === 0 ? "Start het programma" : "Ga verder"}{" "}
               <ArrowRight size={14} />
@@ -102,7 +102,7 @@ export default async function LeerpadPage({ params }: Props) {
           {data.isStaff && (
             <Link
               href={`/leren/${cohort.id}/deelnemers`}
-              className="text-label-caps border-on-surface text-on-surface hover:bg-on-surface hover:text-on-primary inline-flex items-center gap-2 border px-6 py-3"
+              className="text-label-md border-on-surface text-on-surface hover:bg-on-surface hover:text-on-primary inline-flex items-center gap-2 border px-6 py-3"
             >
               <Users size={14} /> Cursistoverzicht
             </Link>
@@ -111,7 +111,7 @@ export default async function LeerpadPage({ params }: Props) {
       </header>
 
       {modules.length === 0 ? (
-        <p className="text-body text-outline">
+        <p className="text-body-md text-secondary">
           Er is nog geen lesmateriaal toegevoegd aan dit programma.
         </p>
       ) : (
@@ -132,28 +132,28 @@ export default async function LeerpadPage({ params }: Props) {
               >
                 <div className="hairline-b flex flex-wrap items-start justify-between gap-4 p-5 lg:p-6">
                   <div className="min-w-0">
-                    <p className="text-label-caps text-outline mb-2">
+                    <p className="text-label-md text-secondary mb-2">
                       MODULE {i + 1}
                       {isCurrent && (
                         <span className="text-primary ml-2">· NU</span>
                       )}
                     </p>
-                    <h2 className="text-headline-xs text-on-surface">
+                    <h2 className="text-headline-sm text-on-surface">
                       {mod.title}
                     </h2>
                     {mod.description && (
-                      <p className="text-body-sm text-on-surface-variant mt-1">
+                      <p className="text-body-md text-on-surface-variant mt-1">
                         {mod.description}
                       </p>
                     )}
                     {(mod.startsAt || mod.endsAt) && (
-                      <p className="text-body-sm text-outline mt-2">
+                      <p className="text-body-md text-secondary mt-2">
                         {mod.startsAt && formatDate(mod.startsAt)}
                         {mod.endsAt && <> – {formatDate(mod.endsAt)}</>}
                       </p>
                     )}
                   </div>
-                  <p className="text-label-caps text-outline shrink-0">
+                  <p className="text-label-md text-secondary shrink-0">
                     {mod.progress.done}/{mod.progress.total}
                   </p>
                 </div>
@@ -170,10 +170,10 @@ export default async function LeerpadPage({ params }: Props) {
                       >
                         <StatusIcon status={lesson.status} />
                         <span className="min-w-0 flex-1">
-                          <span className="text-body text-on-surface block truncate">
+                          <span className="text-body-md text-on-surface block truncate">
                             {lesson.title}
                           </span>
-                          <span className="text-body-sm text-outline flex items-center gap-2">
+                          <span className="text-body-md text-secondary flex items-center gap-2">
                             <LessonIcon type={lesson.type} size={12} />
                             {LESSON_TYPE_LABELS[lesson.type]}
                             {lesson.durationMinutes ? (
@@ -183,7 +183,7 @@ export default async function LeerpadPage({ params }: Props) {
                           </span>
                         </span>
                         {lesson.id === nextLessonId && (
-                          <span className="text-label-caps text-primary hidden sm:inline">
+                          <span className="text-label-md text-primary hidden sm:inline">
                             VOLGENDE
                           </span>
                         )}

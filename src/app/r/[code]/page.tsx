@@ -5,7 +5,7 @@ interface Props {
   params: Promise<{ code: string }>;
 }
 
-export const metadata: Metadata = { title: "Uitnodiging Samenmakers" };
+export const metadata: Metadata = { title: "Uitnodiging We Shape the Future" };
 
 export default async function ReferralPage({ params }: Props) {
   const { code } = await params;

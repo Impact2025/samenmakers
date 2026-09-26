@@ -36,31 +36,41 @@ export default async function VraagPage({ params }: Props) {
       {/* Question */}
       <Card hover={false}>
         <CardBody>
-          <div className="flex items-start gap-3 mb-4">
+          <div className="mb-4 flex items-start gap-3">
             {question.isResolved && (
-              <CheckCircle size={20} className="text-primary shrink-0 mt-0.5" />
+              <CheckCircle size={20} className="text-primary mt-0.5 shrink-0" />
             )}
-            <h1 className="text-headline-sm text-on-surface">{question.title}</h1>
+            <h1 className="text-headline-md text-on-surface">
+              {question.title}
+            </h1>
           </div>
 
-          {question.sector && <Badge variant="default" size="sm" className="mb-3">{question.sector}</Badge>}
-
-          {question.content && (
-            <p className="text-body text-on-surface-variant mb-4">{question.content}</p>
+          {question.sector && (
+            <Badge variant="default" size="sm" className="mb-3">
+              {question.sector}
+            </Badge>
           )}
 
-          <div className="flex items-center gap-3 hairline-t pt-4">
+          {question.content && (
+            <p className="text-body-md text-on-surface-variant mb-4">
+              {question.content}
+            </p>
+          )}
+
+          <div className="hairline-t flex items-center gap-3 pt-4">
             <Avatar
               src={question.author.avatarUrl}
               naam={question.author.naam ?? question.author.name ?? "?"}
               size="xs"
               grayscale={false}
             />
-            <span className="text-xs text-outline">
-              {question.author.naam ?? question.author.name} · {formatDate(new Date(question.createdAt))}
+            <span className="text-secondary text-xs">
+              {question.author.naam ?? question.author.name} ·{" "}
+              {formatDate(new Date(question.createdAt))}
             </span>
-            <span className="ml-auto text-xs text-outline">
-              {question.answers.length} antwoord{question.answers.length !== 1 ? "en" : ""}
+            <span className="text-secondary ml-auto text-xs">
+              {question.answers.length} antwoord
+              {question.answers.length !== 1 ? "en" : ""}
             </span>
           </div>
         </CardBody>

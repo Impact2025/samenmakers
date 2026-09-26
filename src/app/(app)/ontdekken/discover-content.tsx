@@ -36,7 +36,10 @@ export function DiscoverContent() {
       {/* Search bar */}
       <div className="flex gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
+          <Search
+            size={16}
+            className="text-secondary absolute top-1/2 left-3 -translate-y-1/2"
+          />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -46,16 +49,16 @@ export function DiscoverContent() {
         </div>
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`flex items-center gap-2 px-4 border text-sm font-semibold transition-colors ${
+          className={`flex items-center gap-2 border px-4 text-sm font-semibold transition-colors ${
             showFilters || Object.keys(filters).length > 0
               ? "bg-on-surface text-on-primary border-on-surface"
-              : "border-hairline text-outline hover:border-on-surface"
+              : "border-hairline text-secondary hover:border-on-surface"
           }`}
         >
           <SlidersHorizontal size={15} />
           Filters
           {Object.keys(filters).length > 0 && (
-            <span className="w-5 h-5 bg-primary text-on-primary text-[10px] font-black rounded-full flex items-center justify-center">
+            <span className="bg-primary text-on-primary flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold">
               {Object.keys(filters).length}
             </span>
           )}
@@ -64,74 +67,96 @@ export function DiscoverContent() {
 
       {/* Filter panel */}
       {showFilters && (
-        <div className="border border-hairline bg-white p-5 space-y-4">
+        <div className="border-hairline space-y-4 border bg-white p-5">
           <div className="flex items-center justify-between">
-            <p className="text-label-caps text-on-surface">FILTERS</p>
+            <p className="text-label-md text-on-surface">FILTERS</p>
             <button
-              onClick={() => { setFilters({}); setShowFilters(false); }}
-              className="text-xs text-outline hover:text-on-surface flex items-center gap-1"
+              onClick={() => {
+                setFilters({});
+                setShowFilters(false);
+              }}
+              className="text-secondary hover:text-on-surface flex items-center gap-1 text-xs"
             >
               <X size={12} /> Wis alles
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <label className="text-label-caps text-outline block mb-2">SECTOR</label>
+              <label className="text-label-md text-secondary mb-2 block">
+                SECTOR
+              </label>
               <select
                 value={filters.sector ?? ""}
                 onChange={(e) => {
                   const v = e.target.value;
                   setFilters((f) => {
                     const next = { ...f };
-                    if (v) next.sector = v; else delete next.sector;
+                    if (v) next.sector = v;
+                    else delete next.sector;
                     return next;
                   });
                 }}
-                className="w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-on-surface"
+                className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="">Alle sectoren</option>
                 {SECTOREN.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">REGIO</label>
+              <label className="text-label-md text-secondary mb-2 block">
+                REGIO
+              </label>
               <select
                 value={filters.regio ?? ""}
                 onChange={(e) => {
                   const v = e.target.value;
                   setFilters((f) => {
                     const next = { ...f };
-                    if (v) next.regio = v; else delete next.regio;
+                    if (v) next.regio = v;
+                    else delete next.regio;
                     return next;
                   });
                 }}
-                className="w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-on-surface"
+                className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="">Alle regio&apos;s</option>
                 {REGIO_S.map((r) => (
-                  <option key={r} value={r}>{r}</option>
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">FASE</label>
+              <label className="text-label-md text-secondary mb-2 block">
+                FASE
+              </label>
               <select
                 value={filters.fase ?? ""}
                 onChange={(e) => {
-                  const v = e.target.value as "starter" | "groei" | "scale" | "";
+                  const v = e.target.value as
+                    | "starter"
+                    | "groei"
+                    | "scale"
+                    | "";
                   setFilters((f) => {
                     const next = { ...f };
-                    if (v) next.fase = v; else delete next.fase;
+                    if (v) next.fase = v;
+                    else delete next.fase;
                     return next;
                   });
                 }}
-                className="w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-on-surface"
+                className="border-hairline text-on-surface focus:border-on-surface w-full border bg-white px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="">Alle fasen</option>
                 {FASEN.map(({ value, label }) => (
-                  <option key={value} value={value}>{label}</option>
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -142,32 +167,43 @@ export function DiscoverContent() {
       {/* Active filter badges */}
       {Object.keys(filters).length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {Object.entries(filters).map(([key, value]) => (
-            value && (
-              <button
-                key={key}
-                onClick={() => setFilters((f) => { const next = { ...f }; delete next[key as keyof Filters]; return next; })}
-                className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-xs font-semibold"
-              >
-                {value}
-                <X size={10} />
-              </button>
-            )
-          ))}
+          {Object.entries(filters).map(
+            ([key, value]) =>
+              value && (
+                <button
+                  key={key}
+                  onClick={() =>
+                    setFilters((f) => {
+                      const next = { ...f };
+                      delete next[key as keyof Filters];
+                      return next;
+                    })
+                  }
+                  className="bg-primary/10 text-primary flex items-center gap-1 px-3 py-1 text-xs font-semibold"
+                >
+                  {value}
+                  <X size={10} />
+                </button>
+              ),
+          )}
         </div>
       )}
 
       {/* Results */}
       {isLoading ? (
-        <div className="flex justify-center py-20"><Spinner /></div>
+        <div className="flex justify-center py-20">
+          <Spinner />
+        </div>
       ) : users.length === 0 ? (
-        <div className="text-center py-20">
+        <div className="py-20 text-center">
           <p className="text-on-surface-variant mb-2">Geen makers gevonden</p>
-          <p className="text-body-sm text-outline">Pas je filters aan om meer resultaten te zien</p>
+          <p className="text-body-md text-secondary">
+            Pas je filters aan om meer resultaten te zien
+          </p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((user) => (
               <UserCard key={user.id} user={user} />
             ))}
@@ -178,7 +214,7 @@ export function DiscoverContent() {
               <button
                 onClick={() => void fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="px-8 py-3 border border-hairline text-label-caps text-on-surface hover:border-on-surface transition-colors disabled:opacity-50"
+                className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-8 py-3 transition-colors disabled:opacity-50"
               >
                 {isFetchingNextPage ? <Spinner /> : "Meer laden"}
               </button>
@@ -209,35 +245,45 @@ function UserCard({ user }: { user: User }) {
   const displayName = user.naam ?? user.name ?? "Maker";
 
   return (
-    <Link href={`/makers/${user.id}`} className="block group">
+    <Link href={`/makers/${user.id}`} className="group block">
       <Card className="h-full">
-        <div className="p-5 flex flex-col h-full">
-          <div className="flex items-start gap-3 mb-3">
+        <div className="flex h-full flex-col p-5">
+          <div className="mb-3 flex items-start gap-3">
             <Avatar
               src={user.avatarUrl}
               naam={displayName}
               size="md"
               grayscale
             />
-            <div className="flex-1 min-w-0">
-              <p className="font-black text-on-surface text-sm truncate group-hover:text-primary transition-colors">
+            <div className="min-w-0 flex-1">
+              <p className="text-on-surface group-hover:text-primary truncate text-sm font-extrabold transition-colors">
                 {displayName}
               </p>
               {user.isFeatured && (
-                <Badge variant="primary" size="sm" className="mt-0.5">FEATURED</Badge>
+                <Badge variant="primary" size="sm" className="mt-0.5">
+                  FEATURED
+                </Badge>
               )}
             </div>
           </div>
 
           {user.missie && (
-            <p className="text-xs text-on-surface-variant line-clamp-2 italic mb-3 flex-1">
+            <p className="text-on-surface-variant mb-3 line-clamp-2 flex-1 text-xs italic">
               &ldquo;{user.missie}&rdquo;
             </p>
           )}
 
-          <div className="flex flex-wrap gap-1 mt-auto">
-            {user.sector && <Badge variant="default" size="sm">{user.sector}</Badge>}
-            {user.regio && <Badge variant="default" size="sm">{user.regio}</Badge>}
+          <div className="mt-auto flex flex-wrap gap-1">
+            {user.sector && (
+              <Badge variant="default" size="sm">
+                {user.sector}
+              </Badge>
+            )}
+            {user.regio && (
+              <Badge variant="default" size="sm">
+                {user.regio}
+              </Badge>
+            )}
           </div>
         </div>
       </Card>

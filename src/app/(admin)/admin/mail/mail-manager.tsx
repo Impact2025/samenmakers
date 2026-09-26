@@ -38,15 +38,21 @@ export function MailManager() {
 
   const preview = trpc.campaigns.preview.useQuery(segment);
 
-  const setSeg = (patch: Partial<Segment>) => setSegment((s) => ({ ...s, ...patch }));
+  const setSeg = (patch: Partial<Segment>) =>
+    setSegment((s) => ({ ...s, ...patch }));
 
   const generate = trpc.campaigns.generate.useMutation({
-    onSuccess: (d) => { setSubject(d.subject); setBody(d.body); },
+    onSuccess: (d) => {
+      setSubject(d.subject);
+      setBody(d.body);
+    },
   });
   const create = trpc.campaigns.create.useMutation({
     onSuccess: () => {
       void utils.campaigns.list.invalidate();
-      setSubject(""); setBody(""); setTopic("");
+      setSubject("");
+      setBody("");
+      setTopic("");
     },
   });
   const send = trpc.campaigns.send.useMutation({
@@ -60,77 +66,170 @@ export function MailManager() {
     <div className="space-y-8">
       {/* Composer */}
       <Card hover={false}>
-        <CardBody className="p-6 space-y-5">
-          <h2 className="text-[11px] font-bold tracking-widest uppercase text-on-surface">Nieuwe mailing</h2>
+        <CardBody className="space-y-5 p-6">
+          <h2 className="text-on-surface text-[11px] font-bold tracking-widest uppercase">
+            Nieuwe mailing
+          </h2>
 
           {/* AI */}
-          <div className="flex gap-2 items-end bg-primary/5 p-4">
+          <div className="bg-primary/5 flex items-end gap-2 p-4">
             <div className="flex-1">
-              <label className="text-label-caps text-outline mb-2 flex items-center gap-1">
-                <Sparkles size={12} className="text-primary" /> AI — schrijf nieuwsbrief over
+              <label className="text-label-md text-secondary mb-2 flex items-center gap-1">
+                <Sparkles size={12} className="text-primary" /> AI — schrijf
+                nieuwsbrief over
               </label>
-              <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="bijv. 'nieuwe matching-functie en zomerevent'" />
+              <Input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="bijv. 'nieuwe matching-functie en zomerevent'"
+              />
             </div>
-            <Button type="button" variant="secondary" size="sm" disabled={generate.isPending || topic.length < 3} onClick={() => generate.mutate({ topic })}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={generate.isPending || topic.length < 3}
+              onClick={() => generate.mutate({ topic })}
+            >
               {generate.isPending ? <Spinner /> : "Genereer"}
             </Button>
           </div>
-          {generate.error && <p className="text-xs text-red-600">{generate.error.message}</p>}
+          {generate.error && (
+            <p className="text-error text-xs">{generate.error.message}</p>
+          )}
 
           <div>
-            <label className="text-label-caps text-outline block mb-2">ONDERWERP *</label>
-            <Input value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={200} />
+            <label className="text-label-md text-secondary mb-2 block">
+              ONDERWERP *
+            </label>
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              maxLength={200}
+            />
           </div>
           <div>
-            <label className="text-label-caps text-outline block mb-2">BERICHT (Markdown) *</label>
-            <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={12} placeholder="Schrijf je bericht… Markdown wordt ondersteund." />
+            <label className="text-label-md text-secondary mb-2 block">
+              BERICHT (Markdown) *
+            </label>
+            <Textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={12}
+              placeholder="Schrijf je bericht… Markdown wordt ondersteund."
+            />
           </div>
 
           {/* Segment */}
           <div>
-            <label className="text-label-caps text-outline block mb-2">SEGMENT</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <select value={segment.subscriptionStatus ?? ""} onChange={(e) => setSeg({ subscriptionStatus: (e.target.value || undefined) as Segment["subscriptionStatus"] })} className="bg-transparent border-b border-hairline pb-2 text-sm outline-none">
+            <label className="text-label-md text-secondary mb-2 block">
+              SEGMENT
+            </label>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <select
+                value={segment.subscriptionStatus ?? ""}
+                onChange={(e) =>
+                  setSeg({
+                    subscriptionStatus: (e.target.value ||
+                      undefined) as Segment["subscriptionStatus"],
+                  })
+                }
+                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+              >
                 <option value="">Alle abonnementen</option>
                 <option value="active">Pro actief</option>
                 <option value="none">Gratis</option>
                 <option value="canceled">Opgezegd</option>
               </select>
-              <select value={segment.stage ?? ""} onChange={(e) => setSeg({ stage: (e.target.value || undefined) as Segment["stage"] })} className="bg-transparent border-b border-hairline pb-2 text-sm outline-none">
+              <select
+                value={segment.stage ?? ""}
+                onChange={(e) =>
+                  setSeg({
+                    stage: (e.target.value || undefined) as Segment["stage"],
+                  })
+                }
+                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+              >
                 <option value="">Alle fases</option>
                 <option value="lead">Lead</option>
                 <option value="engaged">Betrokken</option>
                 <option value="customer">Klant</option>
                 <option value="churned">Verloren</option>
               </select>
-              <select value={segment.sector ?? ""} onChange={(e) => setSeg({ sector: e.target.value || undefined })} className="bg-transparent border-b border-hairline pb-2 text-sm outline-none">
+              <select
+                value={segment.sector ?? ""}
+                onChange={(e) =>
+                  setSeg({ sector: e.target.value || undefined })
+                }
+                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+              >
                 <option value="">Alle sectoren</option>
-                {SECTOREN.map((s) => <option key={s} value={s}>{s}</option>)}
+                {SECTOREN.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </select>
-              <select value={segment.regio ?? ""} onChange={(e) => setSeg({ regio: e.target.value || undefined })} className="bg-transparent border-b border-hairline pb-2 text-sm outline-none">
-                <option value="">Alle regio's</option>
-                {REGIO_S.map((r) => <option key={r} value={r}>{r}</option>)}
+              <select
+                value={segment.regio ?? ""}
+                onChange={(e) => setSeg({ regio: e.target.value || undefined })}
+                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+              >
+                <option value="">Alle regio&apos;s</option>
+                {REGIO_S.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
-              <select value={segment.fase ?? ""} onChange={(e) => setSeg({ fase: (e.target.value || undefined) as Segment["fase"] })} className="bg-transparent border-b border-hairline pb-2 text-sm outline-none">
+              <select
+                value={segment.fase ?? ""}
+                onChange={(e) =>
+                  setSeg({
+                    fase: (e.target.value || undefined) as Segment["fase"],
+                  })
+                }
+                className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
+              >
                 <option value="">Alle stadia</option>
-                {FASEN.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
+                {FASEN.map((f) => (
+                  <option key={f.value} value={f.value}>
+                    {f.label}
+                  </option>
+                ))}
               </select>
             </div>
-            <p className="text-sm text-on-surface-variant mt-3">
+            <p className="text-on-surface-variant mt-3 text-sm">
               Bereik:{" "}
               <strong className="text-on-surface">
-                {preview.isFetching ? "…" : preview.data?.count ?? 0} ontvangers
+                {preview.isFetching ? "…" : (preview.data?.count ?? 0)}{" "}
+                ontvangers
               </strong>
-              {preview.data?.capped && <span className="text-amber-600"> (max bereikt)</span>}
-              <span className="text-outline"> — actieve gebruikers met e-mail</span>
+              {preview.data?.capped && (
+                <span className="text-amber-600"> (max bereikt)</span>
+              )}
+              <span className="text-secondary">
+                {" "}
+                — actieve gebruikers met e-mail
+              </span>
             </p>
           </div>
 
-          <div className="flex items-center gap-3 hairline-t pt-5">
-            <Button type="button" variant="primary" size="sm" disabled={create.isPending || subject.length < 2 || body.length < 10} onClick={() => create.mutate({ subject, body, segment })}>
+          <div className="hairline-t flex items-center gap-3 pt-5">
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={
+                create.isPending || subject.length < 2 || body.length < 10
+              }
+              onClick={() => create.mutate({ subject, body, segment })}
+            >
               {create.isPending ? <Spinner /> : "Opslaan als concept"}
             </Button>
-            {create.error && <p className="text-sm text-red-600">{create.error.message}</p>}
+            {create.error && (
+              <p className="text-error text-sm">{create.error.message}</p>
+            )}
           </div>
         </CardBody>
       </Card>
@@ -139,17 +238,27 @@ export function MailManager() {
       <Card hover={false}>
         <CardBody className="p-0">
           {list.isLoading ? (
-            <div className="p-8"><Spinner /></div>
+            <div className="p-8">
+              <Spinner />
+            </div>
           ) : !list.data?.length ? (
-            <p className="p-8 text-sm text-outline">Nog geen mailings.</p>
+            <p className="text-secondary p-8 text-sm">Nog geen mailings.</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-hairline text-left">
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">ONDERWERP</th>
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">BEREIK</th>
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">STATUS</th>
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">AANGEMAAKT</th>
+                <tr className="border-hairline border-b text-left">
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    ONDERWERP
+                  </th>
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    BEREIK
+                  </th>
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    STATUS
+                  </th>
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    AANGEMAAKT
+                  </th>
                   <th className="p-4"></th>
                 </tr>
               </thead>
@@ -159,20 +268,35 @@ export function MailManager() {
                     (send.isPending && send.variables?.id === c.id) ||
                     (remove.isPending && remove.variables?.id === c.id);
                   return (
-                    <tr key={c.id} className="border-b border-hairline/50 last:border-0">
-                      <td className="p-4 font-semibold text-on-surface">{c.subject}</td>
-                      <td className="p-4 text-on-surface-variant">
+                    <tr
+                      key={c.id}
+                      className="border-hairline/50 border-b last:border-0"
+                    >
+                      <td className="text-on-surface p-4 font-semibold">
+                        {c.subject}
+                      </td>
+                      <td className="text-on-surface-variant p-4">
                         {c.status === "sent" || c.status === "failed"
                           ? `${c.sentCount}/${c.recipientCount} verzonden`
                           : `${c.recipientCount} ontvangers`}
-                        {c.failedCount > 0 && <span className="text-red-500"> · {c.failedCount} mislukt</span>}
+                        {c.failedCount > 0 && (
+                          <span className="text-error">
+                            {" "}
+                            · {c.failedCount} mislukt
+                          </span>
+                        )}
                       </td>
                       <td className="p-4">
-                        <Badge variant={c.status === "sent" ? "primary" : "default"} size="sm">
+                        <Badge
+                          variant={c.status === "sent" ? "primary" : "default"}
+                          size="sm"
+                        >
                           {STATUS_LABEL[c.status] ?? c.status}
                         </Badge>
                       </td>
-                      <td className="p-4 text-xs text-outline">{formatDateTime(c.createdAt)}</td>
+                      <td className="text-secondary p-4 text-xs">
+                        {formatDateTime(c.createdAt)}
+                      </td>
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-3 text-xs">
                           {c.status === "draft" && (
@@ -180,18 +304,28 @@ export function MailManager() {
                               type="button"
                               disabled={busy}
                               onClick={() => {
-                                if (confirm(`Mailing "${c.subject}" nu verzenden naar ${c.recipientCount} ontvangers?`)) send.mutate({ id: c.id });
+                                if (
+                                  confirm(
+                                    `Mailing "${c.subject}" nu verzenden naar ${c.recipientCount} ontvangers?`,
+                                  )
+                                )
+                                  send.mutate({ id: c.id });
                               }}
-                              className="font-semibold text-primary hover:underline disabled:opacity-40"
+                              className="text-primary font-semibold hover:underline disabled:opacity-40"
                             >
-                              {busy && send.isPending ? "Verzenden…" : "Verzend"}
+                              {busy && send.isPending
+                                ? "Verzenden…"
+                                : "Verzend"}
                             </button>
                           )}
                           <button
                             type="button"
                             disabled={busy}
-                            onClick={() => { if (confirm("Verwijderen?")) remove.mutate({ id: c.id }); }}
-                            className="font-semibold text-red-500 hover:underline disabled:opacity-40"
+                            onClick={() => {
+                              if (confirm("Verwijderen?"))
+                                remove.mutate({ id: c.id });
+                            }}
+                            className="text-error font-semibold hover:underline disabled:opacity-40"
                           >
                             Verwijder
                           </button>
@@ -203,7 +337,9 @@ export function MailManager() {
               </tbody>
             </table>
           )}
-          {send.error && <p className="p-4 text-sm text-red-600">{send.error.message}</p>}
+          {send.error && (
+            <p className="text-error p-4 text-sm">{send.error.message}</p>
+          )}
         </CardBody>
       </Card>
     </div>

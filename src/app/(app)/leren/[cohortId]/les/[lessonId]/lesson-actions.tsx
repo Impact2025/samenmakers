@@ -91,7 +91,7 @@ export function LessonActions({
           }
           maxLength={10_000}
         />
-        <p className="text-body-sm text-outline" aria-live="polite">
+        <p className="text-body-md text-secondary" aria-live="polite">
           {saveNote.isPending
             ? "Opslaan…"
             : note !== savedNote
@@ -105,7 +105,7 @@ export function LessonActions({
       <div className="flex flex-wrap items-center gap-4">
         {done ? (
           <>
-            <span className="text-label-caps text-primary inline-flex items-center gap-2">
+            <span className="text-label-md text-primary inline-flex items-center gap-2">
               <CircleCheck size={16} /> Les afgerond
             </span>
             <Button
@@ -134,7 +134,7 @@ export function LessonActions({
           </Button>
         )}
         {setLessonStatus.error && (
-          <p className="text-body-sm text-error">
+          <p className="text-body-md text-error">
             {setLessonStatus.error.message}
           </p>
         )}
@@ -150,10 +150,10 @@ export function LessonActions({
               href={`/leren/${cohortId}/les/${prev.id}`}
               className="group block"
             >
-              <span className="text-label-caps text-outline flex items-center gap-2">
+              <span className="text-label-md text-secondary flex items-center gap-2">
                 <ArrowLeft size={12} /> Vorige
               </span>
-              <span className="text-body-sm text-on-surface mt-1 block group-hover:underline">
+              <span className="text-body-md text-on-surface mt-1 block group-hover:underline">
                 {prev.title}
               </span>
             </Link>
@@ -165,17 +165,17 @@ export function LessonActions({
               href={`/leren/${cohortId}/les/${next.id}`}
               className="group block"
             >
-              <span className="text-label-caps text-outline flex items-center justify-end gap-2">
+              <span className="text-label-md text-secondary flex items-center justify-end gap-2">
                 Volgende <ArrowRight size={12} />
               </span>
-              <span className="text-body-sm text-on-surface mt-1 block group-hover:underline">
+              <span className="text-body-md text-on-surface mt-1 block group-hover:underline">
                 {next.title}
               </span>
             </Link>
           ) : (
             <Link
               href={`/leren/${cohortId}`}
-              className="text-label-caps text-primary underline underline-offset-4"
+              className="text-label-md text-primary underline underline-offset-4"
             >
               Terug naar leerpad
             </Link>

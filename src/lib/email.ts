@@ -21,10 +21,10 @@ export async function sendWelcomeEmail(user: {
   await getResend().emails.send({
     from: FROM,
     to: user.email,
-    subject: "Welkom bij Samenmakers!",
+    subject: "Welkom bij We Shape the Future!",
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
-        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">SAMENMAKERS</p>
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Welkom, ${naam}!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
           Je account is aangemaakt. Vul je profiel in zodat andere impact-ondernemers jou kunnen vinden.
@@ -33,7 +33,7 @@ export async function sendWelcomeEmail(user: {
           PROFIEL AANVULLEN →
         </a>
         <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
-          Je ontvangt deze e-mail omdat je je hebt aangemeld bij Samenmakers.
+          Je ontvangt deze e-mail omdat je je hebt aangemeld bij We Shape the Future.
           <a href="${APP_URL}/instellingen/notificaties" style="color: #555;">Notificaties beheren</a>
         </p>
       </div>
@@ -53,7 +53,7 @@ export async function sendMatchEmail(opts: {
     subject: `Nieuwe match: ${opts.matchNaam}`,
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
-        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">SAMENMAKERS</p>
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Je hebt een match!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
           Hoi ${opts.naam}, jullie zijn allebei geïnteresseerd in samenwerken. Stuur ${opts.matchNaam} een berichtje.
@@ -98,11 +98,11 @@ export async function sendWeeklyDigest(opts: {
   await getResend().emails.send({
     from: FROM,
     to: opts.to,
-    subject: "Jouw wekelijkse Samenmakers update",
+    subject: "Jouw wekelijkse We Shape the Future update",
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
-        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">SAMENMAKERS DIGEST</p>
-        <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 24px;">Hoi ${opts.naam}, dit week bij Samenmakers</h1>
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE DIGEST</p>
+        <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 24px;">Hoi ${opts.naam}, dit week bij We Shape the Future</h1>
         ${opts.newMatches > 0 ? `<p style="margin-bottom:16px;"><strong>${opts.newMatches} nieuwe match${opts.newMatches > 1 ? "es" : ""}</strong> wachten op je reactie.</p>` : ""}
         ${opts.recentPosts.length > 0 ? `<h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:8px;">Nieuwe artikelen</h2><ul style="padding-left:16px;margin-bottom:24px;">${postsHtml}</ul>` : ""}
         ${opts.upcomingEvents.length > 0 ? `<h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:8px;">Aankomende events</h2><ul style="padding-left:16px;margin-bottom:24px;">${eventsHtml}</ul>` : ""}
@@ -121,14 +121,14 @@ export async function sendWeeklyDigest(opts: {
 // CRM EMAIL CAMPAIGNS
 // =============================================
 
-/** Wraps campaign Markdown in the Samenmakers house style. */
+/** Wraps campaign Markdown in the We Shape the Future house style. */
 export function renderCampaignHtml(bodyMarkdown: string) {
   return `
     <div style="font-family: Inter, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a; line-height:1.6;">
-      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 24px;">SAMENMAKERS</p>
+      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 24px;">WE SHAPE THE FUTURE</p>
       <div style="font-size:15px;color:#333;">${renderMarkdown(bodyMarkdown)}</div>
       <p style="font-size: 12px; color: #aaa; margin-top: 40px; border-top:1px solid #eee; padding-top:16px;">
-        Je ontvangt deze e-mail als lid van Samenmakers.
+        Je ontvangt deze e-mail als lid van We Shape the Future.
         <a href="${APP_URL}/instellingen/notificaties" style="color: #555;">Voorkeuren beheren</a>
       </p>
     </div>`;
@@ -220,10 +220,10 @@ export async function sendManagementDigest(opts: {
   await getResend().emails.send({
     from: FROM,
     to: opts.to ?? MANAGEMENT_EMAIL,
-    subject: `Samenmakers ${title} Management Rapport — ${dateLabel}`,
+    subject: `We Shape the Future ${title} Management Rapport — ${dateLabel}`,
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
-        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 8px;">SAMENMAKERS · MANAGEMENT</p>
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 8px;">WE SHAPE THE FUTURE · MANAGEMENT</p>
         <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 4px;">${title} rapport</h1>
         <p style="font-size: 13px; color: #999; margin-bottom: 24px;">${dateLabel} · ${m.windowLabel}</p>
 
@@ -262,7 +262,7 @@ export async function sendManagementDigest(opts: {
           NAAR ADMIN DASHBOARD →
         </a>
         <p style="font-size: 11px; color: #bbb; margin-top: 32px;">
-          Automatisch gegenereerd door Samenmakers Admin · ${m.generatedAt.toLocaleString("nl-NL")}
+          Automatisch gegenereerd door We Shape the Future Admin · ${m.generatedAt.toLocaleString("nl-NL")}
         </p>
       </div>
     `,
@@ -298,7 +298,7 @@ export interface EventEmailInput {
 export async function sendEventEmail(opts: EventEmailInput) {
   const html = `
     <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
-      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">SAMENMAKERS EVENTS</p>
+      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE EVENTS</p>
       <h1 style="font-size: 26px; font-weight: 900; margin-bottom: 12px;">${escapeHtml(opts.heading)}</h1>
       <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px;">${escapeHtml(opts.intro)}</p>
       <table style="width:100%;border:1px solid #eee;margin-bottom:24px;border-collapse:collapse;">

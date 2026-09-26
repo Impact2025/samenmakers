@@ -106,7 +106,10 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         content,
         aiGenerated: true,
       }));
-      setSuggestions({ internal: draft.internalLinks, external: draft.externalLinks });
+      setSuggestions({
+        internal: draft.internalLinks,
+        external: draft.externalLinks,
+      });
     },
   });
 
@@ -141,7 +144,10 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
       metaDescription: form.metaDescription || undefined,
       focusKeyword: form.focusKeyword || undefined,
       keywords: form.keywords
-        ? form.keywords.split(",").map((k) => k.trim()).filter(Boolean)
+        ? form.keywords
+            .split(",")
+            .map((k) => k.trim())
+            .filter(Boolean)
         : [],
       canonicalUrl: form.canonicalUrl || undefined,
       ogImageUrl: form.ogImageUrl || undefined,
@@ -157,15 +163,15 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
   const saving = create.isPending || update.isPending;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
       {/* Main column */}
       <div className="space-y-6">
         {/* AI generator */}
         <Card hover={false}>
-          <CardBody className="p-5 bg-primary/5 space-y-3">
+          <CardBody className="bg-primary/5 space-y-3 p-5">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-primary" />
-              <h2 className="text-[11px] font-bold tracking-widest uppercase text-on-surface">
+              <h2 className="text-on-surface text-[11px] font-bold tracking-widest uppercase">
                 AI-generator
               </h2>
             </div>
@@ -185,7 +191,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
                   key={c.value}
                   type="button"
                   onClick={() => set("category", c.value)}
-                  className={`px-3 py-1.5 text-xs font-medium border transition-colors ${
+                  className={`border px-3 py-1.5 text-xs font-medium transition-colors ${
                     form.category === c.value
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-hairline text-on-surface-variant"
@@ -199,7 +205,11 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               type="button"
               variant="primary"
               size="sm"
-              disabled={generate.isPending || topic.length < 3 || form.focusKeyword.length < 2}
+              disabled={
+                generate.isPending ||
+                topic.length < 3 ||
+                form.focusKeyword.length < 2
+              }
               onClick={() =>
                 generate.mutate({
                   topic,
@@ -211,18 +221,26 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               {generate.isPending ? <Spinner /> : "Genereer artikel met AI"}
             </Button>
             {generate.error && (
-              <p className="text-xs text-red-600">{generate.error.message}</p>
+              <p className="text-error text-xs">{generate.error.message}</p>
             )}
           </CardBody>
         </Card>
 
         <div>
-          <label className="text-label-caps text-outline block mb-2">TITEL *</label>
-          <Input value={form.title} onChange={(e) => set("title", e.target.value)} maxLength={160} />
+          <label className="text-label-md text-secondary mb-2 block">
+            TITEL *
+          </label>
+          <Input
+            value={form.title}
+            onChange={(e) => set("title", e.target.value)}
+            maxLength={160}
+          />
         </div>
 
         <div>
-          <label className="text-label-caps text-outline block mb-2">SLUG (URL)</label>
+          <label className="text-label-md text-secondary mb-2 block">
+            SLUG (URL)
+          </label>
           <Input
             value={form.slug}
             onChange={(e) => set("slug", e.target.value)}
@@ -231,65 +249,134 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         </div>
 
         <div>
-          <label className="text-label-caps text-outline block mb-2">SAMENVATTING</label>
-          <Textarea value={form.excerpt} onChange={(e) => set("excerpt", e.target.value)} rows={2} maxLength={300} />
+          <label className="text-label-md text-secondary mb-2 block">
+            SAMENVATTING
+          </label>
+          <Textarea
+            value={form.excerpt}
+            onChange={(e) => set("excerpt", e.target.value)}
+            rows={2}
+            maxLength={300}
+          />
         </div>
 
         <div>
-          <label className="text-label-caps text-outline block mb-2">INHOUD (Markdown) *</label>
-          <Textarea value={form.content} onChange={(e) => set("content", e.target.value)} rows={20} />
-          <p className="text-xs text-outline mt-1">
+          <label className="text-label-md text-secondary mb-2 block">
+            INHOUD (Markdown) *
+          </label>
+          <Textarea
+            value={form.content}
+            onChange={(e) => set("content", e.target.value)}
+            rows={20}
+          />
+          <p className="text-secondary mt-1 text-xs">
             {seo.wordCount} woorden · {seo.readingTime} min leestijd
           </p>
         </div>
 
         {/* SEO meta */}
         <Card hover={false}>
-          <CardBody className="p-5 space-y-4">
-            <h2 className="text-[11px] font-bold tracking-widest uppercase text-on-surface">SEO-meta</h2>
+          <CardBody className="space-y-4 p-5">
+            <h2 className="text-on-surface text-[11px] font-bold tracking-widest uppercase">
+              SEO-meta
+            </h2>
             <div>
-              <label className="text-label-caps text-outline block mb-2">META-TITLE ({form.metaTitle.length})</label>
-              <Input value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} maxLength={70} />
+              <label className="text-label-md text-secondary mb-2 block">
+                META-TITLE ({form.metaTitle.length})
+              </label>
+              <Input
+                value={form.metaTitle}
+                onChange={(e) => set("metaTitle", e.target.value)}
+                maxLength={70}
+              />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">META-DESCRIPTION ({form.metaDescription.length})</label>
-              <Textarea value={form.metaDescription} onChange={(e) => set("metaDescription", e.target.value)} rows={2} maxLength={200} />
+              <label className="text-label-md text-secondary mb-2 block">
+                META-DESCRIPTION ({form.metaDescription.length})
+              </label>
+              <Textarea
+                value={form.metaDescription}
+                onChange={(e) => set("metaDescription", e.target.value)}
+                rows={2}
+                maxLength={200}
+              />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">KEYWORDS (komma-gescheiden)</label>
-              <Input value={form.keywords} onChange={(e) => set("keywords", e.target.value)} />
+              <label className="text-label-md text-secondary mb-2 block">
+                KEYWORDS (komma-gescheiden)
+              </label>
+              <Input
+                value={form.keywords}
+                onChange={(e) => set("keywords", e.target.value)}
+              />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">OMSLAG / OG-IMAGE URL</label>
-              <Input value={form.coverImageUrl} onChange={(e) => set("coverImageUrl", e.target.value)} placeholder="https://..." />
+              <label className="text-label-md text-secondary mb-2 block">
+                OMSLAG / OG-IMAGE URL
+              </label>
+              <Input
+                value={form.coverImageUrl}
+                onChange={(e) => set("coverImageUrl", e.target.value)}
+                placeholder="https://..."
+              />
             </div>
             <div>
-              <label className="text-label-caps text-outline block mb-2">CANONICAL URL (optioneel)</label>
-              <Input value={form.canonicalUrl} onChange={(e) => set("canonicalUrl", e.target.value)} placeholder="https://..." />
+              <label className="text-label-md text-secondary mb-2 block">
+                CANONICAL URL (optioneel)
+              </label>
+              <Input
+                value={form.canonicalUrl}
+                onChange={(e) => set("canonicalUrl", e.target.value)}
+                placeholder="https://..."
+              />
             </div>
           </CardBody>
         </Card>
 
         {/* Save bar */}
-        <div className="flex flex-wrap items-center gap-3 hairline-t pt-6">
-          <Button type="button" variant="primary" onClick={save} disabled={saving || form.title.length < 3 || form.content.length < 20}>
-            {saving ? <Spinner /> : isEdit ? "Wijzigingen opslaan" : "Concept opslaan"}
+        <div className="hairline-t flex flex-wrap items-center gap-3 pt-6">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={save}
+            disabled={
+              saving || form.title.length < 3 || form.content.length < 20
+            }
+          >
+            {saving ? (
+              <Spinner />
+            ) : isEdit ? (
+              "Wijzigingen opslaan"
+            ) : (
+              "Concept opslaan"
+            )}
           </Button>
           {isEdit && (
             <Button
               type="button"
               variant="secondary"
               disabled={setPublished.isPending}
-              onClick={() => setPublished.mutate({ id: initial!.id!, isPublished: !initial?.isPublished })}
+              onClick={() =>
+                setPublished.mutate({
+                  id: initial!.id!,
+                  isPublished: !initial?.isPublished,
+                })
+              }
             >
               {initial?.isPublished ? "Depubliceren" : "Publiceren"}
             </Button>
           )}
-          <Button type="button" variant="ghost" onClick={() => router.push("/admin/blog")}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => router.push("/admin/blog")}
+          >
             Terug
           </Button>
           {(create.error ?? update.error) && (
-            <p className="text-sm text-red-600 w-full">{(create.error ?? update.error)?.message}</p>
+            <p className="text-error w-full text-sm">
+              {(create.error ?? update.error)?.message}
+            </p>
           )}
         </div>
       </div>
@@ -298,19 +385,28 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
       <div className="space-y-4">
         <Card hover={false}>
           <CardBody className="p-5">
-            <p className="text-[10px] font-bold tracking-widest text-outline mb-2">SEO-SCORE</p>
-            <div className="flex items-baseline gap-1 mb-4">
-              <span className={`text-5xl font-black ${seo.score >= 80 ? "text-primary" : seo.score >= 50 ? "text-amber-600" : "text-red-500"}`}>
+            <p className="text-secondary mb-2 text-[10px] font-bold tracking-widest">
+              SEO-SCORE
+            </p>
+            <div className="mb-4 flex items-baseline gap-1">
+              <span
+                className={`text-5xl font-extrabold ${seo.score >= 80 ? "text-primary" : seo.score >= 50 ? "text-amber-600" : "text-error"}`}
+              >
                 {seo.score}
               </span>
-              <span className="text-outline">/100</span>
+              <span className="text-secondary">/100</span>
             </div>
             <div className="space-y-2">
               {seo.checks.map((c) => (
                 <div key={c.id} className="flex items-start gap-2 text-xs">
-                  <span className={`mt-1 h-2 w-2 rounded-full shrink-0 ${statusDot[c.status]}`} />
+                  <span
+                    className={`mt-1 h-2 w-2 shrink-0 rounded-full ${statusDot[c.status]}`}
+                  />
                   <span className="text-on-surface-variant">
-                    <span className="font-semibold text-on-surface">{c.label}:</span> {c.message}
+                    <span className="text-on-surface font-semibold">
+                      {c.label}:
+                    </span>{" "}
+                    {c.message}
                   </span>
                 </div>
               ))}
@@ -321,13 +417,17 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
         {suggestions && (
           <Card hover={false}>
             <CardBody className="p-5">
-              <p className="text-[10px] font-bold tracking-widest text-outline mb-3">LINK-SUGGESTIES (AI)</p>
+              <p className="text-secondary mb-3 text-[10px] font-bold tracking-widest">
+                LINK-SUGGESTIES (AI)
+              </p>
               {suggestions.internal.length > 0 && (
                 <>
-                  <p className="text-xs font-semibold text-on-surface mb-1">Intern</p>
+                  <p className="text-on-surface mb-1 text-xs font-semibold">
+                    Intern
+                  </p>
                   <ul className="mb-3 space-y-1">
                     {suggestions.internal.map((l, i) => (
-                      <li key={i} className="text-xs text-outline">
+                      <li key={i} className="text-secondary text-xs">
                         {l.anchor} → <code>/kennis/{l.slug}</code>
                       </li>
                     ))}
@@ -336,10 +436,14 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
               )}
               {suggestions.external.length > 0 && (
                 <>
-                  <p className="text-xs font-semibold text-on-surface mb-1">Extern</p>
+                  <p className="text-on-surface mb-1 text-xs font-semibold">
+                    Extern
+                  </p>
                   <ul className="space-y-1">
                     {suggestions.external.map((l, i) => (
-                      <li key={i} className="text-xs text-outline break-all">{l.anchor} → {l.url}</li>
+                      <li key={i} className="text-secondary text-xs break-all">
+                        {l.anchor} → {l.url}
+                      </li>
                     ))}
                   </ul>
                 </>

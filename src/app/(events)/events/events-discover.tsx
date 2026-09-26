@@ -69,7 +69,7 @@ export function EventsDiscover({
         <div className="flex flex-wrap items-center gap-2">
           {near ? (
             <>
-              <span className="text-body-sm text-on-surface">Binnen</span>
+              <span className="text-body-md text-on-surface">Binnen</span>
               <select
                 aria-label="Straal"
                 value={near.radiusKm}
@@ -84,11 +84,11 @@ export function EventsDiscover({
                   </option>
                 ))}
               </select>
-              <span className="text-body-sm text-on-surface">van jou</span>
+              <span className="text-body-md text-on-surface">van jou</span>
               <button
                 type="button"
                 onClick={() => setNear(null)}
-                className="text-label-caps text-outline hover:text-on-surface inline-flex items-center gap-1"
+                className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-1"
               >
                 <X size={12} aria-hidden /> Wissen
               </button>
@@ -98,14 +98,14 @@ export function EventsDiscover({
               type="button"
               onClick={locate}
               disabled={locating}
-              className="border-hairline text-label-caps text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2 disabled:opacity-40"
+              className="border-hairline text-label-md text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2 disabled:opacity-40"
             >
               {locating ? <Spinner /> : <LocateFixed size={14} aria-hidden />}{" "}
               In mijn buurt
             </button>
           )}
           {geoError && (
-            <span className="text-body-sm text-error">{geoError}</span>
+            <span className="text-body-md text-error">{geoError}</span>
           )}
         </div>
       )}
@@ -134,7 +134,7 @@ export function EventsDiscover({
             type="button"
             onClick={() => void query.fetchNextPage()}
             disabled={query.isFetchingNextPage}
-            className="border-on-surface text-label-caps text-on-surface hover:bg-on-surface hover:text-on-primary border px-6 py-3 disabled:opacity-40"
+            className="border-on-surface text-label-md text-on-surface hover:bg-on-surface hover:text-on-primary border px-6 py-3 disabled:opacity-40"
           >
             {query.isFetchingNextPage ? <Spinner /> : "Meer events"}
           </button>

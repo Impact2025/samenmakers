@@ -30,7 +30,12 @@ export function CrmContacts() {
     sector?: string | undefined;
     regio?: string | undefined;
     fase?: "starter" | "groei" | "scale" | undefined;
-    subscriptionStatus?: "none" | "active" | "past_due" | "canceled" | undefined;
+    subscriptionStatus?:
+      | "none"
+      | "active"
+      | "past_due"
+      | "canceled"
+      | undefined;
     stage?: (typeof STAGES)[number] | undefined;
   }>({ search: "" });
 
@@ -40,67 +45,91 @@ export function CrmContacts() {
     limit: 100,
   });
 
-  const set = (patch: Partial<typeof filters>) => setFilters((f) => ({ ...f, ...patch }));
+  const set = (patch: Partial<typeof filters>) =>
+    setFilters((f) => ({ ...f, ...patch }));
 
   return (
     <div className="space-y-6">
       {/* Filters */}
       <Card hover={false}>
-        <CardBody className="p-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <CardBody className="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-6">
           <input
             value={filters.search}
             onChange={(e) => set({ search: e.target.value })}
             placeholder="Zoek naam/e-mail"
-            className="col-span-2 lg:col-span-2 bg-transparent border-b border-on-surface pb-2 text-sm outline-none focus:border-b-2"
+            className="border-on-surface col-span-2 border-b bg-transparent pb-2 text-sm outline-none focus:border-b-2 lg:col-span-2"
           />
           <select
             value={filters.stage ?? ""}
-            onChange={(e) => set({ stage: (e.target.value || undefined) as typeof filters.stage })}
-            className="bg-transparent border-b border-hairline pb-2 text-sm outline-none"
+            onChange={(e) =>
+              set({
+                stage: (e.target.value || undefined) as typeof filters.stage,
+              })
+            }
+            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
           >
             <option value="">Alle fases</option>
             {STAGES.map((s) => (
-              <option key={s} value={s}>{STAGE_LABEL[s]}</option>
+              <option key={s} value={s}>
+                {STAGE_LABEL[s]}
+              </option>
             ))}
           </select>
           <select
             value={filters.subscriptionStatus ?? ""}
-            onChange={(e) => set({ subscriptionStatus: (e.target.value || undefined) as typeof filters.subscriptionStatus })}
-            className="bg-transparent border-b border-hairline pb-2 text-sm outline-none"
+            onChange={(e) =>
+              set({
+                subscriptionStatus: (e.target.value ||
+                  undefined) as typeof filters.subscriptionStatus,
+              })
+            }
+            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
           >
             <option value="">Alle abonnementen</option>
             {SUBS.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
             ))}
           </select>
           <select
             value={filters.sector ?? ""}
             onChange={(e) => set({ sector: e.target.value || undefined })}
-            className="bg-transparent border-b border-hairline pb-2 text-sm outline-none"
+            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
           >
             <option value="">Alle sectoren</option>
             {SECTOREN.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
           <select
             value={filters.regio ?? ""}
             onChange={(e) => set({ regio: e.target.value || undefined })}
-            className="bg-transparent border-b border-hairline pb-2 text-sm outline-none"
+            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
           >
-            <option value="">Alle regio's</option>
+            <option value="">Alle regio&apos;s</option>
             {REGIO_S.map((r) => (
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>
+                {r}
+              </option>
             ))}
           </select>
           <select
             value={filters.fase ?? ""}
-            onChange={(e) => set({ fase: (e.target.value || undefined) as typeof filters.fase })}
-            className="bg-transparent border-b border-hairline pb-2 text-sm outline-none"
+            onChange={(e) =>
+              set({
+                fase: (e.target.value || undefined) as typeof filters.fase,
+              })
+            }
+            className="border-hairline border-b bg-transparent pb-2 text-sm outline-none"
           >
             <option value="">Alle stadia</option>
             {FASEN.map((f) => (
-              <option key={f.value} value={f.value}>{f.label}</option>
+              <option key={f.value} value={f.value}>
+                {f.label}
+              </option>
             ))}
           </select>
         </CardBody>
@@ -110,46 +139,78 @@ export function CrmContacts() {
       <Card hover={false}>
         <CardBody className="p-0">
           {contacts.isLoading ? (
-            <div className="p-8"><Spinner /></div>
+            <div className="p-8">
+              <Spinner />
+            </div>
           ) : !contacts.data?.length ? (
-            <p className="p-8 text-sm text-outline">Geen contacten gevonden.</p>
+            <p className="text-secondary p-8 text-sm">
+              Geen contacten gevonden.
+            </p>
           ) : (
             <>
-              <p className="px-4 pt-4 text-xs text-outline">{contacts.data.length} contacten</p>
+              <p className="text-secondary px-4 pt-4 text-xs">
+                {contacts.data.length} contacten
+              </p>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-hairline text-left">
-                    <th className="p-4 text-[10px] font-bold tracking-widest text-outline">NAAM</th>
-                    <th className="p-4 text-[10px] font-bold tracking-widest text-outline">SECTOR / REGIO</th>
-                    <th className="p-4 text-[10px] font-bold tracking-widest text-outline">ABONNEMENT</th>
-                    <th className="p-4 text-[10px] font-bold tracking-widest text-outline">FASE</th>
-                    <th className="p-4 text-[10px] font-bold tracking-widest text-outline">LAATSTE CONTACT</th>
+                  <tr className="border-hairline border-b text-left">
+                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                      NAAM
+                    </th>
+                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                      SECTOR / REGIO
+                    </th>
+                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                      ABONNEMENT
+                    </th>
+                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                      FASE
+                    </th>
+                    <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                      LAATSTE CONTACT
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {contacts.data.map((c) => (
-                    <tr key={c.id} className="border-b border-hairline/50 last:border-0 hover:bg-surface-container-low">
+                    <tr
+                      key={c.id}
+                      className="border-hairline/50 hover:bg-surface-container-low border-b last:border-0"
+                    >
                       <td className="p-4">
-                        <Link href={`/admin/crm/${c.id}`} className="font-semibold text-on-surface hover:underline">
+                        <Link
+                          href={`/admin/crm/${c.id}`}
+                          className="text-on-surface font-semibold hover:underline"
+                        >
                           {c.naam ?? c.name ?? "—"}
                         </Link>
-                        <p className="text-xs text-outline">{c.email}</p>
+                        <p className="text-secondary text-xs">{c.email}</p>
                       </td>
-                      <td className="p-4 text-on-surface-variant text-xs">
-                        {c.sector ?? "—"}<br />{c.regio ?? ""}
+                      <td className="text-on-surface-variant p-4 text-xs">
+                        {c.sector ?? "—"}
+                        <br />
+                        {c.regio ?? ""}
                       </td>
                       <td className="p-4">
                         {c.subscriptionStatus === "active" ? (
-                          <Badge variant="primary" size="sm">Pro</Badge>
+                          <Badge variant="primary" size="sm">
+                            Pro
+                          </Badge>
                         ) : (
-                          <span className="text-xs text-outline">{c.subscriptionStatus}</span>
+                          <span className="text-secondary text-xs">
+                            {c.subscriptionStatus}
+                          </span>
                         )}
                       </td>
                       <td className="p-4">
-                        <Badge variant="default" size="sm">{STAGE_LABEL[c.crmStage] ?? c.crmStage}</Badge>
+                        <Badge variant="default" size="sm">
+                          {STAGE_LABEL[c.crmStage] ?? c.crmStage}
+                        </Badge>
                       </td>
-                      <td className="p-4 text-xs text-outline">
-                        {c.crmLastContactedAt ? formatRelative(c.crmLastContactedAt) : "—"}
+                      <td className="text-secondary p-4 text-xs">
+                        {c.crmLastContactedAt
+                          ? formatRelative(c.crmLastContactedAt)
+                          : "—"}
                       </td>
                     </tr>
                   ))}

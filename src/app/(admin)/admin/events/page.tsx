@@ -32,8 +32,8 @@ export default async function AdminEventsPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-label-caps text-outline mb-1">ADMIN</p>
-          <h1 className="text-headline-md text-on-surface">Events</h1>
+          <p className="text-label-md text-secondary mb-1">ADMIN</p>
+          <h1 className="text-headline-lg text-on-surface">Events</h1>
         </div>
         <Link
           href="/events/nieuw"
@@ -48,7 +48,7 @@ export default async function AdminEventsPage({
           <Link
             key={t.label}
             href={t.key ? `/admin/events?status=${t.key}` : "/admin/events"}
-            className={`text-label-caps border px-4 py-1.5 ${status === t.key ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-outline hover:border-on-surface"}`}
+            className={`text-label-md border px-4 py-1.5 ${status === t.key ? "bg-on-surface text-on-primary border-on-surface" : "border-hairline text-secondary hover:border-on-surface"}`}
           >
             {t.label}
           </Link>
@@ -70,7 +70,7 @@ export default async function AdminEventsPage({
               ].map((h) => (
                 <th
                   key={h}
-                  className="text-label-caps text-outline px-4 py-3 text-left font-normal"
+                  className="text-label-md text-secondary px-4 py-3 text-left font-normal"
                 >
                   {h}
                 </th>
@@ -82,7 +82,7 @@ export default async function AdminEventsPage({
               <tr>
                 <td
                   colSpan={7}
-                  className="text-outline px-4 py-8 text-center text-sm"
+                  className="text-secondary px-4 py-8 text-center text-sm"
                 >
                   Geen events gevonden.
                 </td>

@@ -48,20 +48,20 @@ export default async function DeelnemersPage({ params }: Props) {
     <div className="space-y-10">
       <Link
         href={`/leren/${cohortId}`}
-        className="text-label-caps text-outline hover:text-on-surface inline-flex items-center gap-2"
+        className="text-label-md text-secondary hover:text-on-surface inline-flex items-center gap-2"
       >
         <ArrowLeft size={14} /> Leerpad
       </Link>
 
       <header>
-        <p className="text-label-caps text-primary-container mb-2">
+        <p className="text-label-md text-primary-container mb-2">
           {data.program.name}
         </p>
-        <h1 className="text-headline-md text-on-surface">
+        <h1 className="text-headline-lg text-on-surface">
           Cursisten · {data.cohort.name}
         </h1>
         {data.staff.length > 0 && (
-          <p className="text-body-sm text-outline mt-2">
+          <p className="text-body-md text-secondary mt-2">
             Begeleiding:{" "}
             {data.staff
               .map(
@@ -80,14 +80,14 @@ export default async function DeelnemersPage({ params }: Props) {
       </dl>
 
       {data.learners.length === 0 ? (
-        <p className="text-body text-outline">
+        <p className="text-body-md text-secondary">
           Nog geen cursisten in deze editie.
         </p>
       ) : (
         <div className="border-hairline overflow-x-auto border bg-white">
           <table className="w-full min-w-[640px] text-left">
             <thead className="hairline-b">
-              <tr className="text-label-caps text-outline">
+              <tr className="text-label-md text-secondary">
                 <th className="p-4 font-semibold">Cursist</th>
                 <th className="p-4 font-semibold">Voortgang</th>
                 <th className="p-4 font-semibold">Laatste activiteit</th>
@@ -100,7 +100,7 @@ export default async function DeelnemersPage({ params }: Props) {
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <Avatar src={l.avatarUrl} naam={l.naam} size="xs" />
-                      <span className="text-body text-on-surface">
+                      <span className="text-body-md text-on-surface">
                         {l.naam}
                       </span>
                     </div>
@@ -111,23 +111,23 @@ export default async function DeelnemersPage({ params }: Props) {
                       color={data.program.color}
                       label={`Voortgang ${l.naam}`}
                     />
-                    <p className="text-body-sm text-outline mt-1">
+                    <p className="text-body-md text-secondary mt-1">
                       {l.progress.done}/{l.progress.total} ·{" "}
                       {l.progress.percent}%
                     </p>
                   </td>
-                  <td className="text-body-sm text-on-surface-variant p-4">
+                  <td className="text-body-md text-on-surface-variant p-4">
                     {l.lastActivity
                       ? formatRelative(l.lastActivity)
                       : "Nog niet gestart"}
                   </td>
                   <td className="p-4">
                     {l.atRisk ? (
-                      <span className="text-label-caps text-error inline-flex items-center gap-1">
+                      <span className="text-label-md text-error inline-flex items-center gap-1">
                         <TriangleAlert size={12} /> Dreigt uit te vallen
                       </span>
                     ) : (
-                      <span className="text-body-sm text-on-surface-variant">
+                      <span className="text-body-md text-on-surface-variant">
                         {STATUS_LABELS[l.status]}
                       </span>
                     )}
@@ -138,7 +138,7 @@ export default async function DeelnemersPage({ params }: Props) {
           </table>
         </div>
       )}
-      <p className="text-body-sm text-outline">
+      <p className="text-body-md text-secondary">
         &ldquo;Dreigt uit te vallen&rdquo;: actieve cursist zonder lesactiviteit
         in de afgelopen 14 dagen.
       </p>
@@ -157,9 +157,9 @@ function Stat({
 }) {
   return (
     <div className="hairline-r p-5 last:border-r-0">
-      <dt className="text-label-caps text-outline">{label}</dt>
+      <dt className="text-label-md text-secondary">{label}</dt>
       <dd
-        className={`text-headline-sm mt-2 ${warn ? "text-error" : "text-on-surface"}`}
+        className={`text-headline-md mt-2 ${warn ? "text-error" : "text-on-surface"}`}
       >
         {value}
       </dd>

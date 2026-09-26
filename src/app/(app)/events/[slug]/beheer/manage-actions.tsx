@@ -56,7 +56,7 @@ export function ManageActions({
 
   if (status === "cancelled") {
     return (
-      <p className="border-hairline text-body-sm text-on-surface-variant border bg-white p-4">
+      <p className="border-hairline text-body-md text-on-surface-variant border bg-white p-4">
         Dit event is geannuleerd.
       </p>
     );
@@ -88,7 +88,7 @@ export function ManageActions({
         )}
         <Link
           href={`/events/${slug}`}
-          className="border-hairline text-label-caps text-on-surface hover:border-on-surface border px-4 py-2"
+          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
         >
           {status === "draft" ? "Voorbeeld bekijken" : "Eventpagina"}
         </Link>
@@ -107,7 +107,7 @@ export function ManageActions({
         <div className="border-hairline space-y-3 border-t pt-4">
           <label
             htmlFor="cancel-reason"
-            className="text-label-caps text-outline block"
+            className="text-label-md text-secondary block"
           >
             Reden (komt in de mail aan deelnemers)
           </label>
@@ -144,18 +144,18 @@ export function ManageActions({
       )}
 
       {status === "draft" && (
-        <p className="text-body-sm text-outline">
+        <p className="text-body-md text-secondary">
           Een concept is alleen voor jou zichtbaar. Na publiceren kunnen leden
           zich aanmelden.
         </p>
       )}
       {error && (
-        <p className="text-body-sm text-error" role="alert">
+        <p className="text-body-md text-error" role="alert">
           {error.message}
         </p>
       )}
       {notice && (
-        <p className="text-body-sm text-on-surface" role="status">
+        <p className="text-body-md text-on-surface" role="status">
           {notice}
         </p>
       )}

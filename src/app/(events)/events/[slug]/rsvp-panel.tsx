@@ -104,7 +104,7 @@ export function RsvpPanel({
   ) {
     body = (
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <p className="text-body text-on-surface flex-1">
+        <p className="text-body-md text-on-surface flex-1">
           <strong>
             Je hebt{" "}
             {me!.ticketCount === 1
@@ -118,14 +118,14 @@ export function RsvpPanel({
             href={meetingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-primary-container text-on-primary text-label-caps inline-flex items-center gap-2 px-6 py-3"
+            className="bg-primary-container text-on-primary text-label-md inline-flex items-center gap-2 px-6 py-3"
           >
             <ExternalLink size={14} aria-hidden /> Deelnemen online
           </a>
         )}
         <Link
           href="/events/mijn"
-          className="border-hairline text-label-caps text-on-surface hover:border-on-surface border px-4 py-2"
+          className="border-hairline text-label-md text-on-surface hover:border-on-surface border px-4 py-2"
         >
           Mijn tickets
         </Link>
@@ -139,7 +139,7 @@ export function RsvpPanel({
   ) {
     body = (
       <div className="space-y-3">
-        <p className="text-body text-on-surface">
+        <p className="text-body-md text-on-surface">
           <strong>Er is een plek voor je vrij.</strong>
           {me?.offerExpiresAt && (
             <> Bestel je ticket vóór {formatDeadline(me.offerExpiresAt)}.</>
@@ -148,7 +148,7 @@ export function RsvpPanel({
         <div className="flex flex-wrap gap-3">
           <Link
             href={orderHref}
-            className="bg-primary-container text-on-primary text-label-caps inline-flex px-8 py-4"
+            className="bg-primary-container text-on-primary text-label-md inline-flex px-8 py-4"
           >
             Ticket bestellen
           </Link>
@@ -167,11 +167,11 @@ export function RsvpPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Link
           href={orderHref}
-          className="bg-primary-container text-on-primary text-label-caps inline-flex justify-center px-8 py-4"
+          className="bg-primary-container text-on-primary text-label-md inline-flex justify-center px-8 py-4"
         >
           Tickets bestellen
         </Link>
-        <p className="text-body-sm text-outline">
+        <p className="text-body-md text-secondary">
           {priceLabel}
           {priceLabel && " · "}ook zonder account
         </p>
@@ -179,13 +179,13 @@ export function RsvpPanel({
     );
   } else if (phase === "cancelled") {
     body = (
-      <p className="text-body text-on-surface-variant">
+      <p className="text-body-md text-on-surface-variant">
         Aanmelden is niet meer mogelijk.
       </p>
     );
   } else if (phase === "ended") {
     body = (
-      <p className="text-body text-on-surface-variant">
+      <p className="text-body-md text-on-surface-variant">
         Dit event is afgelopen.
       </p>
     );
@@ -194,13 +194,13 @@ export function RsvpPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Link
           href={`/inloggen?next=${encodeURIComponent(`/events/${slug}`)}`}
-          className="bg-primary-container text-on-primary text-label-caps inline-flex justify-center px-8 py-4"
+          className="bg-primary-container text-on-primary text-label-md inline-flex justify-center px-8 py-4"
         >
           {phase === "sold_out"
             ? "Inloggen voor de wachtlijst"
             : "Inloggen en aanmelden"}
         </Link>
-        <p className="text-body-sm text-outline">
+        <p className="text-body-md text-secondary">
           Nog geen lid?{" "}
           <Link href="/aanmelden" className="underline underline-offset-4">
             Maak gratis een account
@@ -211,7 +211,7 @@ export function RsvpPanel({
   } else if (status === "offered") {
     body = (
       <div className="space-y-3">
-        <p className="text-body text-on-surface">
+        <p className="text-body-md text-on-surface">
           <strong>Er is een plek voor je vrij.</strong>
           {me.offerExpiresAt && (
             <> Bevestig vóór {formatDeadline(me.offerExpiresAt)}.</>
@@ -234,7 +234,7 @@ export function RsvpPanel({
   } else if (status === "registered" || status === "checked_in") {
     body = (
       <div className="space-y-3">
-        <p className="text-body text-on-surface">
+        <p className="text-body-md text-on-surface">
           <strong>
             {status === "checked_in"
               ? "Je bent ingecheckt."
@@ -246,7 +246,7 @@ export function RsvpPanel({
             href={meetingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-primary-container text-on-primary text-label-caps inline-flex items-center gap-2 px-6 py-3"
+            className="bg-primary-container text-on-primary text-label-md inline-flex items-center gap-2 px-6 py-3"
           >
             <ExternalLink size={14} aria-hidden /> Deelnemen online
           </a>
@@ -267,7 +267,7 @@ export function RsvpPanel({
   } else if (status === "waitlisted") {
     body = (
       <div className="space-y-3">
-        <p className="text-body text-on-surface">
+        <p className="text-body-md text-on-surface">
           <strong>Je staat op de wachtlijst.</strong> Komt er een plek vrij, dan
           bieden we die je aan per mail en melding.
         </p>
@@ -282,7 +282,7 @@ export function RsvpPanel({
     );
   } else if (phase === "live") {
     body = (
-      <p className="text-body text-on-surface-variant">
+      <p className="text-body-md text-on-surface-variant">
         Dit event is al begonnen; aanmelden kan niet meer.
       </p>
     );
@@ -298,7 +298,7 @@ export function RsvpPanel({
             "Aanmelden"
           )}
         </Button>
-        <p className="text-body-sm text-outline">
+        <p className="text-body-md text-secondary">
           {phase === "sold_out"
             ? "Vol. Op volgorde van aanmelding bieden we vrijgekomen plekken aan."
             : hasMeetingUrl && format !== "in_person"
@@ -317,7 +317,7 @@ export function RsvpPanel({
       {body}
       {message && (
         <p
-          className="text-body-sm text-on-surface-variant"
+          className="text-body-md text-on-surface-variant"
           role="status"
           aria-live="polite"
         >

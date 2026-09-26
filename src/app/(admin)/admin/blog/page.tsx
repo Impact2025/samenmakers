@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Admin — Blog" };
 function scoreColor(score: number) {
   if (score >= 80) return "text-primary";
   if (score >= 50) return "text-amber-600";
-  return "text-red-500";
+  return "text-error";
 }
 
 export default async function AdminBlogPage() {
@@ -21,14 +21,14 @@ export default async function AdminBlogPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-on-surface">Blog</h1>
-          <p className="text-sm text-outline mt-1">
+          <h1 className="text-on-surface text-2xl font-extrabold">Blog</h1>
+          <p className="text-secondary mt-1 text-sm">
             AI-gegenereerde, SEO-geoptimaliseerde artikelen
           </p>
         </div>
         <Link
           href="/admin/blog/nieuw"
-          className="px-5 py-3 bg-primary-container text-on-primary text-[11px] font-bold tracking-widest uppercase"
+          className="bg-primary-container text-on-primary px-5 py-3 text-[11px] font-bold tracking-widest uppercase"
         >
           + Nieuw artikel
         </Link>
@@ -37,44 +37,78 @@ export default async function AdminBlogPage() {
       <Card hover={false}>
         <CardBody className="p-0">
           {posts.length === 0 ? (
-            <p className="p-8 text-sm text-outline">Nog geen artikelen.</p>
+            <p className="text-secondary p-8 text-sm">Nog geen artikelen.</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-hairline text-left">
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">TITEL</th>
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">SEO</th>
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">STATUS</th>
-                  <th className="p-4 text-[10px] font-bold tracking-widest text-outline">BIJGEWERKT</th>
+                <tr className="border-hairline border-b text-left">
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    TITEL
+                  </th>
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    SEO
+                  </th>
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    STATUS
+                  </th>
+                  <th className="text-secondary p-4 text-[10px] font-bold tracking-widest">
+                    BIJGEWERKT
+                  </th>
                   <th className="p-4"></th>
                 </tr>
               </thead>
               <tbody>
                 {posts.map((p) => (
-                  <tr key={p.id} className="border-b border-hairline/50 last:border-0">
+                  <tr
+                    key={p.id}
+                    className="border-hairline/50 border-b last:border-0"
+                  >
                     <td className="p-4">
-                      <Link href={`/admin/blog/${p.id}`} className="font-semibold text-on-surface hover:underline">
+                      <Link
+                        href={`/admin/blog/${p.id}`}
+                        className="text-on-surface font-semibold hover:underline"
+                      >
                         {p.title}
                       </Link>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="default" size="sm">{p.category}</Badge>
-                        {p.aiGenerated && <Badge variant="primary" size="sm">AI</Badge>}
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge variant="default" size="sm">
+                          {p.category}
+                        </Badge>
+                        {p.aiGenerated && (
+                          <Badge variant="primary" size="sm">
+                            AI
+                          </Badge>
+                        )}
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className={`font-black ${scoreColor(p.seoScore)}`}>{p.seoScore}</span>
-                      <span className="text-outline text-xs">/100</span>
+                      <span
+                        className={`font-extrabold ${scoreColor(p.seoScore)}`}
+                      >
+                        {p.seoScore}
+                      </span>
+                      <span className="text-secondary text-xs">/100</span>
                     </td>
                     <td className="p-4">
                       {p.isPublished ? (
-                        <Badge variant="primary" size="sm">Live</Badge>
+                        <Badge variant="primary" size="sm">
+                          Live
+                        </Badge>
                       ) : (
-                        <Badge variant="default" size="sm">Concept</Badge>
+                        <Badge variant="default" size="sm">
+                          Concept
+                        </Badge>
                       )}
                     </td>
-                    <td className="p-4 text-outline text-xs">{formatDate(p.updatedAt)}</td>
+                    <td className="text-secondary p-4 text-xs">
+                      {formatDate(p.updatedAt)}
+                    </td>
                     <td className="p-4 text-right">
-                      <BlogRowActions id={p.id} isPublished={p.isPublished} slug={p.slug} />
+                      <BlogRowActions
+                        id={p.id}
+                        isPublished={p.isPublished}
+                        slug={p.slug}
+                      />
                     </td>
                   </tr>
                 ))}

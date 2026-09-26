@@ -48,23 +48,23 @@ export default async function OrderConfirmationPage({
 
       <header className="space-y-2">
         {done ? (
-          <p className="text-label-caps text-primary inline-flex items-center gap-2">
+          <p className="text-label-md text-primary inline-flex items-center gap-2">
             <CheckCircle2 size={16} aria-hidden /> {STATUS[order.status]}
           </p>
         ) : (
-          <p className="text-label-caps text-outline">{STATUS[order.status]}</p>
+          <p className="text-label-md text-secondary">{STATUS[order.status]}</p>
         )}
-        <h1 className="text-headline-md text-on-surface">
+        <h1 className="text-headline-lg text-on-surface">
           {done ? `Tot bij ${e.title}!` : e.title}
         </h1>
-        <p className="text-body-sm text-on-surface-variant">
+        <p className="text-body-md text-on-surface-variant">
           {formatEventWhen(e.startAt, e.endAt, e.timezone)} · {eventWhere(e)}
         </p>
       </header>
 
       {order.status === "pending" && (
         <p
-          className="border-hairline text-body-sm text-on-surface-variant border bg-white p-4"
+          className="border-hairline text-body-md text-on-surface-variant border bg-white p-4"
           role="status"
         >
           {betaald
@@ -75,7 +75,7 @@ export default async function OrderConfirmationPage({
 
       {done && (
         <section className="space-y-2">
-          <h2 className="text-label-caps text-on-surface">JE TICKETS</h2>
+          <h2 className="text-label-md text-on-surface">JE TICKETS</h2>
           <ul className="space-y-2">
             {order.tickets.map((tk, i) => (
               <li key={tk.code}>
@@ -85,25 +85,25 @@ export default async function OrderConfirmationPage({
                 >
                   <Ticket
                     size={18}
-                    className="text-outline shrink-0"
+                    className="text-secondary shrink-0"
                     aria-hidden
                   />
                   <span className="flex-1">
                     <span className="text-on-surface block font-semibold">
                       Ticket {i + 1} · {tk.name}
                     </span>
-                    <span className="text-body-sm text-outline block">
+                    <span className="text-body-md text-secondary block">
                       {tk.holderName}
                       {tk.status !== "valid" &&
                         ` · ${tk.status === "refunded" ? "terugbetaald" : "geannuleerd"}`}
                     </span>
                   </span>
-                  <span className="text-label-caps text-primary">Openen →</span>
+                  <span className="text-label-md text-primary">Openen →</span>
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="text-body-sm text-outline">
+          <p className="text-body-md text-secondary">
             We hebben alles ook gemaild naar {order.buyerEmail}. Een ticket
             doorgeven aan een collega? Open het ticket.
           </p>
@@ -111,8 +111,8 @@ export default async function OrderConfirmationPage({
       )}
 
       <section className="border-hairline space-y-2 border bg-white p-5">
-        <h2 className="text-label-caps text-outline">OVERZICHT</h2>
-        <ul className="text-body-sm text-on-surface-variant space-y-1">
+        <h2 className="text-label-md text-secondary">OVERZICHT</h2>
+        <ul className="text-body-md text-on-surface-variant space-y-1">
           {order.items.map((it) => (
             <li key={it.name} className="flex justify-between gap-4">
               <span>
@@ -142,17 +142,17 @@ export default async function OrderConfirmationPage({
 
       {!session?.user && done && (
         <section className="border-on-surface space-y-3 border bg-white p-5">
-          <p className="text-on-surface font-black">
+          <p className="text-on-surface font-extrabold">
             Blijf in contact met de andere deelnemers
           </p>
-          <p className="text-body-sm text-on-surface-variant">
-            Met een gratis Samenmakers-profiel zie je wie er nog meer komt, vind
-            je je tickets terug en word je gematcht met impact-ondernemers die
-            bij je passen.
+          <p className="text-body-md text-on-surface-variant">
+            Met een gratis We Shape the Future-profiel zie je wie er nog meer
+            komt, vind je je tickets terug en word je gematcht met
+            impact-ondernemers die bij je passen.
           </p>
           <Link
             href={`/aanmelden?email=${encodeURIComponent(order.buyerEmail)}`}
-            className="bg-primary-container text-on-primary text-label-caps inline-block px-6 py-3"
+            className="bg-primary-container text-on-primary text-label-md inline-block px-6 py-3"
           >
             Gratis profiel maken
           </Link>

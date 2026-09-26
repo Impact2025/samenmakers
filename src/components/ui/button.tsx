@@ -3,8 +3,14 @@
 import { cn } from "@/lib/utils";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "tonal"
+  | "dark"
+  | "ghost"
+  | "danger";
+export type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -13,18 +19,38 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary-container text-on-primary active:bg-primary transition-colors",
+    "bg-primary-container text-on-primary shadow-cta hover:brightness-105",
   secondary:
-    "border border-on-surface bg-transparent text-on-surface hover:bg-on-surface hover:text-on-primary transition-colors",
-  ghost:
-    "bg-transparent text-on-surface underline underline-offset-4 hover:opacity-60 transition-opacity",
+    "bg-surface-container-lowest text-on-surface border border-surface-container hover:bg-surface-container-low",
+  tonal:
+    "bg-surface-container-high text-primary-container hover:bg-primary-container hover:text-on-primary",
+  dark: "bg-on-surface text-surface-container-lowest hover:opacity-90",
+  ghost: "bg-transparent text-secondary hover:text-primary-container",
+  danger:
+    "bg-surface-container-lowest text-error shadow-card hover:bg-error-container hover:text-on-error-container",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "px-4 py-2 text-label-caps",
-  md: "px-8 py-4 text-label-caps",
-  lg: "px-10 py-5 text-label-caps",
+  sm: "h-9 px-4 gap-1.5 text-label-md",
+  md: "h-11 px-5 gap-2 text-label-lg",
+  lg: "h-12 px-6 gap-2 text-label-lg",
+  icon: "h-11 w-11 text-label-lg",
 };
+
+/** Klassen voor een knop-uiterlijk, ook bruikbaar op <Link>. */
+export function buttonClasses(
+  variant: ButtonVariant = "primary",
+  size: ButtonSize = "md",
+  className?: string,
+) {
+  return cn(
+    "inline-flex items-center justify-center rounded-full cursor-pointer select-none whitespace-nowrap",
+    "transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100",
+    variants[variant],
+    sizes[size],
+    className,
+  );
+}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -34,12 +60,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center font-semibold tracking-widest uppercase cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed",
-          variants[variant],
-          sizes[size],
-          className,
-        )}
+        className={buttonClasses(variant, size, className)}
         {...props}
       >
         {children}

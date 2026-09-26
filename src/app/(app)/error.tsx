@@ -14,22 +14,25 @@ export default function AppError({ error, reset }: Props) {
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-24 px-6 text-center">
-      <p className="text-label-caps text-outline mb-4">FOUT</p>
-      <h1 className="text-headline-sm text-on-surface mb-3">Er ging iets mis</h1>
-      <p className="text-body text-on-surface-variant mb-8 max-w-sm">
-        Er is een onverwachte fout opgetreden. Dit is gelogd en we kijken ernaar.
+    <div className="flex flex-col items-center justify-center px-6 py-24 text-center">
+      <p className="text-label-md text-secondary mb-4">FOUT</p>
+      <h1 className="text-headline-md text-on-surface mb-3">
+        Er ging iets mis
+      </h1>
+      <p className="text-body-md text-on-surface-variant mb-8 max-w-sm">
+        Er is een onverwachte fout opgetreden. Dit is gelogd en we kijken
+        ernaar.
       </p>
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="px-6 py-3 bg-primary text-on-primary font-bold text-label-caps hover:bg-primary/90 transition-colors"
+          className="bg-primary text-on-primary text-label-md hover:bg-primary/90 px-6 py-3 font-bold transition-colors"
         >
           Opnieuw proberen
         </button>
         <Link
           href="/dashboard"
-          className="px-6 py-3 border border-hairline text-on-surface font-bold text-label-caps hover:border-on-surface transition-colors"
+          className="border-hairline text-on-surface text-label-md hover:border-on-surface border px-6 py-3 font-bold transition-colors"
         >
           Naar dashboard
         </Link>

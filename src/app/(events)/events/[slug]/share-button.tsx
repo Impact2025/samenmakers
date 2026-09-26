@@ -28,7 +28,7 @@ export function ShareButton({ url, title }: { url: string; title: string }) {
     <button
       type="button"
       onClick={() => void share()}
-      className="border-hairline text-label-caps text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2"
+      className="border-hairline text-label-md text-on-surface hover:border-on-surface inline-flex items-center gap-2 border px-4 py-2"
     >
       <Share2 size={14} aria-hidden /> {copied ? "Link gekopieerd" : "Delen"}
     </button>

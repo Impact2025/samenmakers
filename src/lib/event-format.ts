@@ -94,3 +94,29 @@ export function fromLocalInputValue(
   const shown2 = new Date(toLocalInputValue(guess, timeZone) + ":00Z");
   return new Date(guess.getTime() - (shown2.getTime() - asUtc.getTime()));
 }
+
+/** Compact: "do 24 okt • 14:00–15:30" (design-kaarten). */
+export function formatEventShort(
+  startAt: Date | string,
+  endAt: Date | string | null | undefined,
+  timeZone: string = DEFAULT_EVENT_TZ,
+): string {
+  const start = new Date(startAt);
+  const day = new Intl.DateTimeFormat("nl-NL", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone,
+  })
+    .format(start)
+    .replace(/\./g, "");
+  const time = new Intl.DateTimeFormat("nl-NL", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone,
+  });
+  const range = endAt
+    ? `${time.format(start)}–${time.format(new Date(endAt))}`
+    : time.format(start);
+  return `${day} • ${range}`;
+}

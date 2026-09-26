@@ -1,319 +1,463 @@
-"use client";
-
 import Link from "next/link";
 import {
   ArrowRight,
-  Users,
-  MessageSquare,
-  Zap,
-  Calendar,
-  Bell,
+  BadgeCheck,
+  BookOpen,
+  CalendarDays,
+  ChevronRight,
+  Clock,
+  ClipboardList,
+  Handshake,
+  Heart,
+  MessageCircle,
+  MessagesSquare,
+  PenLine,
+  TrendingUp,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { Card, CardHeader, CardBody } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { formatRelative } from "@/lib/date-utils";
-import { eventWhere } from "@/lib/event-format";
+import { ProgressBar } from "@/components/learning/progress-bar";
+import { StatCard, IconTile } from "@/components/ui/stat-card";
+import { SectionHeader } from "@/components/shared/section-header";
+import { EmptyState } from "@/components/shared/empty-state";
+import { buttonClasses } from "@/components/ui/button";
+import { formatRelative, formatDueIn } from "@/lib/date-utils";
+import { eventWhere, formatEventShort } from "@/lib/event-format";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 type Me = RouterOutputs["users"]["me"];
 type Matches = RouterOutputs["matches"]["myMatches"];
-type Notifications = RouterOutputs["notifications"]["list"];
 type EventItems = RouterOutputs["events"]["list"]["items"];
+type Questions = RouterOutputs["questions"]["list"]["items"];
+type Edition = RouterOutputs["learning"]["home"]["learning"][number];
 
 interface Props {
+  greeting: string;
   me: Me;
   matches: Matches;
-  notifications: Notifications;
   events: EventItems;
+  questions: Questions;
+  edition: Edition | null;
 }
 
+const shortcuts = [
+  {
+    href: "/matching",
+    label: "Vind een match",
+    icon: Heart,
+    tone: "text-primary-container",
+  },
+  {
+    href: "/vragen/nieuw",
+    label: "Stel een vraag",
+    icon: PenLine,
+    tone: "text-tertiary",
+  },
+  {
+    href: "/kennis",
+    label: "Kennisbank",
+    icon: BookOpen,
+    tone: "text-secondary",
+  },
+  {
+    href: "/mentorship",
+    label: "Mentorship",
+    icon: Handshake,
+    tone: "text-primary-container",
+  },
+];
+
 export function DashboardContent({
+  greeting,
   me,
   matches,
-  notifications,
   events,
+  questions,
+  edition,
 }: Props) {
-  const firstName = me?.naam?.split(" ")[0] ?? "Maker";
+  const firstName = (me?.naam ?? me?.name)?.split(" ")[0] ?? "Maker";
   const completeness = me?.profileCompleteness ?? 0;
-  const unreadNotifications = notifications.filter((n) => !n.readAt).length;
+  const conversations = matches.filter((m) => m.messages.length > 0);
+  const [nextEvent, ...laterEvents] = events;
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-label-caps text-outline mb-1">WELKOM TERUG</p>
-          <h1 className="text-headline-md text-on-surface">
-            Goedemorgen, {firstName}
+    <div className="flex flex-col gap-6">
+      {/* Begroeting */}
+      <section className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <span className="bg-primary-fixed text-on-primary-fixed text-label-sm inline-flex w-fit max-w-full items-center gap-1.5 rounded-full px-3 py-1 uppercase">
+            <span className="bg-primary-container h-1.5 w-1.5 shrink-0 animate-pulse rounded-full" />
+            <span className="truncate">
+              {edition
+                ? `${edition.cohort.name} • ${edition.program.name}`
+                : "Actief netwerk"}
+            </span>
+          </span>
+          <h1 className="text-headline-lg text-on-surface">
+            {greeting}, {firstName} 👋
           </h1>
         </div>
-        <Link href="/notificaties" className="relative">
-          <Bell size={22} className="text-outline" />
-          {unreadNotifications > 0 && (
-            <span className="bg-primary text-on-primary absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
-              {unreadNotifications > 9 ? "9+" : unreadNotifications}
-            </span>
-          )}
-        </Link>
-      </div>
+        {me?.subscriptionStatus === "active" && (
+          <span
+            className="bg-surface-container-high text-primary-container rounded-full p-2"
+            title="Pro-lid"
+            aria-label="Pro-lid"
+          >
+            <BadgeCheck size={24} />
+          </span>
+        )}
+      </section>
 
-      {/* Profile completeness — only show if < 100% */}
-      {completeness < 100 && (
-        <Card className="border-primary/20 bg-surface-container-low">
-          <CardBody className="p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <p className="text-label-caps text-outline">
-                  PROFIEL COMPLEETHEID
-                </p>
-                <p className="text-body-sm text-on-surface-variant mt-0.5">
-                  Maak je profiel compleet voor meer matches
-                </p>
-              </div>
-              <span className="text-headline-sm text-primary font-black">
-                {completeness}%
+      {/* Voortgang: leertraject of profiel */}
+      {edition ? (
+        <Link
+          href={`/leren/${edition.cohort.id}`}
+          className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex flex-col gap-3 rounded-2xl p-4 transition-shadow"
+        >
+          <div className="flex items-baseline justify-between">
+            <span className="text-title-md text-on-surface flex items-center gap-2">
+              <TrendingUp size={20} className="text-primary-container" />
+              Traject voortgang
+            </span>
+            <span className="text-headline-sm text-primary-container">
+              {edition.progress.percent}%
+            </span>
+          </div>
+          <ProgressBar
+            percent={edition.progress.percent}
+            label="Traject voortgang"
+          />
+          <div className="text-label-md text-secondary flex items-center justify-between gap-3">
+            <span>
+              {edition.progress.done} van {edition.progress.total} lessen klaar
+            </span>
+            {edition.currentModule && (
+              <span className="text-on-surface-variant truncate">
+                {edition.currentModule.title}
+              </span>
+            )}
+          </div>
+        </Link>
+      ) : (
+        completeness < 100 && (
+          <Link
+            href="/profiel/bewerken"
+            className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex flex-col gap-3 rounded-2xl p-4 transition-shadow"
+          >
+            <div className="flex items-baseline justify-between">
+              <span className="text-title-md text-on-surface flex items-center gap-2">
+                <TrendingUp size={20} className="text-primary-container" />
+                Profiel {completeness}% compleet
+              </span>
+              <span className="text-label-md text-primary-container flex items-center gap-1">
+                Afronden <ArrowRight size={14} />
               </span>
             </div>
-            <div className="bg-hairline h-1.5 w-full">
-              <div
-                className="bg-primary h-1.5 transition-all duration-500"
-                style={{ width: `${completeness}%` }}
-              />
-            </div>
-            <div className="mt-4">
-              <Link href="/profiel/bewerken">
-                <Button variant="secondary" className="px-4 py-2 text-sm">
-                  Profiel aanvullen
-                </Button>
-              </Link>
-            </div>
-          </CardBody>
-        </Card>
+            <ProgressBar percent={completeness} label="Profiel compleetheid" />
+            <p className="text-body-sm text-secondary">
+              Een compleet profiel levert meer en betere matches op.
+            </p>
+          </Link>
+        )
       )}
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* Snelkoppelingen */}
+      <section className="no-scrollbar -mx-5 flex items-center gap-2 overflow-x-auto px-5 py-1 lg:mx-0 lg:px-0">
+        {shortcuts.map(({ href, label, icon: Icon, tone }) => (
+          <Link
+            key={href}
+            href={href}
+            className="bg-surface-container-lowest text-on-surface shadow-card text-label-lg flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 whitespace-nowrap transition-transform active:scale-95"
+          >
+            <Icon size={18} className={tone} />
+            {label}
+          </Link>
+        ))}
+      </section>
+
+      {/* KPI's */}
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
-          icon={<Users size={18} />}
-          label="Matches"
           value={matches.length}
+          label="Matches in je netwerk"
+          icon={<Handshake size={18} />}
+          tone="primary"
           href="/matching"
         />
         <StatCard
-          icon={<MessageSquare size={18} />}
-          label="Gesprekken"
-          value={matches.filter((m) => m.messages.length > 0).length}
+          value={conversations.length}
+          label="Lopende gesprekken"
+          icon={<MessageCircle size={18} />}
           href="/berichten"
         />
         <StatCard
-          icon={<Calendar size={18} />}
-          label="Events"
           value={events.length}
+          label="Komende evenementen"
+          icon={<CalendarDays size={18} />}
           href="/events"
+          className="hidden lg:flex"
         />
         <StatCard
-          icon={<Zap size={18} />}
-          label="Pro status"
-          value={me?.subscriptionStatus === "active" ? "Actief" : "Basis"}
-          href="/instellingen/abonnement"
-          isText
+          value={edition ? edition.progress.done : `${completeness}%`}
+          label={edition ? "Lessen afgerond" : "Profiel compleet"}
+          icon={<TrendingUp size={18} />}
+          tone="tertiary"
+          href={edition ? `/leren/${edition.cohort.id}` : "/profiel"}
+          className="hidden lg:flex"
         />
-      </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Recent matches */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <h2 className="text-label-caps text-on-surface">
-                  MIJN MATCHES
-                </h2>
-                <Link
-                  href="/matching"
-                  className="text-label-caps text-primary flex items-center gap-1"
-                >
-                  ALLE <ArrowRight size={12} />
-                </Link>
+      {/* Eerstvolgend event */}
+      <section>
+        <SectionHeader
+          title="Binnenkort op de planning"
+          viewAllHref="/events"
+        />
+        {nextEvent ? (
+          <div className="flex flex-col gap-3">
+            <div className="bg-surface-container-lowest shadow-elevated flex flex-col gap-4 rounded-2xl p-5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="bg-tertiary-fixed text-on-tertiary-fixed-variant text-label-sm rounded-full px-2.5 py-1 uppercase">
+                  {nextEvent.thema ?? "Event"}
+                </span>
+                <span className="text-label-md text-secondary flex items-center gap-1">
+                  <Clock size={16} />
+                  {
+                    formatEventShort(
+                      nextEvent.startAt,
+                      nextEvent.endAt,
+                      nextEvent.timezone,
+                    ).split(" • ")[1]
+                  }
+                </span>
               </div>
-            </CardHeader>
-            <CardBody className="p-0">
-              {matches.length === 0 ? (
-                <div className="px-6 py-12 text-center">
-                  <p className="text-body-sm text-outline mb-4">
-                    Nog geen matches. Ga ontdekken!
+              <div className="flex flex-col gap-1">
+                <h3 className="text-headline-sm text-on-surface">
+                  {nextEvent.title}
+                </h3>
+                <p className="text-body-sm text-secondary flex items-center gap-1.5">
+                  <CalendarDays
+                    size={16}
+                    className="text-primary-container shrink-0"
+                  />
+                  <span className="truncate">
+                    {
+                      formatEventShort(
+                        nextEvent.startAt,
+                        null,
+                        nextEvent.timezone,
+                      ).split(" • ")[0]
+                    }{" "}
+                    • {eventWhere(nextEvent)}
+                  </span>
+                </p>
+              </div>
+              {nextEvent.description && (
+                <p className="bg-surface-container-low text-body-sm text-on-surface-variant line-clamp-2 rounded-lg p-3">
+                  {nextEvent.description}
+                </p>
+              )}
+              <Link
+                href={`/events/${nextEvent.slug}`}
+                className={buttonClasses("primary", "lg", "w-full")}
+              >
+                {nextEvent.myStatus
+                  ? "Bekijk je aanmelding"
+                  : "Deelnemen & details"}
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+            {laterEvents.map((e) => (
+              <Link
+                key={e.id}
+                href={`/events/${e.slug}`}
+                className="bg-surface-container-low hover:bg-surface-container flex items-center gap-3 rounded-2xl p-3 transition-colors"
+              >
+                <IconTile tone="neutral">
+                  <CalendarDays size={20} />
+                </IconTile>
+                <div className="min-w-0 flex-1">
+                  <p className="text-title-md text-on-surface truncate">
+                    {e.title}
                   </p>
-                  <Link href="/ontdekken">
-                    <Button variant="primary">Ontdek makers</Button>
-                  </Link>
+                  <p className="text-body-sm text-secondary truncate">
+                    {formatEventShort(e.startAt, e.endAt, e.timezone)}
+                  </p>
                 </div>
-              ) : (
-                <ul className="divide-hairline divide-y">
-                  {matches.slice(0, 5).map((match) => {
-                    const other =
-                      match.userId === me?.id ? match.target : match.user;
-                    const lastMsg = match.messages[0];
-                    return (
-                      <li key={match.id}>
-                        <Link
-                          href={`/berichten/${match.id}`}
-                          className="hover:bg-surface-container-low flex items-center gap-4 px-6 py-4 transition-colors"
-                        >
-                          <Avatar
-                            src={other.avatarUrl}
-                            naam={other.naam ?? other.name ?? "?"}
-                            size="md"
-                            grayscale={false}
-                          />
-                          <div className="min-w-0 flex-1">
-                            <p className="text-on-surface truncate text-sm font-semibold">
-                              {other.naam ?? other.name}
-                            </p>
-                            <p className="text-outline mt-0.5 truncate text-xs">
-                              {lastMsg?.content ?? "Stuur een bericht"}
-                            </p>
-                          </div>
-                          {lastMsg && (
-                            <span className="text-outline shrink-0 text-[10px]">
-                              {formatRelative(new Date(lastMsg.createdAt))}
-                            </span>
-                          )}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </CardBody>
-          </Card>
-        </div>
+                <ChevronRight size={18} className="text-secondary shrink-0" />
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon={<CalendarDays size={22} />}
+            title="Geen evenementen gepland"
+            description="Organiseer zelf een meetup of kijk later nog eens."
+            action={
+              <Link
+                href="/events/nieuw"
+                className={buttonClasses("tonal", "sm")}
+              >
+                Event organiseren
+              </Link>
+            }
+          />
+        )}
+      </section>
 
-        {/* Right column: events + notifications */}
-        <div className="space-y-6">
-          {/* Upcoming events */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <h2 className="text-label-caps text-on-surface">
-                  KOMENDE EVENTS
-                </h2>
-                <Link
-                  href="/events"
-                  className="text-label-caps text-primary flex items-center gap-1"
-                >
-                  ALLE <ArrowRight size={12} />
-                </Link>
+      {/* Volgende leertaak */}
+      {edition?.nextLesson && (
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-headline-sm text-on-surface">
+              Jouw volgende leertaak
+            </h2>
+            {edition.currentModule?.endsAt && (
+              <span className="bg-error-container text-on-error-container text-label-sm rounded-full px-2 py-0.5">
+                Deadline {formatDueIn(edition.currentModule.endsAt)}
+              </span>
+            )}
+          </div>
+          <div className="bg-surface-container-lowest shadow-card flex flex-col gap-3 rounded-2xl p-4">
+            <div className="flex items-start gap-3">
+              <IconTile tone="neutral">
+                <ClipboardList size={22} />
+              </IconTile>
+              <div className="min-w-0">
+                <span className="text-label-sm text-secondary uppercase">
+                  {edition.nextLesson.moduleTitle}
+                </span>
+                <h3 className="text-title-md text-on-surface">
+                  {edition.nextLesson.title}
+                </h3>
               </div>
-            </CardHeader>
-            <CardBody className="p-0">
-              {events.length === 0 ? (
-                <p className="text-body-sm text-outline px-6 py-8 text-center">
-                  Geen events gepland
-                </p>
-              ) : (
-                <ul className="divide-hairline divide-y">
-                  {events.map((event) => (
-                    <li key={event.id}>
-                      <Link
-                        href={`/events/${event.slug}`}
-                        className="hover:bg-surface-container-low flex gap-3 px-5 py-4 transition-colors"
-                      >
-                        <div className="w-10 shrink-0 text-center">
-                          <span className="text-outline block text-[10px] font-bold uppercase">
-                            {new Date(event.startAt).toLocaleDateString(
-                              "nl-NL",
-                              { month: "short" },
-                            )}
-                          </span>
-                          <span className="text-on-surface text-lg leading-none font-black">
-                            {new Date(event.startAt).getDate()}
-                          </span>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-on-surface truncate text-sm font-semibold">
-                            {event.title}
-                          </p>
-                          <p className="text-outline mt-0.5 text-xs">
-                            {eventWhere(event)}
-                          </p>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardBody>
-          </Card>
+            </div>
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-label-sm text-secondary">
+                {edition.progress.total - edition.progress.done} lessen te gaan
+              </span>
+              <Link
+                href={`/leren/${edition.cohort.id}/les/${edition.nextLesson.id}`}
+                className={buttonClasses("dark", "sm")}
+              >
+                Verder leren
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
-          {/* Recent notifications */}
-          <Card>
-            <CardHeader>
-              <h2 className="text-label-caps text-on-surface">MELDINGEN</h2>
-            </CardHeader>
-            <CardBody className="p-0">
-              {notifications.length === 0 ? (
-                <p className="text-body-sm text-outline px-6 py-8 text-center">
-                  Geen meldingen
-                </p>
-              ) : (
-                <ul className="divide-hairline divide-y">
-                  {notifications.slice(0, 4).map((n) => (
-                    <li key={n.id}>
-                      <Link
-                        href={n.url ?? "/dashboard"}
-                        className="hover:bg-surface-container-low flex gap-3 px-5 py-4 transition-colors"
-                      >
-                        <div
-                          className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
-                            n.readAt ? "bg-transparent" : "bg-primary"
-                          }`}
-                        />
-                        <div className="min-w-0">
-                          <p className="text-on-surface text-sm font-medium">
-                            {n.title}
-                          </p>
-                          <p className="text-outline mt-0.5 line-clamp-2 text-xs">
-                            {n.body}
-                          </p>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardBody>
-          </Card>
-        </div>
-      </div>
+      {/* Community */}
+      <section>
+        <SectionHeader
+          title="Populair in de community"
+          viewAllHref="/vragen"
+          viewAllLabel="Naar de feed"
+        />
+        {questions.length === 0 ? (
+          <EmptyState
+            icon={<MessagesSquare size={22} />}
+            title="Nog geen vragen"
+            description="Stel als eerste een vraag aan de community."
+            action={
+              <Link
+                href="/vragen/nieuw"
+                className={buttonClasses("primary", "sm")}
+              >
+                Stel een vraag
+              </Link>
+            }
+          />
+        ) : (
+          <div className="flex flex-col gap-3">
+            {questions.map((q) => (
+              <Link
+                key={q.id}
+                href={`/vragen/${q.id}`}
+                className="bg-surface-container-lowest shadow-card hover:shadow-elevated flex flex-col gap-3 rounded-2xl p-4 transition-shadow"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <Avatar
+                      src={q.author.avatarUrl}
+                      naam={q.author.naam ?? q.author.name ?? "?"}
+                      size="xs"
+                      className="!h-6 !w-6"
+                    />
+                    <span className="text-label-md text-on-surface truncate">
+                      {q.author.naam ?? q.author.name}
+                    </span>
+                  </span>
+                  <span className="text-label-sm text-secondary shrink-0">
+                    {formatRelative(new Date(q.createdAt))}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-title-md text-on-surface line-clamp-2">
+                    {q.title}
+                  </p>
+                  {q.content && (
+                    <p className="text-body-sm text-secondary line-clamp-2">
+                      {q.content}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-label-sm text-secondary flex items-center gap-1">
+                    <MessageCircle size={16} />
+                    {q.answers.length}{" "}
+                    {q.answers.length === 1 ? "reactie" : "reacties"}
+                  </span>
+                  <span className="text-label-md text-primary-container flex items-center gap-1">
+                    Meepraten <ChevronRight size={16} />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Gesprekken */}
+      {matches.length > 0 && (
+        <section>
+          <SectionHeader title="Recente gesprekken" viewAllHref="/berichten" />
+          <ul className="bg-surface-container-lowest shadow-card rounded-2xl p-1.5">
+            {matches.slice(0, 4).map((match) => {
+              const other = match.userId === me?.id ? match.target : match.user;
+              const lastMsg = match.messages[0];
+              return (
+                <li key={match.id}>
+                  <Link
+                    href={`/berichten/${match.id}`}
+                    className="hover:bg-surface-container-low flex items-center gap-3 rounded-xl p-2.5 transition-colors"
+                  >
+                    <Avatar
+                      src={other.avatarUrl}
+                      naam={other.naam ?? other.name ?? "?"}
+                      size="sm"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-title-md text-on-surface truncate">
+                        {other.naam ?? other.name}
+                      </p>
+                      <p className="text-body-sm text-secondary truncate">
+                        {lastMsg?.content ?? "Stuur een eerste bericht"}
+                      </p>
+                    </div>
+                    {lastMsg && (
+                      <span className="text-label-sm text-secondary shrink-0">
+                        {formatRelative(new Date(lastMsg.createdAt))}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
     </div>
-  );
-}
-
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number | string;
-  href: string;
-  isText?: boolean;
-}
-
-function StatCard({ icon, label, value, href, isText = false }: StatCardProps) {
-  return (
-    <Link href={href}>
-      <Card className="group hover:border-primary p-5 transition-colors">
-        <div className="text-outline group-hover:text-primary mb-3 flex items-center gap-2 transition-colors">
-          {icon}
-          <span className="text-label-caps">{label}</span>
-        </div>
-        <p
-          className={`text-on-surface font-black ${isText ? "text-xl" : "text-3xl"}`}
-        >
-          {value}
-        </p>
-      </Card>
-    </Link>
   );
 }

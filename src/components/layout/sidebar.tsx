@@ -4,62 +4,84 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutGrid,
-  Search,
-  MessageSquare,
-  Calendar,
-  BookOpen,
-  HelpCircle,
-  Heart,
-  GraduationCap,
-  Settings,
-  Library,
-} from "lucide-react";
-import { features } from "@/lib/features";
+  primaryNav,
+  secondaryNav,
+  accountNav,
+  isActive,
+  type NavItem,
+} from "./nav-items";
 
-const navItems = [
-  { href: "/dashboard", label: "DASHBOARD", icon: LayoutGrid },
-  ...(features.leren
-    ? [{ href: "/leren", label: "LEREN", icon: Library }]
-    : []),
-  { href: "/ontdekken", label: "ONTDEKKEN", icon: Search },
-  { href: "/matching", label: "MATCHING", icon: Heart },
-  { href: "/berichten", label: "BERICHTEN", icon: MessageSquare },
-  { href: "/events", label: "EVENTS", icon: Calendar },
-  { href: "/kennis", label: "KENNISBANK", icon: BookOpen },
-  { href: "/vragen", label: "Q&A", icon: HelpCircle },
-  { href: "/mentorship", label: "MENTORSHIP", icon: GraduationCap },
-  { href: "/instellingen", label: "INSTELLINGEN", icon: Settings },
-];
-
-export function Sidebar() {
+export function Sidebar({ unreadMessages = 0 }: { unreadMessages?: number }) {
   const pathname = usePathname();
 
   return (
-    <aside className="hairline-r fixed top-0 left-0 z-40 hidden h-screen w-72 flex-col bg-white pt-20 lg:flex">
-      <div className="px-8 py-6">
-        <p className="text-label-caps text-outline">MENU</p>
-      </div>
-      <nav className="flex flex-1 flex-col">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || pathname.startsWith(href + "/");
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-4 px-8 py-4 transition-all duration-150 hover:pl-10",
-                isActive
-                  ? "bg-surface-container-low text-primary border-primary border-l-2"
-                  : "text-outline hover:bg-surface-container-low hover:text-on-surface",
-              )}
-            >
-              <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
-              <span className="text-label-caps">{label}</span>
-            </Link>
-          );
-        })}
+    <aside className="bg-surface fixed top-0 left-0 z-40 hidden h-screen w-64 flex-col px-3 pt-20 pb-6 lg:flex">
+      <nav className="no-scrollbar flex flex-col gap-6 overflow-y-auto">
+        <Group
+          items={primaryNav}
+          pathname={pathname}
+          unreadMessages={unreadMessages}
+        />
+        <Group
+          title="Meer"
+          items={secondaryNav}
+          pathname={pathname}
+          unreadMessages={unreadMessages}
+        />
+        <Group
+          title="Account"
+          items={accountNav}
+          pathname={pathname}
+          unreadMessages={unreadMessages}
+        />
       </nav>
     </aside>
+  );
+}
+
+function Group({
+  title,
+  items,
+  pathname,
+  unreadMessages,
+}: {
+  title?: string;
+  items: NavItem[];
+  pathname: string;
+  unreadMessages: number;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      {title && (
+        <p className="text-label-sm text-secondary px-4 pb-1 uppercase">
+          {title}
+        </p>
+      )}
+      {items.map((item) => {
+        const active = isActive(pathname, item);
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "text-label-lg flex h-11 items-center gap-3 rounded-full px-4 transition-colors",
+              active
+                ? "bg-primary-fixed/60 text-primary-container"
+                : "text-secondary hover:bg-surface-container-low hover:text-on-surface",
+            )}
+          >
+            <Icon size={20} strokeWidth={active ? 2.25 : 1.75} />
+            <span className="flex-1">{item.label}</span>
+            {item.href === "/berichten" && unreadMessages > 0 && (
+              <span className="bg-primary-container text-on-primary flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold">
+                {unreadMessages > 9 ? "9+" : unreadMessages}
+              </span>
+            )}
+          </Link>
+        );
+      })}
+    </div>
   );
 }

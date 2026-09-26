@@ -26,7 +26,11 @@ export function formatRelative(date: Date): string {
 
 export function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString("nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 export function formatDateTime(date: Date | string): string {
@@ -38,4 +42,15 @@ export function formatDateTime(date: Date | string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+/** Toekomstige deadline: "vandaag", "morgen", "over 3 dagen", "verlopen". */
+export function formatDueIn(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const days = Math.ceil((d.getTime() - Date.now()) / 86400000);
+  if (days < 0) return "verlopen";
+  if (days === 0) return "vandaag";
+  if (days === 1) return "morgen";
+  if (days < 14) return `over ${days} dagen`;
+  return `over ${Math.round(days / 7)} weken`;
 }

@@ -6,19 +6,25 @@ import { PRO_FEATURES, SECTOREN } from "@/lib/constants";
 import { CheckCircle, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Samenmakers — Vind je medemissie-ondernemer",
-  description: "Het platform waar purpose-driven ondernemers elkaar vinden, kennis delen en samenwerken aan een betere wereld.",
+  title: "We Shape the Future — Vind je medemissie-ondernemer",
+  description:
+    "Het platform waar purpose-driven ondernemers elkaar vinden, kennis delen en samenwerken aan een betere wereld.",
 };
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Nav */}
-      <header className="fixed top-0 w-full z-50 bg-white hairline-b">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-lg font-black tracking-tighter text-on-surface">SAMENMAKERS</span>
+      <header className="hairline-b fixed top-0 z-50 w-full bg-white">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+          <span className="text-on-surface text-lg font-extrabold tracking-tighter">
+            WE SHAPE THE FUTURE
+          </span>
           <div className="flex items-center gap-4">
-            <Link href="/inloggen" className="text-label-caps text-outline hover:text-on-surface transition-colors">
+            <Link
+              href="/inloggen"
+              className="text-label-md text-secondary hover:text-on-surface transition-colors"
+            >
               INLOGGEN
             </Link>
             <Link href="/aanmelden">
@@ -29,24 +35,27 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section className="pt-32 pb-24 px-6 max-w-5xl mx-auto">
+      <section className="mx-auto max-w-5xl px-6 pt-32 pb-24">
         <div className="max-w-2xl">
-          <Badge variant="default" className="mb-6">Purpose-driven netwerk</Badge>
-          <h1 className="text-headline-lg text-on-surface mb-6">
+          <Badge variant="default" className="mb-6">
+            Purpose-driven netwerk
+          </Badge>
+          <h1 className="text-display-lg text-on-surface mb-6">
             Vind je medemissie-ondernemer
           </h1>
           <p className="text-body-lg text-on-surface-variant mb-10 max-w-lg">
-            Samenmakers verbindt impact-ondernemers die samen meer bereiken.
-            Match op missie, deel kennis en bouw aan een betere wereld.
+            We Shape the Future verbindt impact-ondernemers die samen meer
+            bereiken. Match op missie, deel kennis en bouw aan een betere
+            wereld.
           </p>
-          <div className="flex gap-4 flex-wrap">
+          <div className="flex flex-wrap gap-4">
             <Link href="/aanmelden">
-              <Button variant="primary" className="py-4 px-8">
+              <Button variant="primary" className="px-8 py-4">
                 Start gratis <ArrowRight size={16} className="ml-2" />
               </Button>
             </Link>
             <Link href="/inloggen">
-              <Button variant="secondary" className="py-4 px-8">
+              <Button variant="secondary" className="px-8 py-4">
                 Inloggen
               </Button>
             </Link>
@@ -55,22 +64,38 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-6 bg-surface-container-low hairline-t hairline-b">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-label-caps text-outline mb-3">HOE HET WERKT</p>
-          <h2 className="text-headline-md text-on-surface mb-12 max-w-md">
+      <section className="bg-surface-container-low hairline-t hairline-b px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-label-md text-secondary mb-3">HOE HET WERKT</p>
+          <h2 className="text-headline-lg text-on-surface mb-12 max-w-md">
             Drie stappen naar jouw medemissie-ondernemer
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid gap-8 md:grid-cols-3">
             {[
-              { step: "01", title: "Maak je profiel", body: "Vertel over je missie, sector, fase en wat je zoekt in een samenwerking." },
-              { step: "02", title: "Match op missie", body: "Swipe door profielen van gelijkgestemde ondernemers. Bij wederzijdse interesse: een match!" },
-              { step: "03", title: "Bouw samen", body: "Chat, ontmoet elkaar op events en deel kennis in de community." },
+              {
+                step: "01",
+                title: "Maak je profiel",
+                body: "Vertel over je missie, sector, fase en wat je zoekt in een samenwerking.",
+              },
+              {
+                step: "02",
+                title: "Match op missie",
+                body: "Swipe door profielen van gelijkgestemde ondernemers. Bij wederzijdse interesse: een match!",
+              },
+              {
+                step: "03",
+                title: "Bouw samen",
+                body: "Chat, ontmoet elkaar op events en deel kennis in de community.",
+              },
             ].map(({ step, title, body }) => (
               <div key={step}>
-                <p className="text-4xl font-black text-outline/30 mb-4">{step}</p>
-                <h3 className="text-lg font-black text-on-surface mb-2">{title}</h3>
-                <p className="text-body-sm text-on-surface-variant">{body}</p>
+                <p className="text-secondary/30 mb-4 text-4xl font-extrabold">
+                  {step}
+                </p>
+                <h3 className="text-on-surface mb-2 text-lg font-extrabold">
+                  {title}
+                </h3>
+                <p className="text-body-md text-on-surface-variant">{body}</p>
               </div>
             ))}
           </div>
@@ -78,13 +103,18 @@ export default function HomePage() {
       </section>
 
       {/* Sectors */}
-      <section className="py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-label-caps text-outline mb-3">SECTOREN</p>
-          <h2 className="text-headline-md text-on-surface mb-8">Van circulaire economie tot social impact</h2>
+      <section className="px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-label-md text-secondary mb-3">SECTOREN</p>
+          <h2 className="text-headline-lg text-on-surface mb-8">
+            Van circulaire economie tot social impact
+          </h2>
           <div className="flex flex-wrap gap-2">
             {SECTOREN.map((s) => (
-              <span key={s} className="px-4 py-2 border border-hairline text-sm font-medium text-on-surface-variant hover:border-on-surface hover:text-on-surface transition-colors">
+              <span
+                key={s}
+                className="border-hairline text-on-surface-variant hover:border-on-surface hover:text-on-surface border px-4 py-2 text-sm font-medium transition-colors"
+              >
                 {s}
               </span>
             ))}
@@ -93,48 +123,75 @@ export default function HomePage() {
       </section>
 
       {/* Pricing */}
-      <section className="py-20 px-6 bg-surface-container-low hairline-t hairline-b">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-label-caps text-outline mb-3">ABONNEMENTEN</p>
-          <h2 className="text-headline-md text-on-surface mb-12">Transparante prijzen</h2>
-          <div className="grid md:grid-cols-2 gap-6 max-w-2xl">
+      <section className="bg-surface-container-low hairline-t hairline-b px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-label-md text-secondary mb-3">ABONNEMENTEN</p>
+          <h2 className="text-headline-lg text-on-surface mb-12">
+            Transparante prijzen
+          </h2>
+          <div className="grid max-w-2xl gap-6 md:grid-cols-2">
             {/* Basis */}
-            <div className="border border-hairline bg-white p-8">
-              <p className="text-label-caps text-outline mb-2">BASIS</p>
-              <p className="text-4xl font-black text-on-surface mb-1">Gratis</p>
-              <p className="text-body-sm text-outline mb-6">Altijd</p>
-              <ul className="space-y-3 mb-8">
-                {["Profiel aanmaken", "20 swipes per dag", "Chatten met matches", "Events bekijken", "Kennisbank lezen"].map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-body-sm text-on-surface">
-                    <CheckCircle size={14} className="text-outline shrink-0" />
+            <div className="border-hairline border bg-white p-8">
+              <p className="text-label-md text-secondary mb-2">BASIS</p>
+              <p className="text-on-surface mb-1 text-4xl font-extrabold">
+                Gratis
+              </p>
+              <p className="text-body-md text-secondary mb-6">Altijd</p>
+              <ul className="mb-8 space-y-3">
+                {[
+                  "Profiel aanmaken",
+                  "20 swipes per dag",
+                  "Chatten met matches",
+                  "Events bekijken",
+                  "Kennisbank lezen",
+                ].map((f) => (
+                  <li
+                    key={f}
+                    className="text-body-md text-on-surface flex items-center gap-2"
+                  >
+                    <CheckCircle
+                      size={14}
+                      className="text-secondary shrink-0"
+                    />
                     {f}
                   </li>
                 ))}
               </ul>
               <Link href="/aanmelden">
-                <Button variant="secondary" className="w-full">Begin gratis</Button>
+                <Button variant="secondary" className="w-full">
+                  Begin gratis
+                </Button>
               </Link>
             </div>
 
             {/* Pro */}
-            <div className="border-2 border-primary bg-white p-8 relative">
-              <Badge variant="primary" className="absolute top-4 right-4">AANBEVOLEN</Badge>
-              <p className="text-label-caps text-primary mb-2">PRO</p>
-              <div className="flex items-baseline gap-1 mb-1">
-                <p className="text-4xl font-black text-on-surface">€9</p>
+            <div className="border-primary relative border-2 bg-white p-8">
+              <Badge variant="primary" className="absolute top-4 right-4">
+                AANBEVOLEN
+              </Badge>
+              <p className="text-label-md text-primary mb-2">PRO</p>
+              <div className="mb-1 flex items-baseline gap-1">
+                <p className="text-on-surface text-4xl font-extrabold">€9</p>
                 <p className="text-on-surface-variant">/maand</p>
               </div>
-              <p className="text-body-sm text-outline mb-6">Maandelijks opzegbaar</p>
-              <ul className="space-y-3 mb-8">
+              <p className="text-body-md text-secondary mb-6">
+                Maandelijks opzegbaar
+              </p>
+              <ul className="mb-8 space-y-3">
                 {PRO_FEATURES.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-body-sm text-on-surface">
+                  <li
+                    key={f}
+                    className="text-body-md text-on-surface flex items-center gap-2"
+                  >
                     <CheckCircle size={14} className="text-primary shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
               <Link href="/aanmelden">
-                <Button variant="primary" className="w-full">Start Pro</Button>
+                <Button variant="primary" className="w-full">
+                  Start Pro
+                </Button>
               </Link>
             </div>
           </div>
@@ -142,14 +199,17 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6 bg-on-surface text-on-primary">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-headline-md mb-4">Klaar om je medemissie-ondernemer te vinden?</h2>
-          <p className="text-body text-white/70 mb-8">
-            Sluit je aan bij honderden impact-ondernemers die al samenwerken via Samenmakers.
+      <section className="bg-on-surface text-on-primary px-6 py-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-headline-lg mb-4">
+            Klaar om je medemissie-ondernemer te vinden?
+          </h2>
+          <p className="text-body-md mb-8 text-white/70">
+            Sluit je aan bij honderden impact-ondernemers die al samenwerken via
+            We Shape the Future.
           </p>
           <Link href="/aanmelden">
-            <button className="px-10 py-4 bg-white text-on-surface font-bold text-label-caps hover:bg-white/90 transition-colors">
+            <button className="text-on-surface text-label-md bg-white px-10 py-4 font-bold transition-colors hover:bg-white/90">
               GRATIS AANMELDEN
             </button>
           </Link>
@@ -157,15 +217,34 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-6 hairline-t">
-        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <span className="text-sm font-black text-on-surface">SAMENMAKERS</span>
-          <div className="flex gap-6 text-xs text-outline">
-            <Link href="/over" className="hover:text-on-surface transition-colors">Over ons</Link>
-            <Link href="/privacy" className="hover:text-on-surface transition-colors">Privacy</Link>
-            <Link href="/voorwaarden" className="hover:text-on-surface transition-colors">Voorwaarden</Link>
+      <footer className="hairline-t px-6 py-10">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
+          <span className="text-on-surface text-sm font-extrabold">
+            WE SHAPE THE FUTURE
+          </span>
+          <div className="text-secondary flex gap-6 text-xs">
+            <Link
+              href="/over"
+              className="hover:text-on-surface transition-colors"
+            >
+              Over ons
+            </Link>
+            <Link
+              href="/privacy"
+              className="hover:text-on-surface transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/voorwaarden"
+              className="hover:text-on-surface transition-colors"
+            >
+              Voorwaarden
+            </Link>
           </div>
-          <p className="text-xs text-outline">© {new Date().getFullYear()} Samenmakers</p>
+          <p className="text-secondary text-xs">
+            © {new Date().getFullYear()} We Shape the Future
+          </p>
         </div>
       </footer>
     </div>

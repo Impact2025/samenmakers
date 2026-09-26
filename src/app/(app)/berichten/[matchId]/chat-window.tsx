@@ -43,7 +43,11 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
   const [content, setContent] = useState("");
   const [contextOpen, setContextOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const hasContext = !!(other.missie ?? other.ikZoek ?? (other.zoektNaar && other.zoektNaar.length > 0));
+  const hasContext = !!(
+    other.missie ??
+    other.ikZoek ??
+    (other.zoektNaar && other.zoektNaar.length > 0)
+  );
   const utils = trpc.useUtils();
 
   const { data } = trpc.messages.history.useQuery(
@@ -95,20 +99,31 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center gap-4 py-4 hairline-b shrink-0">
-        <Link href="/berichten" className="p-2 -ml-2 text-outline hover:text-on-surface lg:hidden">
+      <div className="hairline-b flex shrink-0 items-center gap-4 py-4">
+        <Link
+          href="/berichten"
+          className="text-secondary hover:text-on-surface -ml-2 p-2 lg:hidden"
+        >
           <ArrowLeft size={20} />
         </Link>
-        <Link href={`/makers/${other.id}`} className="flex items-center gap-3 group flex-1 min-w-0">
-          <Avatar src={other.avatarUrl} naam={other.naam} size="sm" grayscale={false} />
-          <span className="font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
+        <Link
+          href={`/makers/${other.id}`}
+          className="group flex min-w-0 flex-1 items-center gap-3"
+        >
+          <Avatar
+            src={other.avatarUrl}
+            naam={other.naam}
+            size="sm"
+            grayscale={false}
+          />
+          <span className="text-on-surface group-hover:text-primary truncate font-semibold transition-colors">
             {other.naam}
           </span>
         </Link>
         {hasContext && (
           <button
             onClick={() => setContextOpen((v) => !v)}
-            className="p-2 -mr-2 text-outline hover:text-on-surface transition-colors shrink-0"
+            className="text-secondary hover:text-on-surface -mr-2 shrink-0 p-2 transition-colors"
             aria-label={contextOpen ? "Context verbergen" : "Context tonen"}
           >
             {contextOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -118,33 +133,42 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
 
       {/* Context panel */}
       {hasContext && contextOpen && (
-        <div className="bg-surface-container-low hairline-b px-4 py-3 text-xs space-y-2 shrink-0">
-          <p className="text-label-caps text-outline mb-1">{other.naam.toUpperCase()}</p>
+        <div className="bg-surface-container-low hairline-b shrink-0 space-y-2 px-4 py-3 text-xs">
+          <p className="text-label-md text-secondary mb-1">
+            {other.naam.toUpperCase()}
+          </p>
           {other.missie && (
             <p className="text-on-surface-variant">
-              <span className="font-semibold text-on-surface">Missie: </span>{other.missie}
+              <span className="text-on-surface font-semibold">Missie: </span>
+              {other.missie}
             </p>
           )}
           {other.zoektNaar && other.zoektNaar.length > 0 && (
             <p className="text-on-surface-variant">
-              <span className="font-semibold text-on-surface">Op zoek naar: </span>
+              <span className="text-on-surface font-semibold">
+                Op zoek naar:{" "}
+              </span>
               {other.zoektNaar
-                .map((z) => ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z)
+                .map(
+                  (z) =>
+                    ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z,
+                )
                 .join(", ")}
             </p>
           )}
           {other.ikZoek && !other.zoektNaar?.length && (
             <p className="text-on-surface-variant">
-              <span className="font-semibold text-on-surface">Zoekt: </span>{other.ikZoek}
+              <span className="text-on-surface font-semibold">Zoekt: </span>
+              {other.ikZoek}
             </p>
           )}
         </div>
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto py-6 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto py-6">
         {messages.length === 0 && (
-          <p className="text-center text-body-sm text-outline">
+          <p className="text-body-md text-secondary text-center">
             Stuur een eerste bericht om het gesprek te starten.
           </p>
         )}
@@ -156,21 +180,26 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
               className={`flex gap-3 ${isMe ? "flex-row-reverse" : "flex-row"}`}
             >
               {!isMe && (
-                <Avatar src={other.avatarUrl} naam={other.naam} size="xs" grayscale={false} />
+                <Avatar
+                  src={other.avatarUrl}
+                  naam={other.naam}
+                  size="xs"
+                  grayscale={false}
+                />
               )}
               <div
-                className={`max-w-[80vw] lg:max-w-md group flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                className={`group flex max-w-[80vw] flex-col lg:max-w-md ${isMe ? "items-end" : "items-start"}`}
               >
                 <div
                   className={`px-4 py-3 text-sm ${
                     isMe
                       ? "bg-primary text-on-primary"
-                      : "bg-surface-container-low text-on-surface border border-hairline"
+                      : "bg-surface-container-low text-on-surface border-hairline border"
                   }`}
                 >
                   {msg.content}
                 </div>
-                <span className="text-[10px] text-outline mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-secondary mt-1 text-[10px] opacity-0 transition-opacity group-hover:opacity-100">
                   {formatRelative(new Date(msg.createdAt))}
                 </span>
               </div>
@@ -181,18 +210,21 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSend} className="flex gap-3 hairline-t pt-4 pb-safe shrink-0">
+      <form
+        onSubmit={handleSend}
+        className="hairline-t pb-safe flex shrink-0 gap-3 pt-4"
+      >
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Typ een bericht…"
-          className="flex-1 border border-hairline bg-white px-4 py-3 text-base text-on-surface placeholder:text-outline focus:outline-none focus:border-on-surface"
+          className="border-hairline text-on-surface placeholder:text-secondary focus:border-on-surface flex-1 border bg-white px-4 py-3 text-base focus:outline-none"
           disabled={send.isPending}
         />
         <button
           type="submit"
           disabled={!content.trim() || send.isPending}
-          className="px-5 bg-primary text-on-primary disabled:opacity-40 hover:bg-primary/90 transition-colors"
+          className="bg-primary text-on-primary hover:bg-primary/90 px-5 transition-colors disabled:opacity-40"
         >
           {send.isPending ? <Spinner /> : <Send size={16} />}
         </button>
