@@ -9,10 +9,10 @@ export const env = createEnv({
 
     // Auth
     AUTH_SECRET: z.string().min(32),
-    AUTH_GOOGLE_ID: z.string().min(1),
-    AUTH_GOOGLE_SECRET: z.string().min(1),
-    AUTH_LINKEDIN_ID: z.string().min(1),
-    AUTH_LINKEDIN_SECRET: z.string().min(1),
+    AUTH_GOOGLE_ID: z.string().min(1).optional(),
+    AUTH_GOOGLE_SECRET: z.string().min(1).optional(),
+    AUTH_LINKEDIN_ID: z.string().min(1).optional(),
+    AUTH_LINKEDIN_SECRET: z.string().min(1).optional(),
 
     // Pusher
     PUSHER_APP_ID: z.string().min(1),
@@ -42,7 +42,9 @@ export const env = createEnv({
     MANAGEMENT_EMAIL: z.string().email().optional(),
 
     // Node
-    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -76,7 +78,8 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
     NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

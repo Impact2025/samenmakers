@@ -20,6 +20,18 @@ describe("ratelimit", () => {
     expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(999);
   });
+
+  it("blocks auth attempts after the limit, even without Redis", async () => {
+    const mod = await import("./ratelimit");
+    const results: boolean[] = [];
+    for (let i = 0; i < 11; i++)
+      results.push(await mod.checkAuthLimit("login", "Jan@Example.nl"));
+    expect(results.slice(0, 10).every(Boolean)).toBe(true);
+    expect(results[10]).toBe(false);
+    // Andere sleutel en andere bucket tellen apart.
+    expect(await mod.checkAuthLimit("login", "piet@example.nl")).toBe(true);
+    expect(await mod.checkAuthLimit("reset", "jan@example.nl")).toBe(true);
+  });
 });
 
 describe("ratelimit with Redis configured", () => {

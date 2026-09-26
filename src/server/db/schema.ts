@@ -1478,6 +1478,7 @@ export const couponRedemptions = pgTable(
   (t) => [
     index("coupon_redemptions_coupon_id_idx").on(t.couponId),
     index("coupon_redemptions_user_id_idx").on(t.userId),
+    uniqueIndex("coupon_redemptions_session_idx").on(t.stripeSessionId),
   ],
 );
 

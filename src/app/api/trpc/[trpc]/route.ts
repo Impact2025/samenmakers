@@ -1,11 +1,17 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "@/server/trpc/root";
 import { createTRPCContext } from "@/server/trpc/init";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-function logError({ path, error }: { path: string | undefined; error: unknown }) {
+function logError({
+  path,
+  error,
+}: {
+  path: string | undefined;
+  error: unknown;
+}) {
   console.error(`tRPC error on ${path ?? "<no-path>"}:`, error);
 }
 

@@ -1,6 +1,9 @@
 import { auth } from "@/server/auth/config";
 import { NextResponse } from "next/server";
 import Pusher from "pusher";
+import { and, eq, or } from "drizzle-orm";
+import { db } from "@/server/db";
+import { matches } from "@/server/db/schema";
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID ?? "",
@@ -26,14 +29,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid channel" }, { status: 403 });
   }
 
-  // For user-specific channels, verify ownership
+  // Alleen je eigen user-kanaal, of het kanaal van een match waar je zelf deel van uitmaakt.
   const userChannel = `private-user-${session.user.id}`;
-  const matchChannel = `private-match-`;
-  if (
-    channelName !== userChannel &&
-    !channelName.startsWith(matchChannel)
-  ) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const matchPrefix = "private-match-";
+  if (channelName !== userChannel) {
+    if (!channelName.startsWith(matchPrefix)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const matchId = channelName.slice(matchPrefix.length);
+    const match = await db.query.matches.findFirst({
+      where: and(
+        eq(matches.id, matchId),
+        eq(matches.status, "matched"),
+        or(
+          eq(matches.userId, session.user.id),
+          eq(matches.targetId, session.user.id),
+        ),
+      ),
+      columns: { id: true },
+    });
+    if (!match) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   const authResponse = pusher.authorizeChannel(socketId, channelName, {

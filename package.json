@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS=--max-old-space-size=4096 next dev",
-    "build": "NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "next start",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
@@ -71,6 +71,7 @@
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
     "@vitejs/plugin-react": "^6.0.3",
+    "cross-env": "^10.1.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.4",

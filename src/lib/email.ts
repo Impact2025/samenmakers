@@ -25,7 +25,7 @@ export async function sendWelcomeEmail(user: {
     html: `
       <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
-        <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Welkom, ${naam}!</h1>
+        <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Welkom, ${escapeHtml(naam)}!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
           Je account is aangemaakt. Vul je profiel in zodat andere impact-ondernemers jou kunnen vinden.
         </p>
@@ -56,7 +56,7 @@ export async function sendMatchEmail(opts: {
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Je hebt een match!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
-          Hoi ${opts.naam}, jullie zijn allebei geïnteresseerd in samenwerken. Stuur ${opts.matchNaam} een berichtje.
+          Hoi ${escapeHtml(opts.naam)}, jullie zijn allebei geïnteresseerd in samenwerken. Stuur ${escapeHtml(opts.matchNaam)} een berichtje.
         </p>
         <a href="${APP_URL}/berichten/${opts.matchId}" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           BERICHT STUREN →
@@ -84,14 +84,14 @@ export async function sendWeeklyDigest(opts: {
   const postsHtml = opts.recentPosts
     .map(
       (p) =>
-        `<li style="margin-bottom:8px;"><a href="${APP_URL}/kennis/${p.slug}" style="color:#2D6A4F;">${p.title}</a></li>`,
+        `<li style="margin-bottom:8px;"><a href="${APP_URL}/kennis/${p.slug}" style="color:#2D6A4F;">${escapeHtml(p.title)}</a></li>`,
     )
     .join("");
 
   const eventsHtml = opts.upcomingEvents
     .map(
       (e) =>
-        `<li style="margin-bottom:8px;"><a href="${APP_URL}/events/${e.id}" style="color:#2D6A4F;">${e.title}</a></li>`,
+        `<li style="margin-bottom:8px;"><a href="${APP_URL}/events/${e.id}" style="color:#2D6A4F;">${escapeHtml(e.title)}</a></li>`,
     )
     .join("");
 
@@ -263,6 +263,38 @@ export async function sendManagementDigest(opts: {
         </a>
         <p style="font-size: 11px; color: #bbb; margin-top: 32px;">
           Automatisch gegenereerd door We Shape the Future Admin · ${m.generatedAt.toLocaleString("nl-NL")}
+        </p>
+      </div>
+    `,
+  });
+}
+
+// =============================================
+// WACHTWOORD RESET
+// =============================================
+
+export async function sendPasswordResetEmail(opts: {
+  to: string;
+  naam?: string | null;
+  url: string;
+}) {
+  const naam = escapeHtml(opts.naam ?? "Maker");
+  await getResend().emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: "Stel een nieuw wachtwoord in",
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
+        <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Nieuw wachtwoord</h1>
+        <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
+          Hoi ${naam}, we kregen een verzoek om je wachtwoord opnieuw in te stellen. Deze link is 1 uur geldig en werkt één keer.
+        </p>
+        <a href="${escapeHtml(opts.url)}" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+          WACHTWOORD INSTELLEN →
+        </a>
+        <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
+          Heb je dit niet aangevraagd? Dan kun je deze e-mail negeren; je wachtwoord blijft ongewijzigd.
         </p>
       </div>
     `,

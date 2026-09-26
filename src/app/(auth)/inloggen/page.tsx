@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
+import { enabledOAuthProviders } from "@/server/auth/providers";
 
 export const metadata: Metadata = { title: "Inloggen" };
 
@@ -12,7 +13,7 @@ export default function LoginPage() {
           Log in op je We Shape the Future account
         </p>
       </div>
-      <LoginForm />
+      <LoginForm providers={enabledOAuthProviders()} />
     </div>
   );
 }

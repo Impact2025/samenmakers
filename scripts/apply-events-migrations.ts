@@ -4,7 +4,7 @@
 import { neon } from "@neondatabase/serverless";
 import { readFileSync } from "node:fs";
 
-const FILES = ["events-fase1.sql", "events-fase2.sql"];
+const FILES = ["events-fase1.sql", "events-fase2.sql", "security-fase1.sql"];
 const sql = neon(
   process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL!,
 );

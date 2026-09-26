@@ -2,19 +2,28 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/server/db";
 import { users, referrals } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { sendWelcomeEmail } from "@/lib/email";
+import { checkAuthLimit, clientIp } from "@/lib/ratelimit";
+import { generateReferralCode } from "@/server/auth/config";
 
 const schema = z.object({
-  name: z.string().min(2).max(80),
-  email: z.string().email(),
-  password: z.string().min(8),
-  referralCode: z.string().optional(),
+  name: z.string().trim().min(2).max(80),
+  email: z.string().trim().toLowerCase().email().max(200),
+  password: z.string().min(8).max(200),
+  referralCode: z.string().trim().max(32).optional(),
 });
 
 export async function POST(req: Request) {
-  const body = await req.json() as unknown;
+  if (!(await checkAuthLimit("register", `ip:${clientIp(req)}`))) {
+    return NextResponse.json(
+      { error: "Te veel pogingen. Probeer het over een uur opnieuw." },
+      { status: 429 },
+    );
+  }
+
+  const body: unknown = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Ongeldige gegevens" }, { status: 400 });
@@ -22,18 +31,24 @@ export async function POST(req: Request) {
 
   const { name, email, password, referralCode } = parsed.data;
 
-  const existing = await db.query.users.findFirst({ where: eq(users.email, email) });
+  const existing = await db.query.users.findFirst({
+    where: sql`lower(${users.email}) = ${email}`,
+    columns: { id: true },
+  });
   if (existing) {
-    return NextResponse.json({ error: "Dit e-mailadres is al in gebruik" }, { status: 409 });
+    return NextResponse.json(
+      { error: "Dit e-mailadres is al in gebruik" },
+      { status: 409 },
+    );
   }
 
   const hashed = await bcrypt.hash(password, 12);
-  const newReferralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
 
   let referrerId: string | undefined;
   if (referralCode) {
     const referrer = await db.query.users.findFirst({
-      where: eq(users.referralCode, referralCode),
+      where: eq(users.referralCode, referralCode.toUpperCase()),
+      columns: { id: true },
     });
     if (referrer) referrerId = referrer.id;
   }
@@ -45,14 +60,23 @@ export async function POST(req: Request) {
       email,
       password: hashed,
       naam: name,
-      referralCode: newReferralCode,
+      referralCode: generateReferralCode(),
       referredById: referrerId,
       // Auto-verify: email was provided directly, no magic-link flow for credentials
       emailVerified: new Date(),
     })
+    .onConflictDoNothing({ target: users.email })
     .returning({ id: users.id });
 
-  if (referrerId && newUser) {
+  // Race: tegelijk dezelfde aanmelding → de tweede krijgt netjes een 409.
+  if (!newUser) {
+    return NextResponse.json(
+      { error: "Dit e-mailadres is al in gebruik" },
+      { status: 409 },
+    );
+  }
+
+  if (referrerId) {
     await db.insert(referrals).values({
       referrerId,
       referredId: newUser.id,
