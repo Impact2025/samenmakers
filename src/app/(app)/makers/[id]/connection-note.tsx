@@ -27,8 +27,8 @@ export function ConnectionNote({ targetUserId }: { targetUserId: string }) {
     <div>
       <div className="mb-2 flex items-center gap-2">
         <StickyNote size={14} className="text-secondary" />
-        <p className="text-label-md text-secondary">Privénotitie</p>
-        <span className="text-body-md text-secondary ml-auto">
+        <p className="text-title-md text-on-surface">Privénotitie</p>
+        <span className="text-body-sm text-secondary ml-auto">
           {content.length}/1000
         </span>
       </div>
@@ -38,13 +38,13 @@ export function ConnectionNote({ targetUserId }: { targetUserId: string }) {
         maxLength={1000}
         rows={3}
         placeholder="Noteer iets over deze maker... (alleen zichtbaar voor jou)"
-        className="bg-surface-container text-body-md text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full resize-none rounded-xl border border-transparent px-3 py-2 transition-colors outline-none focus:ring-[3px]"
+        className="text-body-md text-on-surface placeholder:text-secondary bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full resize-none rounded-xl border border-transparent px-3 py-2 transition-colors outline-none focus:ring-[3px]"
       />
       <div className="mt-2 flex justify-end">
         <button
           onClick={() => saveNote.mutate({ targetUserId, content })}
           disabled={saveNote.isPending}
-          className="text-label-md text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors disabled:opacity-50"
+          className="text-label-md text-primary-container hover:bg-primary-fixed/50 flex h-9 items-center gap-1.5 rounded-full px-4 transition-colors disabled:opacity-50"
         >
           {saved ? (
             <>

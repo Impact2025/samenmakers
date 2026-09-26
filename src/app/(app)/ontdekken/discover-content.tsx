@@ -2,21 +2,34 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  Users,
+  X,
+  ArrowRight,
+  BadgeCheck,
+} from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Chip, ChipRow } from "@/components/ui/chip";
 import { Spinner } from "@/components/ui/spinner";
+import { EmptyState } from "@/components/shared/empty-state";
+import { fieldClasses } from "@/components/ui/field-styles";
 import { SECTOREN, REGIO_S, FASEN } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
+type Fase = "starter" | "groei" | "scale";
 type Filters = {
   sector?: string;
   regio?: string;
-  fase?: "starter" | "groei" | "scale";
-  search?: string;
+  fase?: Fase;
 };
+
+const FASE_LABEL: Record<Fase, string> = Object.fromEntries(
+  FASEN.map((f) => [f.value, f.label]),
+) as Record<Fase, string>;
 
 export function DiscoverContent() {
   const [filters, setFilters] = useState<Filters>({});
@@ -25,103 +38,92 @@ export function DiscoverContent() {
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     trpc.users.list.useInfiniteQuery(
-      { ...filters, search: search || undefined, limit: 24 },
+      { ...filters, ...(search ? { search } : {}), limit: 24 },
       { getNextPageParam: (last) => last.nextCursor },
     );
 
   const users = data?.pages.flatMap((p) => p.items) ?? [];
+  const extraFilters = (filters.regio ? 1 : 0) + (filters.fase ? 1 : 0);
+  const pristine = !search && Object.keys(filters).length === 0;
+  const featured = pristine
+    ? users.filter((u) => u.isFeatured).slice(0, 8)
+    : [];
+
+  function setFilter<K extends keyof Filters>(key: K, value: Filters[K] | "") {
+    setFilters((f) => {
+      const next = { ...f };
+      if (value) next[key] = value as Filters[K];
+      else delete next[key];
+      return next;
+    });
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Search bar */}
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search
-            size={16}
-            className="text-secondary absolute top-1/2 left-3 -translate-y-1/2"
-          />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Zoek op naam, bio of missie…"
-            className="pl-9"
-          />
+    <div className="flex flex-col gap-6">
+      {/* Zoeken + filters */}
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          <label className="relative flex-1">
+            <span className="sr-only">Zoeken</span>
+            <Search
+              size={20}
+              className="text-secondary pointer-events-none absolute top-1/2 left-4 -translate-y-1/2"
+            />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Zoek op naam, missie of expertise..."
+              className={cn(fieldClasses, "pl-12")}
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowFilters((v) => !v)}
+            aria-expanded={showFilters}
+            aria-label="Meer filters"
+            className={cn(
+              "relative flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-xl transition-colors",
+              showFilters || extraFilters > 0
+                ? "bg-on-surface text-surface-container-lowest"
+                : "bg-surface-container-low text-secondary hover:text-on-surface",
+            )}
+          >
+            <SlidersHorizontal size={20} />
+            {extraFilters > 0 && (
+              <span className="bg-primary-container text-on-primary absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
+                {extraFilters}
+              </span>
+            )}
+          </button>
         </div>
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className={`flex items-center gap-2 border px-4 text-sm font-semibold transition-colors ${
-            showFilters || Object.keys(filters).length > 0
-              ? "bg-on-surface text-on-primary border-on-surface"
-              : "border-hairline text-secondary hover:border-on-surface"
-          }`}
-        >
-          <SlidersHorizontal size={15} />
-          Filters
-          {Object.keys(filters).length > 0 && (
-            <span className="bg-primary text-on-primary flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold">
-              {Object.keys(filters).length}
-            </span>
-          )}
-        </button>
-      </div>
 
-      {/* Filter panel */}
-      {showFilters && (
-        <div className="bg-surface-container-lowest shadow-card space-y-4 rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-label-md text-on-surface">Filters</p>
-            <button
-              onClick={() => {
-                setFilters({});
-                setShowFilters(false);
-              }}
-              className="text-secondary hover:text-on-surface flex items-center gap-1 text-xs"
+        <ChipRow>
+          <Chip
+            active={!filters.sector}
+            onClick={() => setFilter("sector", "")}
+          >
+            Alles
+          </Chip>
+          {SECTOREN.map((s) => (
+            <Chip
+              key={s}
+              active={filters.sector === s}
+              onClick={() => setFilter("sector", filters.sector === s ? "" : s)}
             >
-              <X size={12} /> Wis alles
-            </button>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div>
-              <label className="text-label-md text-secondary mb-2 block">
-                Sector
-              </label>
-              <select
-                value={filters.sector ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setFilters((f) => {
-                    const next = { ...f };
-                    if (v) next.sector = v;
-                    else delete next.sector;
-                    return next;
-                  });
-                }}
-                className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
-              >
-                <option value="">Alle sectoren</option>
-                {SECTOREN.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-label-md text-secondary mb-2 block">
-                Regio
-              </label>
+              {s}
+            </Chip>
+          ))}
+        </ChipRow>
+
+        {showFilters && (
+          <div className="bg-surface-container-low grid gap-3 rounded-2xl p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+            <label className="flex flex-col gap-1.5">
+              <span className="text-label-lg text-on-surface">Regio</span>
               <select
                 value={filters.regio ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setFilters((f) => {
-                    const next = { ...f };
-                    if (v) next.regio = v;
-                    else delete next.regio;
-                    return next;
-                  });
-                }}
-                className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
+                onChange={(e) => setFilter("regio", e.target.value)}
+                className={cn(fieldClasses, "bg-surface-container-lowest")}
               >
                 <option value="">Alle regio&apos;s</option>
                 {REGIO_S.map((r) => (
@@ -130,27 +132,13 @@ export function DiscoverContent() {
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="text-label-md text-secondary mb-2 block">
-                Fase
-              </label>
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-label-lg text-on-surface">Fase</span>
               <select
                 value={filters.fase ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value as
-                    | "starter"
-                    | "groei"
-                    | "scale"
-                    | "";
-                  setFilters((f) => {
-                    const next = { ...f };
-                    if (v) next.fase = v;
-                    else delete next.fase;
-                    return next;
-                  });
-                }}
-                className="text-on-surface bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 w-full rounded-xl border border-transparent px-3 py-2 text-sm outline-none focus:ring-[3px]"
+                onChange={(e) => setFilter("fase", e.target.value as Fase | "")}
+                className={cn(fieldClasses, "bg-surface-container-lowest")}
               >
                 <option value="">Alle fasen</option>
                 {FASEN.map(({ value, label }) => (
@@ -159,65 +147,82 @@ export function DiscoverContent() {
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setFilters({});
+                setShowFilters(false);
+              }}
+            >
+              <X size={16} /> Wis filters
+            </Button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Active filter badges */}
-      {Object.keys(filters).length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(filters).map(
-            ([key, value]) =>
-              value && (
-                <button
-                  key={key}
-                  onClick={() =>
-                    setFilters((f) => {
-                      const next = { ...f };
-                      delete next[key as keyof Filters];
-                      return next;
-                    })
-                  }
-                  className="bg-primary/10 text-primary flex items-center gap-1 px-3 py-1 text-xs font-semibold"
-                >
-                  {value}
-                  <X size={10} />
-                </button>
-              ),
-          )}
-        </div>
-      )}
-
-      {/* Results */}
       {isLoading ? (
-        <div className="flex justify-center py-20">
+        <div className="text-primary-container flex justify-center py-20">
           <Spinner />
         </div>
       ) : users.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-on-surface-variant mb-2">Geen makers gevonden</p>
-          <p className="text-body-md text-secondary">
-            Pas je filters aan om meer resultaten te zien
-          </p>
-        </div>
+        <EmptyState
+          icon={<Users size={22} />}
+          title="Geen makers gevonden"
+          description="Pas je zoekterm of filters aan om meer resultaten te zien."
+        />
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {users.map((user) => (
-              <UserCard key={user.id} user={user} />
-            ))}
-          </div>
+          {featured.length > 0 && (
+            <section>
+              <div className="mb-3 flex items-baseline justify-between">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-headline-sm text-on-surface">
+                    Uitgelichte makers
+                  </h2>
+                  <span className="bg-primary-fixed text-label-sm text-primary rounded-full px-2 py-0.5">
+                    Spotlight
+                  </span>
+                </div>
+              </div>
+              <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 lg:mx-0 lg:px-0">
+                {featured.map((u) => (
+                  <FeaturedCard key={u.id} user={u} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section>
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 className="text-headline-sm text-on-surface">
+                {pristine ? "Changemakers in het netwerk" : "Resultaten"}
+              </h2>
+              <span className="text-label-md text-secondary">
+                {users.length}
+                {hasNextPage ? "+" : ""} makers
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {users.map((user) => (
+                <UserCard key={user.id} user={user} />
+              ))}
+            </div>
+          </section>
 
           {hasNextPage && (
-            <div className="flex justify-center pt-4">
-              <button
+            <div className="flex justify-center">
+              <Button
+                variant="secondary"
                 onClick={() => void fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="text-label-md text-on-surface hover:bg-surface-container-low border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-8 py-3 transition-colors disabled:opacity-50"
               >
-                {isFetchingNextPage ? <Spinner /> : "Meer laden"}
-              </button>
+                {isFetchingNextPage ? (
+                  <Spinner size="sm" />
+                ) : (
+                  "Meer makers laden"
+                )}
+              </Button>
             </div>
           )}
         </>
@@ -234,59 +239,104 @@ type User = {
   missie: string | null;
   sector: string | null;
   regio: string | null;
-  fase: "starter" | "groei" | "scale" | null;
+  fase: Fase | null;
   avatarUrl: string | null;
   isFeatured: boolean;
   isVerified: boolean;
   expertise: string[];
 };
 
+function FeaturedCard({ user }: { user: User }) {
+  const displayName = user.naam ?? user.name ?? "Maker";
+  return (
+    <Link
+      href={`/makers/${user.id}`}
+      className="bg-surface-container-low shadow-card hover:shadow-elevated flex w-60 shrink-0 snap-start flex-col items-center rounded-2xl p-4 text-center transition-shadow"
+    >
+      <Avatar
+        src={user.avatarUrl}
+        naam={displayName}
+        size="lg"
+        className="mb-3"
+      />
+      <h3 className="text-title-md text-on-surface flex items-center gap-1">
+        <span className="truncate">{displayName}</span>
+        {user.isVerified && (
+          <BadgeCheck
+            size={16}
+            className="text-primary-container shrink-0"
+            aria-label="Geverifieerd"
+          />
+        )}
+      </h3>
+      {user.sector && (
+        <p className="text-body-sm text-primary-container mt-0.5 font-semibold">
+          {user.sector}
+        </p>
+      )}
+      {user.missie && (
+        <p className="text-body-sm text-secondary mt-1 line-clamp-1">
+          {user.missie}
+        </p>
+      )}
+      <span className="bg-primary-container text-label-md text-on-primary shadow-cta mt-4 flex h-10 w-full items-center justify-center gap-1.5 rounded-full">
+        Bekijk profiel <ArrowRight size={16} />
+      </span>
+    </Link>
+  );
+}
+
 function UserCard({ user }: { user: User }) {
   const displayName = user.naam ?? user.name ?? "Maker";
+  const subtitle = [user.sector, user.regio].filter(Boolean).join(" · ");
 
   return (
-    <Link href={`/makers/${user.id}`} className="group block">
-      <Card className="h-full">
-        <div className="flex h-full flex-col p-5">
-          <div className="mb-3 flex items-start gap-3">
-            <Avatar
-              src={user.avatarUrl}
-              naam={displayName}
-              size="md"
-              grayscale
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-on-surface group-hover:text-primary truncate text-sm font-extrabold transition-colors">
-                {displayName}
-              </p>
-              {user.isFeatured && (
-                <Badge variant="primary" size="sm" className="mt-0.5">
-                  Featured
-                </Badge>
+    <Link
+      href={`/makers/${user.id}`}
+      className="group bg-surface-container-lowest shadow-card hover:shadow-elevated flex h-full flex-col gap-3 rounded-2xl p-4 transition-shadow"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 gap-3">
+          <Avatar src={user.avatarUrl} naam={displayName} size="sm" />
+          <div className="min-w-0">
+            <h3 className="text-title-md text-on-surface group-hover:text-primary-container flex items-center gap-1 transition-colors">
+              <span className="truncate">{displayName}</span>
+              {user.isVerified && (
+                <BadgeCheck
+                  size={16}
+                  className="text-primary-container shrink-0"
+                  aria-label="Geverifieerd"
+                />
               )}
-            </div>
-          </div>
-
-          {user.missie && (
-            <p className="text-on-surface-variant mb-3 line-clamp-2 flex-1 text-xs italic">
-              &ldquo;{user.missie}&rdquo;
-            </p>
-          )}
-
-          <div className="mt-auto flex flex-wrap gap-1">
-            {user.sector && (
-              <Badge variant="default" size="sm">
-                {user.sector}
-              </Badge>
-            )}
-            {user.regio && (
-              <Badge variant="default" size="sm">
-                {user.regio}
-              </Badge>
+            </h3>
+            {subtitle && (
+              <p className="text-body-sm text-secondary truncate">{subtitle}</p>
             )}
           </div>
         </div>
-      </Card>
+        {user.fase && (
+          <span className="bg-primary-container/10 text-label-sm text-primary-container shrink-0 rounded-full px-2 py-0.5">
+            {FASE_LABEL[user.fase]}
+          </span>
+        )}
+      </div>
+      {(user.missie ?? user.bio) && (
+        <p className="text-body-sm text-on-surface-variant line-clamp-2">
+          {user.missie ?? user.bio}
+        </p>
+      )}
+      <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+        {user.expertise[0] ? (
+          <span className="bg-surface-container-low text-label-sm text-secondary truncate rounded-md px-2 py-1">
+            Expertise: {user.expertise[0]}
+          </span>
+        ) : (
+          <span />
+        )}
+        <span className="bg-surface-container-high text-label-md text-primary-container group-hover:bg-primary-container group-hover:text-on-primary flex h-9 shrink-0 items-center gap-1 rounded-full px-4 transition-colors">
+          Bekijk <ArrowRight size={16} />
+        </span>
+      </div>
     </Link>
   );
 }

@@ -34,10 +34,10 @@ export function ExpertiseEndorsements({ targetUserId, expertise }: Props) {
             onClick={() => toggle.mutate({ targetId: targetUserId, skill })}
             disabled={toggle.isPending}
             className={cn(
-              "flex items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95",
+              "text-label-md flex h-8 items-center gap-1.5 rounded-full px-3 transition-all active:scale-95",
               endorsed
-                ? "bg-primary text-on-primary border-primary"
-                : "border-hairline text-on-surface hover:border-primary hover:text-primary",
+                ? "bg-primary-container text-on-primary shadow-sm"
+                : "bg-surface-container text-on-surface hover:bg-primary-fixed hover:text-on-primary-fixed",
             )}
             title={
               endorsed ? "Endorsement intrekken" : "Endorseer deze expertise"

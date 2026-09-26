@@ -2,9 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardBody } from "@/components/ui/card";
-import { Globe, CheckCircle, Users, ExternalLink } from "lucide-react";
+import { buttonClasses } from "@/components/ui/button";
+import {
+  BadgeCheck,
+  Globe,
+  Handshake,
+  MapPin,
+  Users,
+  ExternalLink,
+} from "lucide-react";
 import { MakerActions } from "./maker-actions";
 import { ConnectionNote } from "./connection-note";
 import { ExpertiseEndorsements } from "./expertise-endorsements";
@@ -36,168 +42,86 @@ export default async function MakerProfilePage({ params }: Props) {
   if (!user) notFound();
 
   const zoektNaar = (user as { zoektNaar?: string[] }).zoektNaar ?? [];
+  const naam = user.naam ?? user.name ?? "?";
+  const section =
+    "flex flex-col gap-3 rounded-2xl bg-surface-container-lowest p-5 shadow-card";
+  const label = "text-label-sm uppercase text-secondary";
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <Card>
-        <CardBody>
-          {/* Header */}
-          <div className="flex gap-4 sm:gap-6">
-            <Avatar
-              src={user.avatarUrl}
-              naam={user.naam ?? user.name ?? "?"}
-              size="xl"
-              grayscale={false}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-on-surface text-xl font-extrabold">
-                  {user.naam ?? user.name}
-                </h1>
-                {user.isVerified && (
-                  <CheckCircle
-                    size={16}
-                    className="text-primary shrink-0"
-                    aria-label="Geverifieerd"
-                  />
-                )}
-                {user.linkedin && (
-                  <a
-                    href={user.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex shrink-0 items-center gap-1 text-xs font-bold tracking-wide text-[#0A66C2] transition-opacity hover:opacity-80"
-                    aria-label="LinkedIn profiel"
-                  >
-                    <ExternalLink size={12} />
-                    in
-                  </a>
-                )}
-                {user.subscriptionStatus === "active" && (
-                  <Badge variant="primary" size="sm">
-                    PRO
-                  </Badge>
-                )}
-              </div>
-
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {user.sector && (
-                  <Badge variant="default" size="sm">
-                    {user.sector}
-                  </Badge>
-                )}
-                {user.regio && (
-                  <Badge variant="default" size="sm">
-                    {user.regio}
-                  </Badge>
-                )}
-                {user.fase && (
-                  <Badge variant="default" size="sm">
-                    {user.fase.charAt(0).toUpperCase() + user.fase.slice(1)}
-                  </Badge>
-                )}
-              </div>
-
-              {/* Mutual connections */}
-              {mutualCount > 0 && (
-                <div className="text-secondary mt-2 flex items-center gap-1.5 text-xs">
-                  <Users size={12} />
-                  <span>
-                    {mutualCount} maker{mutualCount === 1 ? "" : "s"} ken
-                    {mutualCount === 1 ? "t" : "nen"} jullie beiden
-                  </span>
-                </div>
-              )}
-
-              {user.missie && (
-                <p className="text-body-md text-on-surface mt-3 italic">
-                  &ldquo;{user.missie}&rdquo;
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="hairline-t mt-6 pt-6">
-            <MakerActions userId={user.id} />
-          </div>
-
-          {/* Private note */}
-          <div className="hairline-t mt-6 pt-6">
-            <ConnectionNote targetUserId={user.id} />
-          </div>
-
-          {user.bio && (
-            <div className="hairline-t mt-6 pt-6">
-              <p className="text-label-md text-secondary mb-2">Bio</p>
-              <p className="text-body-md text-on-surface-variant">{user.bio}</p>
-            </div>
-          )}
-
-          {/* What they're looking for */}
-          {zoektNaar.length > 0 && (
-            <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">Op zoek naar</p>
-              <div className="flex flex-wrap gap-1.5">
-                {zoektNaar.map((z) => {
-                  const label =
-                    ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z;
-                  return (
-                    <Badge key={z} variant="primary" size="sm">
-                      {label}
-                    </Badge>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {user.ikZoek && (
-            <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">
-                {zoektNaar.length > 0 ? "Toelichting" : "Ik zoek"}
-              </p>
-              <p className="text-body-md text-on-surface-variant">
-                {user.ikZoek}
-              </p>
-            </div>
-          )}
-
-          {/* Expertise with endorsements */}
-          {user.expertise && user.expertise.length > 0 && (
-            <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">Expertise</p>
-              <ExpertiseEndorsements
-                targetUserId={user.id}
-                expertise={user.expertise}
+    <div className="flex flex-col gap-5">
+      {/* Profielkaart */}
+      <section className="bg-surface-container-lowest shadow-card flex flex-col gap-4 rounded-2xl p-5">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <Avatar src={user.avatarUrl} naam={naam} size="lg" />
+          <div className="flex items-center gap-1.5">
+            <h1 className="text-headline-md text-on-surface">{naam}</h1>
+            {user.isVerified && (
+              <BadgeCheck
+                size={20}
+                className="text-primary-container shrink-0"
+                aria-label="Geverifieerd"
               />
-            </div>
+            )}
+          </div>
+          {(user.sector || user.regio) && (
+            <p className="text-label-lg text-secondary flex items-center gap-1">
+              {user.sector}
+              {user.sector && user.regio && " · "}
+              {user.regio && (
+                <span className="inline-flex items-center gap-0.5">
+                  <MapPin size={14} /> {user.regio}
+                </span>
+              )}
+            </p>
           )}
-
-          {user.mentorshipRole && user.mentorshipRole !== "none" && (
-            <div className="mt-4">
-              <p className="text-label-md text-secondary mb-2">Mentorschap</p>
-              <Badge variant="default">
-                {user.mentorshipRole === "mentor"
-                  ? "Beschikbaar als mentor"
-                  : user.mentorshipRole === "mentee"
-                    ? "Op zoek naar mentor"
-                    : "Mentor & mentee"}
-              </Badge>
-            </div>
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {user.subscriptionStatus === "active" && (
+              <span className="bg-primary-fixed text-label-sm text-on-primary-fixed-variant rounded-full px-3 py-1 uppercase">
+                Pro-lid
+              </span>
+            )}
+            {user.fase && (
+              <span className="bg-tertiary-fixed text-label-sm text-on-tertiary-fixed-variant rounded-full px-3 py-1 uppercase">
+                {user.fase.charAt(0).toUpperCase() + user.fase.slice(1)}
+              </span>
+            )}
+          </div>
+          {user.missie && (
+            <p className="text-body-md text-on-surface-variant mt-1 max-w-md">
+              &ldquo;{user.missie}&rdquo;
+            </p>
           )}
+          {mutualCount > 0 && (
+            <p className="text-body-sm text-secondary flex items-center gap-1.5">
+              <Users size={14} />
+              {mutualCount} maker{mutualCount === 1 ? "" : "s"} ken
+              {mutualCount === 1 ? "t" : "nen"} jullie beiden
+            </p>
+          )}
+        </div>
+        <MakerActions userId={user.id} />
+      </section>
 
+      {(user.bio || user.website || user.linkedin) && (
+        <section className={section}>
+          <h2 className="text-headline-sm text-on-surface">
+            Over {naam.split(" ")[0]}
+          </h2>
+          {user.bio && (
+            <p className="text-body-md text-on-surface-variant whitespace-pre-line">
+              {user.bio}
+            </p>
+          )}
           {(user.website || user.linkedin) && (
-            <div className="mt-4 flex gap-4">
+            <div className="flex flex-wrap gap-2">
               {user.website && (
                 <a
                   href={user.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-label-md text-secondary hover:text-primary flex items-center gap-1.5 transition-colors"
+                  className={buttonClasses("secondary", "sm")}
                 >
-                  <Globe size={13} />
-                  Website
+                  <Globe size={16} /> Website
                 </a>
               )}
               {user.linkedin && (
@@ -205,16 +129,80 @@ export default async function MakerProfilePage({ params }: Props) {
                   href={user.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-label-md flex items-center gap-1.5 text-[#0A66C2] transition-opacity hover:opacity-80"
+                  className={buttonClasses("secondary", "sm")}
                 >
-                  <ExternalLink size={13} />
-                  LinkedIn
+                  <ExternalLink size={16} /> LinkedIn
                 </a>
               )}
             </div>
           )}
-        </CardBody>
-      </Card>
+        </section>
+      )}
+
+      {(zoektNaar.length > 0 || user.ikZoek) && (
+        <section className={section}>
+          <h2 className="text-headline-sm text-on-surface">Op zoek naar</h2>
+          {zoektNaar.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {zoektNaar.map((z) => (
+                <span
+                  key={z}
+                  className="bg-primary-container/10 text-label-md text-primary-container rounded-full px-3 py-1"
+                >
+                  {ZOEKT_NAAR_OPTIONS.find((o) => o.value === z)?.label ?? z}
+                </span>
+              ))}
+            </div>
+          )}
+          {user.ikZoek && (
+            <div className="bg-surface-container-low rounded-xl p-3">
+              <p className={label}>
+                {zoektNaar.length > 0 ? "Toelichting" : "Ik zoek"}
+              </p>
+              <p className="text-body-md text-on-surface-variant mt-1">
+                {user.ikZoek}
+              </p>
+            </div>
+          )}
+        </section>
+      )}
+
+      {user.expertise && user.expertise.length > 0 && (
+        <section className={section}>
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-headline-sm text-on-surface">Expertise</h2>
+            <span className="text-body-sm text-secondary">
+              Tik om te onderschrijven
+            </span>
+          </div>
+          <ExpertiseEndorsements
+            targetUserId={user.id}
+            expertise={user.expertise}
+          />
+        </section>
+      )}
+
+      {user.mentorshipRole && user.mentorshipRole !== "none" && (
+        <section className="bg-surface-container-low flex items-center gap-3 rounded-2xl p-4">
+          <span className="bg-primary-fixed/60 text-primary-container flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+            <Handshake size={20} />
+          </span>
+          <div>
+            <p className={label}>Mentorschap</p>
+            <p className="text-title-md text-on-surface">
+              {user.mentorshipRole === "mentor"
+                ? "Beschikbaar als mentor"
+                : user.mentorshipRole === "mentee"
+                  ? "Op zoek naar een mentor"
+                  : "Mentor én mentee"}
+            </p>
+          </div>
+        </section>
+      )}
+
+      <section className={section}>
+        <ConnectionNote targetUserId={user.id} />
+      </section>
     </div>
   );
 }
