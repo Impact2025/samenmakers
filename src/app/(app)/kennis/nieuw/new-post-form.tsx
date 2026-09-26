@@ -148,7 +148,7 @@ export function NewPostForm() {
             <button
               type="button"
               onClick={() => setForm((f) => ({ ...f, coverImageUrl: "" }))}
-              className="hover:bg-surface-container border-surface-container bg-surface-container-lowest absolute top-2 right-2 inline-flex items-center justify-center gap-2 rounded-full border bg-white px-2 py-1 text-xs font-medium transition-colors"
+              className="hover:bg-surface-container border-surface-container bg-surface-container-lowest text-label-md absolute top-2 right-2 inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 transition-colors"
             >
               Verwijderen
             </button>

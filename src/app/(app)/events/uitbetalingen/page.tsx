@@ -45,7 +45,7 @@ export default async function PayoutsPage({
         </p>
       )}
 
-      <section className="border-on-surface space-y-4 border bg-white p-6">
+      <section className="bg-surface-container-lowest shadow-elevated space-y-4 rounded-2xl p-6">
         {status.state === "ready" ? (
           <>
             <p className="text-on-surface font-extrabold">

@@ -35,7 +35,7 @@ export default async function TicketPage({
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <article className="border-on-surface border bg-white">
+      <article className="bg-surface-container-lowest shadow-elevated overflow-hidden rounded-2xl">
         <div className="border-outline space-y-2 border-b border-dashed p-6">
           <p className="text-label-md text-secondary">
             TICKET · {t.ticketName}

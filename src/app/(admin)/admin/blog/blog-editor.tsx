@@ -40,8 +40,8 @@ export interface BlogEditorInitial {
 
 const statusDot: Record<SeoCheckStatus, string> = {
   good: "bg-primary",
-  ok: "bg-amber-500",
-  bad: "bg-red-500",
+  ok: "bg-primary-container",
+  bad: "bg-error",
 };
 
 export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
@@ -388,7 +388,7 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
             <p className="text-secondary text-label-sm uppercase">Seo-score</p>
             <div className="mb-4 flex items-baseline gap-1">
               <span
-                className={`text-5xl font-extrabold ${seo.score >= 80 ? "text-primary" : seo.score >= 50 ? "text-amber-600" : "text-error"}`}
+                className={`text-5xl font-extrabold ${seo.score >= 80 ? "text-primary" : seo.score >= 50 ? "text-secondary" : "text-error"}`}
               >
                 {seo.score}
               </span>

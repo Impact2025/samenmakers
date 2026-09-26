@@ -217,7 +217,7 @@ export function ContactDetail({ id }: { id: string }) {
                     key={t}
                     type="button"
                     onClick={() => removeTag.mutate({ contactId: id, tag: t })}
-                    className="bg-surface-container hover:text-error border-surface-container bg-surface-container-lowest inline-flex items-center justify-center gap-2 rounded-full border px-2 py-1 text-xs transition-colors hover:border-red-400"
+                    className="bg-surface-container hover:text-error border-surface-container bg-surface-container-lowest hover:border-error/30 inline-flex items-center justify-center gap-2 rounded-full border px-2 py-1 text-xs transition-colors"
                     title="Klik om te verwijderen"
                   >
                     {t} ✕

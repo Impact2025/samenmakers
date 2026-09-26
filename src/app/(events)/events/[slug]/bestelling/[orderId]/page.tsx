@@ -81,7 +81,7 @@ export default async function OrderConfirmationPage({
               <li key={tk.code}>
                 <Link
                   href={`/tickets/${tk.code}`}
-                  className={`hover:border-on-surface flex items-center gap-3 border bg-white p-4 ${tk.status === "valid" ? "border-hairline" : "border-hairline opacity-50"}`}
+                  className={`hover:shadow-elevated bg-surface-container-lowest shadow-card flex items-center gap-3 rounded-2xl p-4 transition-shadow ${tk.status === "valid" ? "" : "opacity-50"}`}
                 >
                   <Ticket
                     size={18}
@@ -141,7 +141,7 @@ export default async function OrderConfirmationPage({
       </section>
 
       {!session?.user && done && (
-        <section className="border-on-surface space-y-3 border bg-white p-5">
+        <section className="bg-surface-container-lowest shadow-elevated space-y-3 rounded-2xl p-5">
           <p className="text-on-surface font-extrabold">
             Blijf in contact met de andere deelnemers
           </p>

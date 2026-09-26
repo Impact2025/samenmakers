@@ -206,7 +206,7 @@ export function MailManager() {
                 ontvangers
               </strong>
               {preview.data?.capped && (
-                <span className="text-amber-600"> (max bereikt)</span>
+                <span className="text-secondary"> (max bereikt)</span>
               )}
               <span className="text-secondary">
                 {" "}

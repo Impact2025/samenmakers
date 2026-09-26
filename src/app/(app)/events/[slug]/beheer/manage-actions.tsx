@@ -64,7 +64,7 @@ export function ManageActions({
 
   return (
     <section
-      className="border-on-surface space-y-4 border bg-white p-5"
+      className="bg-surface-container-lowest shadow-elevated space-y-4 rounded-2xl p-5"
       aria-label="Status"
     >
       <div className="flex flex-wrap items-center gap-3">

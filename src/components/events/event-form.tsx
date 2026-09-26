@@ -44,7 +44,7 @@ export interface EventFormInitial {
 }
 
 const field =
-  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-secondary focus:outline-none focus:border-on-surface";
+  "w-full h-[50px] px-4 rounded-xl bg-surface-container-low text-body-md text-on-surface placeholder:text-secondary border border-transparent outline-none transition-all focus:bg-surface-container-lowest focus:border-primary-container focus:ring-[3px] focus:ring-primary-container/15";
 const label = "text-label-md text-secondary block mb-2";
 
 /**

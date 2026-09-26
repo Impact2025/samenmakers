@@ -66,7 +66,7 @@ function DefaultErrorFallback({ error }: { error: Error | null }) {
           Dit onderdeel kon niet worden geladen. Probeer de pagina te verversen.
         </p>
         {process.env.NODE_ENV === "development" && error && (
-          <pre className="bg-error-container mb-4 max-h-32 overflow-auto rounded border border-red-200 p-3 text-left text-xs">
+          <pre className="bg-error-container border-error/30 mb-4 max-h-32 overflow-auto rounded border p-3 text-left text-xs">
             {error.name}: {error.message}
           </pre>
         )}

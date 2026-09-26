@@ -19,7 +19,7 @@ type Manage = inferRouterOutputs<AppRouter>["tickets"]["manage"];
 type TicketRow = Manage["tickets"][number];
 
 const input =
-  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface placeholder:text-secondary focus:outline-none focus:border-on-surface";
+  "w-full h-[50px] px-4 rounded-xl bg-surface-container-low text-body-md text-on-surface placeholder:text-secondary border border-transparent outline-none transition-all focus:bg-surface-container-lowest focus:border-primary-container focus:ring-[3px] focus:ring-primary-container/15";
 const label = "text-label-md text-secondary block mb-1";
 
 const ORDER_STATUS: Record<string, string> = {
@@ -52,7 +52,7 @@ export function TicketsManager({
   return (
     <div className="space-y-6">
       {!data.canSellPaid && (
-        <div className="border-on-surface text-body-md text-on-surface flex flex-wrap items-center justify-between gap-3 border bg-white p-4">
+        <div className="text-body-md text-on-surface bg-surface-container-lowest shadow-elevated flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
           <span>
             Wil je betaalde tickets verkopen? Koppel eerst je uitbetaalrekening
             via Stripe.
@@ -227,7 +227,7 @@ function TicketForm({
 
   return (
     <form
-      className="border-on-surface space-y-4 border bg-white p-5"
+      className="bg-surface-container-lowest shadow-elevated space-y-4 rounded-2xl p-5"
       onSubmit={(e) => {
         e.preventDefault();
         const cents = Math.round(

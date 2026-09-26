@@ -8,7 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { formatEuro } from "@/server/events/pricing";
 
 const input =
-  "w-full border border-hairline bg-white px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-on-surface";
+  "w-full h-[50px] px-4 rounded-xl bg-surface-container-low text-body-md text-on-surface placeholder:text-secondary border border-transparent outline-none transition-all focus:bg-surface-container-lowest focus:border-primary-container focus:ring-[3px] focus:ring-primary-container/15";
 
 export function TicketActions({
   code,

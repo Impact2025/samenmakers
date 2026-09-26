@@ -312,7 +312,7 @@ export function RsvpPanel({
   return (
     <section
       aria-label="Aanmelden"
-      className="border-on-surface space-y-3 border bg-white p-5"
+      className="bg-surface-container-lowest shadow-elevated space-y-3 rounded-2xl p-5"
     >
       {body}
       {message && (

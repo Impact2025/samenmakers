@@ -210,12 +210,7 @@ export function EventCheckinPanel({
                 key={a.id}
                 className="bg-surface-container-low flex items-center gap-3 rounded-2xl px-3 py-2.5"
               >
-                <Avatar
-                  src={a.user.avatarUrl}
-                  naam={name(a)}
-                  size="xs"
-                  grayscale
-                />
+                <Avatar src={a.user.avatarUrl} naam={name(a)} size="xs" />
                 <span className="text-on-surface-variant truncate text-sm">
                   {name(a)}
                 </span>

@@ -84,7 +84,7 @@ export default async function SectorPage({ params }: Props) {
           </p>
           <Link
             href="/aanmelden"
-            className="text-on-surface text-label-md inline-block bg-white px-8 py-3 font-bold transition-colors hover:bg-white/90"
+            className="text-primary text-label-lg bg-surface-container-lowest inline-flex h-12 items-center rounded-full px-8 transition-transform hover:scale-[1.02]"
           >
             Gratis aanmelden
           </Link>

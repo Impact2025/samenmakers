@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Admin — Blog" };
 
 function scoreColor(score: number) {
   if (score >= 80) return "text-primary";
-  if (score >= 50) return "text-amber-600";
+  if (score >= 50) return "text-secondary";
   return "text-error";
 }
 

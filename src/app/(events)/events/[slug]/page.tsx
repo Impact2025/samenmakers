@@ -71,7 +71,7 @@ export default async function EventPage({ params }: Props) {
   if (data.access === "not_found") notFound();
   if (data.access === "login_required") {
     return (
-      <div className="border-hairline max-w-xl border bg-white p-8">
+      <div className="bg-surface-container-lowest shadow-card max-w-xl rounded-2xl p-8">
         <p className="text-label-md text-secondary mb-2">ALLEEN VOOR LEDEN</p>
         <h1 className="text-headline-lg text-on-surface mb-4">{data.title}</h1>
         <p className="text-body-md text-on-surface-variant mb-6">
