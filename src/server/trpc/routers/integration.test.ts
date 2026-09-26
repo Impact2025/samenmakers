@@ -40,6 +40,9 @@ const BASE_USERS = [
     id: "u1",
     naam: "Alice",
     email: "alice@test.com",
+    password: "$2a$12$fakehashfakehashfakehash",
+    stripeCustomerId: "cus_123",
+    referralCode: "ALICE123",
     sector: "Social Impact",
     regio: "Amsterdam",
     fase: "starter",
@@ -110,7 +113,7 @@ const BASE_USERS = [
 describe("users router", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    const m = createMockDb({ users: BASE_USERS });
+    const m = createMockDb({ users: BASE_USERS, blockedUsers: [] });
     dbHolder.value = m;
     authHolder.value = {
       user: {
@@ -151,6 +154,28 @@ describe("users router", () => {
     const result = await caller.users.byId({ id: "u2" });
     expect(result).not.toBeNull();
     expect(result?.naam).toBeTruthy();
+  });
+
+  it("never leaks password hash, e-mail, Stripe or CRM fields of other members", async () => {
+    const caller = createTestCaller(dbHolder.value, { id: "u1", role: "user" });
+    for (const result of [
+      await caller.users.byId({ id: "u2" }),
+      await caller.users.byNaam({ naam: "Alice" }),
+    ]) {
+      expect(result).toBeTruthy();
+      for (const key of [
+        "password",
+        "email",
+        "stripeCustomerId",
+        "subscriptionId",
+        "crmStage",
+        "crmTags",
+        "referralCode",
+        "role",
+      ]) {
+        expect(result).not.toHaveProperty(key);
+      }
+    }
   });
 
   it("byNaam returns a user (public)", async () => {

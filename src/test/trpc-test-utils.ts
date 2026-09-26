@@ -46,20 +46,40 @@ export function createTestCaller(
 
 type Store = Record<string, any[]>;
 
+/** Past Drizzle's `columns`-optie toe (true = alleen deze, false = deze weglaten). */
+function project(row: any, columns?: Record<string, boolean>) {
+  if (!row || !columns) return row;
+  const entries = Object.entries(columns);
+  if (entries.some(([, v]) => v)) {
+    return Object.fromEntries(
+      entries.filter(([, v]) => v).map(([k]) => [k, row[k]]),
+    );
+  }
+  const drop = new Set(entries.map(([k]) => k));
+  return Object.fromEntries(Object.entries(row).filter(([k]) => !drop.has(k)));
+}
+
 function makeQueryApi(stores: Store) {
   const query: Record<string, { findFirst: Function; findMany: Function }> = {};
 
   for (const key of Object.keys(stores)) {
     query[key] = {
-      findFirst: (_opts?: { where?: any }) => {
+      findFirst: (opts?: {
+        where?: any;
+        columns?: Record<string, boolean>;
+      }) => {
         const rows = stores[key] ?? [];
-        return rows[0] ?? null;
+        return project(rows[0], opts?.columns) ?? null;
       },
-      findMany: (opts?: { where?: any; limit?: number }) => {
+      findMany: (opts?: {
+        where?: any;
+        limit?: number;
+        columns?: Record<string, boolean>;
+      }) => {
         let rows = stores[key] ?? [];
         if (opts?.limit && opts.limit < rows.length)
           rows = rows.slice(0, opts.limit);
-        return rows;
+        return rows.map((r) => project(r, opts?.columns));
       },
     };
   }
