@@ -6,6 +6,9 @@ import { events, posts } from "@/server/db/schema";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 
+// Leest uit de database: niet tijdens de build prerenderen (CI heeft geen database).
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sectorUrls = SECTOREN.map((s) => ({
     url: `${APP_URL}/sector/${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
