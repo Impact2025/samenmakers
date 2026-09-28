@@ -1,16 +1,25 @@
 import { z } from "zod";
 import { eq, and, desc, ilike } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure, proProcedure, adminProcedure } from "@/server/trpc/init";
-import { posts, postComments, postReactions, bookmarks } from "@/server/db/schema";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  proProcedure,
+  adminProcedure,
+} from "@/server/trpc/init";
+import {
+  posts,
+  postComments,
+  postReactions,
+  bookmarks,
+} from "@/server/db/schema";
+import { publicUserColumns } from "@/server/db/user-columns";
 import { slugify } from "@/lib/utils";
 
 export const postsRouter = createTRPCRouter({
   list: protectedProcedure
     .input(
       z.object({
-        category: z
-          .enum(["blog", "kennisbank", "tool", "funding"])
-          .optional(),
+        category: z.enum(["blog", "kennisbank", "tool", "funding"]).optional(),
         search: z.string().optional(),
         limit: z.number().min(1).max(50).default(20),
         cursor: z.string().optional(),
@@ -19,13 +28,14 @@ export const postsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const conditions = [eq(posts.isPublished, true)];
       if (input.category) conditions.push(eq(posts.category, input.category));
-      if (input.search) conditions.push(ilike(posts.title, `%${input.search}%`));
+      if (input.search)
+        conditions.push(ilike(posts.title, `%${input.search}%`));
 
       const rows = await ctx.db.query.posts.findMany({
         where: and(...conditions),
         orderBy: [desc(posts.publishedAt)],
         limit: input.limit + 1,
-        with: { author: true },
+        with: { author: { columns: publicUserColumns } },
       });
 
       const hasMore = rows.length > input.limit;
@@ -41,8 +51,11 @@ export const postsRouter = createTRPCRouter({
       return ctx.db.query.posts.findFirst({
         where: and(eq(posts.slug, input.slug), eq(posts.isPublished, true)),
         with: {
-          author: true,
-          comments: { with: { author: true }, orderBy: (c, { asc }) => [asc(c.createdAt)] },
+          author: { columns: publicUserColumns },
+          comments: {
+            with: { author: { columns: publicUserColumns } },
+            orderBy: (c, { asc }) => [asc(c.createdAt)],
+          },
           reactions: true,
         },
       });
@@ -73,7 +86,9 @@ export const postsRouter = createTRPCRouter({
     }),
 
   comment: protectedProcedure
-    .input(z.object({ postId: z.string(), content: z.string().min(1).max(1000) }))
+    .input(
+      z.object({ postId: z.string(), content: z.string().min(1).max(1000) }),
+    )
     .mutation(async ({ ctx, input }) => {
       const [comment] = await ctx.db
         .insert(postComments)

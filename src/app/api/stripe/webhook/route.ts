@@ -86,16 +86,23 @@ export async function POST(req: Request) {
             : eq(coupons.stripeCouponId, couponStripeId!),
         });
         if (ours) {
-          await db.insert(couponRedemptions).values({
-            couponId: ours.id,
-            userId,
-            stripeSessionId: s.id,
-            amountDiscounted: s.total_details?.amount_discount ?? null,
-          });
-          await db
-            .update(coupons)
-            .set({ timesRedeemed: sql`${coupons.timesRedeemed} + 1` })
-            .where(eq(coupons.id, ours.id));
+          // Idempotent: Stripe kan dit event vaker sturen; tel een sessie maar één keer.
+          const inserted = await db
+            .insert(couponRedemptions)
+            .values({
+              couponId: ours.id,
+              userId,
+              stripeSessionId: s.id,
+              amountDiscounted: s.total_details?.amount_discount ?? null,
+            })
+            .onConflictDoNothing({ target: couponRedemptions.stripeSessionId })
+            .returning({ id: couponRedemptions.id });
+          if (inserted.length > 0) {
+            await db
+              .update(coupons)
+              .set({ timesRedeemed: sql`${coupons.timesRedeemed} + 1` })
+              .where(eq(coupons.id, ours.id));
+          }
         }
       }
       break;
@@ -106,9 +113,9 @@ export async function POST(req: Request) {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
       const status =
-        sub.status === "active"
+        sub.status === "active" || sub.status === "trialing"
           ? "active"
-          : sub.status === "past_due"
+          : sub.status === "past_due" || sub.status === "unpaid"
             ? "past_due"
             : "canceled";
 

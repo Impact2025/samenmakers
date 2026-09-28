@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
 import { auth } from "@/server/auth/config";
 import { NextResponse } from "next/server";
+import { validateImage } from "@/lib/upload";
 
 export const runtime = "nodejs";
 
@@ -10,19 +11,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const form = await request.formData();
-  const file = form.get("file");
-  if (!(file instanceof File)) {
-    return NextResponse.json({ error: "Geen bestand meegegeven" }, { status: 400 });
+  const form = await request.formData().catch(() => null);
+  const file = form?.get("file");
+  const check = await validateImage(file);
+  if (!check.ok) {
+    return NextResponse.json({ error: check.error }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const filename = `posts/${session.user.id}-${Date.now()}.${ext}`;
-
-  const blob = await put(filename, file, {
-    access: "public",
-    contentType: file.type,
-  });
+  // Type en extensie komen uit de bestandsinhoud, nooit uit wat de client opgeeft.
+  const blob = await put(
+    `posts/${session.user.id}.${check.ext}`,
+    file as File,
+    {
+      access: "public",
+      contentType: check.contentType,
+      addRandomSuffix: true,
+    },
+  );
 
   return NextResponse.json({ url: blob.url });
 }

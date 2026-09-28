@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RegisterForm } from "./register-form";
+import { enabledOAuthProviders } from "@/server/auth/providers";
 
 export const metadata: Metadata = { title: "Aanmelden" };
 
@@ -20,6 +21,7 @@ export default async function RegisterPage({ searchParams }: Props) {
         </p>
       </div>
       <RegisterForm
+        providers={enabledOAuthProviders()}
         {...(ref ? { referralCode: ref } : {})}
         {...(email ? { initialEmail: email } : {})}
       />

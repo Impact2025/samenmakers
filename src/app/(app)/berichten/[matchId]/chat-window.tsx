@@ -86,6 +86,8 @@ export function ChatWindow({ matchId, myId, other, initialMessages }: Props) {
 
   useEffect(() => {
     void markRead.mutate({ matchId });
+    // markRead is bij elke render een nieuw object; alleen bij wisselen van gesprek markeren.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchId]);
 
   const messages = data?.items ?? initialMessages;

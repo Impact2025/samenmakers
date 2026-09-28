@@ -5,7 +5,13 @@ import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-function logError({ path, error }: { path: string | undefined; error: unknown }) {
+function logError({
+  path,
+  error,
+}: {
+  path: string | undefined;
+  error: unknown;
+}) {
   console.error(`tRPC error on ${path ?? "<no-path>"}:`, error);
 }
 

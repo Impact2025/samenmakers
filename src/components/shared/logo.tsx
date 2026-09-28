@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Beeldmerk: magenta tegel met vinkje. */
+/** Beeldmerk: vijf magenta stippen die samen een pijl/chevron vormen. */
 export function LogoMark({
   size = 32,
   className,
@@ -12,20 +12,16 @@ export function LogoMark({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 40 40"
+      viewBox="93 62.5 396 396"
+      fill="#dd026a"
       className={cn("shrink-0", className)}
       aria-hidden
     >
-      <rect width="40" height="40" rx="10" fill="#d8006e" />
-      <path
-        d="M11 20.5l6.2 6.2L29 13.5"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="4.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="29.3" cy="12.2" r="2.6" fill="#fff" />
+      <circle cx="221" cy="122.7" r="27.1" />
+      <circle cx="292.5" cy="195.6" r="27.1" />
+      <circle cx="361.1" cy="260.4" r="27.1" />
+      <circle cx="292.6" cy="333.6" r="27.1" />
+      <circle cx="221.1" cy="398.3" r="27.1" />
     </svg>
   );
 }

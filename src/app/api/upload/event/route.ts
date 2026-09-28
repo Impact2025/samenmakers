@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
 import { auth } from "@/server/auth/config";
 import { NextResponse } from "next/server";
+import { validateImage } from "@/lib/upload";
 
 export const runtime = "nodejs";
 
@@ -10,37 +11,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const form = await request.formData();
-  const file = form.get("file");
-  if (!(file instanceof File)) {
-    return NextResponse.json(
-      { error: "Geen bestand meegegeven" },
-      { status: 400 },
-    );
+  const form = await request.formData().catch(() => null);
+  const file = form?.get("file");
+  const check = await validateImage(file);
+  if (!check.ok) {
+    return NextResponse.json({ error: check.error }, { status: 400 });
   }
 
-  // Alleen afbeeldingen: een publieke blob met willekeurig type (bijv. HTML) is een XSS-risico.
-  const EXT: Record<string, string> = {
-    "image/jpeg": "jpg",
-    "image/png": "png",
-    "image/webp": "webp",
-  };
-  const ext = EXT[file.type];
-  if (!ext) {
-    return NextResponse.json(
-      { error: "Alleen JPG, PNG of WebP" },
-      { status: 400 },
-    );
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    return NextResponse.json({ error: "Maximaal 5 MB" }, { status: 400 });
-  }
-  const filename = `events/${session.user.id}-${Date.now()}.${ext}`;
-
-  const blob = await put(filename, file, {
-    access: "public",
-    contentType: file.type,
-  });
+  // Type en extensie komen uit de bestandsinhoud, nooit uit wat de client opgeeft.
+  const blob = await put(
+    `events/${session.user.id}.${check.ext}`,
+    file as File,
+    {
+      access: "public",
+      contentType: check.contentType,
+      addRandomSuffix: true,
+    },
+  );
 
   return NextResponse.json({ url: blob.url });
 }

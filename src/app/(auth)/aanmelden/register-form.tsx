@@ -6,13 +6,15 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { OAuthButtons, OrDivider } from "../oauth-buttons";
+import { OAuthButtons, OrDivider, type OAuthProviders } from "../oauth-buttons";
 
 // initialEmail: vanuit een gastbestelling (?email=) alvast invullen, zodat tickets direct gekoppeld zijn.
 export function RegisterForm({
   referralCode,
   initialEmail = "",
+  providers,
 }: {
+  providers: OAuthProviders;
   referralCode?: string;
   initialEmail?: string;
 }) {
@@ -63,8 +65,9 @@ export function RegisterForm({
         verb="Aanmelden"
         loading={oauthLoading}
         onSelect={(p) => void handleOAuth(p)}
+        providers={providers}
       />
-      <OrDivider />
+      {(providers.google || providers.linkedin) && <OrDivider />}
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
         <Input

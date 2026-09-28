@@ -46,3 +46,15 @@ next-env.d.ts
 
 # Claude Code local settings
 .claude/
+
+# Lokale hulpscripts (bevatten testgegevens), ontwerpbestanden en Office-tempbestanden
+scripts/admin-check.ts
+scripts/check-tables.ts
+scripts/check-user.ts
+scripts/reset-password.ts
+scripts/test-password.ts
+scripts/test-queries.ts
+scripts/verify-user.ts
+DESIGNER/
+Projectplan.*
+~$*

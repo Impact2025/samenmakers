@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eq, and, isNull } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc/init";
 import { bookmarks, connectionNotes, profileViews } from "@/server/db/schema";
+import { publicUserColumns } from "@/server/db/user-columns";
 import { createNotification } from "@/lib/notify";
 
 export const connectionsRouter = createTRPCRouter({
@@ -36,7 +37,7 @@ export const connectionsRouter = createTRPCRouter({
         // Only profile bookmarks (not post bookmarks)
         isNull(bookmarks.postId),
       ),
-      with: { user: true },
+      with: { user: { columns: publicUserColumns } },
       orderBy: (b, { desc }) => [desc(b.createdAt)],
     });
   }),

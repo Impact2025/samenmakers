@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { eq, and, desc, ilike } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure, proProcedure } from "@/server/trpc/init";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  proProcedure,
+} from "@/server/trpc/init";
 import { questions, questionAnswers } from "@/server/db/schema";
+import { publicUserColumns } from "@/server/db/user-columns";
 
 export const questionsRouter = createTRPCRouter({
   list: protectedProcedure
@@ -16,15 +21,16 @@ export const questionsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const conditions = [];
       if (input.sector) conditions.push(eq(questions.sector, input.sector));
-      if (input.search) conditions.push(ilike(questions.title, `%${input.search}%`));
+      if (input.search)
+        conditions.push(ilike(questions.title, `%${input.search}%`));
 
       const rows = await ctx.db.query.questions.findMany({
         where: conditions.length > 0 ? and(...conditions) : undefined,
         orderBy: [desc(questions.createdAt)],
         limit: input.limit + 1,
         with: {
-          author: true,
-          answers: { with: { author: true } },
+          author: { columns: publicUserColumns },
+          answers: { with: { author: { columns: publicUserColumns } } },
         },
       });
 
@@ -41,10 +47,13 @@ export const questionsRouter = createTRPCRouter({
       return ctx.db.query.questions.findFirst({
         where: eq(questions.id, input.id),
         with: {
-          author: true,
+          author: { columns: publicUserColumns },
           answers: {
-            with: { author: true },
-            orderBy: (a, { desc, asc }) => [desc(a.isAccepted), asc(a.createdAt)],
+            with: { author: { columns: publicUserColumns } },
+            orderBy: (a, { desc, asc }) => [
+              desc(a.isAccepted),
+              asc(a.createdAt),
+            ],
           },
         },
       });

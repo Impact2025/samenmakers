@@ -25,14 +25,14 @@ const createInput = z
     maxRedemptions: z.number().int().positive().optional(),
     expiresAt: z.date().optional(),
   })
-  .refine(
-    (v) => v.discountType !== "percent" || v.discountValue <= 100,
-    { message: "Percentage moet ≤ 100 zijn", path: ["discountValue"] },
-  )
-  .refine(
-    (v) => v.duration !== "repeating" || !!v.durationInMonths,
-    { message: "Aantal maanden vereist bij 'repeating'", path: ["durationInMonths"] },
-  );
+  .refine((v) => v.discountType !== "percent" || v.discountValue <= 100, {
+    message: "Percentage moet ≤ 100 zijn",
+    path: ["discountValue"],
+  })
+  .refine((v) => v.duration !== "repeating" || !!v.durationInMonths, {
+    message: "Aantal maanden vereist bij 'repeating'",
+    path: ["durationInMonths"],
+  });
 
 export const couponsRouter = createTRPCRouter({
   list: adminProcedure.query(async ({ ctx }) => {
@@ -42,80 +42,86 @@ export const couponsRouter = createTRPCRouter({
     });
   }),
 
-  create: adminProcedure
-    .input(createInput)
-    .mutation(async ({ ctx, input }) => {
-      const code = input.code.toUpperCase();
-      const stripe = getStripe();
+  create: adminProcedure.input(createInput).mutation(async ({ ctx, input }) => {
+    const code = input.code.toUpperCase();
+    const stripe = getStripe();
 
-      // Reject duplicates early (case-insensitive via stored uppercase).
-      const existing = await ctx.db.query.coupons.findFirst({
-        where: eq(coupons.code, code),
+    // Reject duplicates early (case-insensitive via stored uppercase).
+    const existing = await ctx.db.query.coupons.findFirst({
+      where: eq(coupons.code, code),
+    });
+    if (existing) {
+      throw new TRPCError({ code: "CONFLICT", message: "Code bestaat al." });
+    }
+
+    try {
+      const couponParams: Stripe.CouponCreateParams = {
+        name: code,
+        duration: input.duration,
+        ...(input.duration === "repeating" && input.durationInMonths
+          ? { duration_in_months: input.durationInMonths }
+          : {}),
+        ...(input.maxRedemptions
+          ? { max_redemptions: input.maxRedemptions }
+          : {}),
+      };
+      if (input.discountType === "percent") {
+        couponParams.percent_off = input.discountValue;
+      } else {
+        couponParams.amount_off = input.discountValue;
+        couponParams.currency = "eur";
+      }
+
+      const stripeCoupon = await stripe.coupons.create(couponParams);
+
+      const promo = await stripe.promotionCodes.create({
+        promotion: { type: "coupon", coupon: stripeCoupon.id },
+        code,
+        ...(input.maxRedemptions
+          ? { max_redemptions: input.maxRedemptions }
+          : {}),
+        ...(input.expiresAt
+          ? { expires_at: Math.floor(input.expiresAt.getTime() / 1000) }
+          : {}),
       });
-      if (existing) {
-        throw new TRPCError({ code: "CONFLICT", message: "Code bestaat al." });
-      }
 
-      try {
-        const couponParams: Stripe.CouponCreateParams = {
-          name: code,
-          duration: input.duration,
-          ...(input.duration === "repeating" && input.durationInMonths
-            ? { duration_in_months: input.durationInMonths }
-            : {}),
-          ...(input.maxRedemptions ? { max_redemptions: input.maxRedemptions } : {}),
-        };
-        if (input.discountType === "percent") {
-          couponParams.percent_off = input.discountValue;
-        } else {
-          couponParams.amount_off = input.discountValue;
-          couponParams.currency = "eur";
-        }
-
-        const stripeCoupon = await stripe.coupons.create(couponParams);
-
-        const promo = await stripe.promotionCodes.create({
-          promotion: { type: "coupon", coupon: stripeCoupon.id },
+      const [row] = await ctx.db
+        .insert(coupons)
+        .values({
           code,
-          ...(input.maxRedemptions ? { max_redemptions: input.maxRedemptions } : {}),
-          ...(input.expiresAt
-            ? { expires_at: Math.floor(input.expiresAt.getTime() / 1000) }
-            : {}),
-        });
+          description: input.description,
+          stripeCouponId: stripeCoupon.id,
+          stripePromotionCodeId: promo.id,
+          discountType: input.discountType,
+          discountValue: input.discountValue,
+          duration: input.duration,
+          durationInMonths: input.durationInMonths ?? null,
+          maxRedemptions: input.maxRedemptions ?? null,
+          expiresAt: input.expiresAt ?? null,
+          createdBy: ctx.userId,
+        })
+        .returning();
 
-        const [row] = await ctx.db
-          .insert(coupons)
-          .values({
-            code,
-            description: input.description,
-            stripeCouponId: stripeCoupon.id,
-            stripePromotionCodeId: promo.id,
-            discountType: input.discountType,
-            discountValue: input.discountValue,
-            duration: input.duration,
-            durationInMonths: input.durationInMonths ?? null,
-            maxRedemptions: input.maxRedemptions ?? null,
-            expiresAt: input.expiresAt ?? null,
-            createdBy: ctx.userId,
-          })
-          .returning();
+      await ctx.db.insert(auditLog).values({
+        adminId: ctx.userId,
+        action: "create_coupon",
+        targetType: "coupon",
+        targetId: row!.id,
+        details: JSON.stringify({
+          code,
+          type: input.discountType,
+          value: input.discountValue,
+        }),
+      });
 
-        await ctx.db.insert(auditLog).values({
-          adminId: ctx.userId,
-          action: "create_coupon",
-          targetType: "coupon",
-          targetId: row!.id,
-          details: JSON.stringify({ code, type: input.discountType, value: input.discountValue }),
-        });
-
-        return row;
-      } catch (err) {
-        if (err instanceof TRPCError) throw err;
-        const message =
-          err instanceof Error ? err.message : "Aanmaken bij Stripe mislukt.";
-        throw new TRPCError({ code: "BAD_REQUEST", message });
-      }
-    }),
+      return row;
+    } catch (err) {
+      if (err instanceof TRPCError) throw err;
+      const message =
+        err instanceof Error ? err.message : "Aanmaken bij Stripe mislukt.";
+      throw new TRPCError({ code: "BAD_REQUEST", message });
+    }
+  }),
 
   setActive: adminProcedure
     .input(z.object({ id: z.string(), active: z.boolean() }))
@@ -150,13 +156,16 @@ export const couponsRouter = createTRPCRouter({
       if (coupon.timesRedeemed > 0) {
         throw new TRPCError({
           code: "PRECONDITION_FAILED",
-          message: "Code is al gebruikt — deactiveer hem in plaats van verwijderen.",
+          message:
+            "Code is al gebruikt — deactiveer hem in plaats van verwijderen.",
         });
       }
 
       // Delete the underlying Stripe coupon (also disables the promo code).
       if (coupon.stripeCouponId) {
-        await getStripe().coupons.del(coupon.stripeCouponId).catch(() => undefined);
+        await getStripe()
+          .coupons.del(coupon.stripeCouponId)
+          .catch(() => undefined);
       }
       await ctx.db.delete(coupons).where(eq(coupons.id, input.id));
       await ctx.db.insert(auditLog).values({
@@ -180,13 +189,19 @@ export const couponsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Ongeldige code." });
       }
       if (coupon.expiresAt && coupon.expiresAt < new Date()) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Code is verlopen." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Code is verlopen.",
+        });
       }
       if (
         coupon.maxRedemptions !== null &&
         coupon.timesRedeemed >= coupon.maxRedemptions
       ) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Code is uitverkocht." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Code is uitverkocht.",
+        });
       }
       return {
         code: coupon.code,

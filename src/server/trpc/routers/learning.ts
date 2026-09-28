@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { publicUserColumns } from "@/server/db/user-columns";
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, ne } from "drizzle-orm";
 import {
@@ -354,7 +355,7 @@ export const learningRouter = createTRPCRouter({
       const { lessons: flat } = await loadCurriculum(ctx.db, cohort.program.id);
       const members = await ctx.db.query.cohortMembers.findMany({
         where: eq(cohortMembers.cohortId, cohort.id),
-        with: { user: true },
+        with: { user: { columns: { ...publicUserColumns, email: true } } }, // staf mag cursisten mailen
       });
       const learners = members.filter(
         (m) => m.role === "cursist" || m.role === "alumnus",

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { publicUserColumns } from "@/server/db/user-columns";
 import { eq, desc, gte, count, sql, and } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
@@ -35,14 +36,32 @@ export const adminRouter = createTRPCRouter({
       totalCohortMembers,
     ] = await Promise.all([
       ctx.db.select({ count: count() }).from(users),
-      ctx.db.select({ count: count() }).from(users).where(gte(users.createdAt, thirtyDaysAgo)),
+      ctx.db
+        .select({ count: count() })
+        .from(users)
+        .where(gte(users.createdAt, thirtyDaysAgo)),
       ctx.db.select({ count: count() }).from(matches),
-      ctx.db.select({ count: count() }).from(matches).where(eq(matches.status, "matched")),
+      ctx.db
+        .select({ count: count() })
+        .from(matches)
+        .where(eq(matches.status, "matched")),
       ctx.db.select({ count: count() }).from(messages),
-      ctx.db.select({ count: sql<number>`count(distinct ${messages.senderId})` }).from(messages).where(gte(messages.createdAt, sevenDaysAgo)),
-      ctx.db.select({ count: count() }).from(posts).where(eq(posts.isPublished, true)),
-      ctx.db.select({ count: count() }).from(events).where(eq(events.isPublished, true)),
-      ctx.db.select({ count: count() }).from(users).where(eq(users.subscriptionStatus, "active")),
+      ctx.db
+        .select({ count: sql<number>`count(distinct ${messages.senderId})` })
+        .from(messages)
+        .where(gte(messages.createdAt, sevenDaysAgo)),
+      ctx.db
+        .select({ count: count() })
+        .from(posts)
+        .where(eq(posts.isPublished, true)),
+      ctx.db
+        .select({ count: count() })
+        .from(events)
+        .where(eq(events.isPublished, true)),
+      ctx.db
+        .select({ count: count() })
+        .from(users)
+        .where(eq(users.subscriptionStatus, "active")),
       ctx.db.select({ count: count() }).from(cohorts),
       ctx.db.select({ count: count() }).from(cohortMembers),
     ]);
@@ -53,9 +72,10 @@ export const adminRouter = createTRPCRouter({
     return {
       totalUsers: Number(totalUsers[0]?.count ?? 0),
       newUsersThisMonth: Number(newUsersThisMonth[0]?.count ?? 0),
-      matchRate: totalMatchCount > 0
-        ? Math.round((mutualMatchCount / totalMatchCount) * 100)
-        : 0,
+      matchRate:
+        totalMatchCount > 0
+          ? Math.round((mutualMatchCount / totalMatchCount) * 100)
+          : 0,
       totalMessages: Number(totalMessages[0]?.count ?? 0),
       activeUsersThisWeek: Number(activeUsersThisWeek[0]?.count ?? 0),
       totalPosts: Number(totalPosts[0]?.count ?? 0),
@@ -69,10 +89,14 @@ export const adminRouter = createTRPCRouter({
 
   // User management
   users: adminProcedure
-    .input(z.object({
-      limit: z.number().default(50),
-      status: z.enum(["active", "suspended", "banned", "pending_deletion"]).optional(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().default(50),
+        status: z
+          .enum(["active", "suspended", "banned", "pending_deletion"])
+          .optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const conditions = [];
       if (input.status) conditions.push(eq(users.status, input.status));
@@ -84,16 +108,23 @@ export const adminRouter = createTRPCRouter({
     }),
 
   updateUser: adminProcedure
-    .input(z.object({
-      id: z.string(),
-      isFeatured: z.boolean().optional(),
-      isVerified: z.boolean().optional(),
-      status: z.enum(["active", "suspended", "banned", "pending_deletion"]).optional(),
-      role: z.enum(["user", "admin"]).optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        isFeatured: z.boolean().optional(),
+        isVerified: z.boolean().optional(),
+        status: z
+          .enum(["active", "suspended", "banned", "pending_deletion"])
+          .optional(),
+        role: z.enum(["user", "admin"]).optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
-      await ctx.db.update(users).set({ ...data, updatedAt: new Date() }).where(eq(users.id, id));
+      await ctx.db
+        .update(users)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(users.id, id));
 
       await ctx.db.insert(auditLog).values({
         adminId: ctx.userId,
@@ -108,43 +139,92 @@ export const adminRouter = createTRPCRouter({
 
   // Content moderation
   pendingContent: adminProcedure.query(async ({ ctx }) => {
-    const [unpublishedPosts, unpublishedEvents, pendingReports] = await Promise.all([
-      ctx.db.query.posts.findMany({ where: eq(posts.isPublished, false), with: { author: true }, limit: 20 }),
-      ctx.db.query.events.findMany({ where: eq(events.isPublished, false), with: { organiser: true }, limit: 20 }),
-      ctx.db.query.reportedContent.findMany({ where: eq(reportedContent.status, "pending"), limit: 20 }),
-    ]);
+    const [unpublishedPosts, unpublishedEvents, pendingReports] =
+      await Promise.all([
+        ctx.db.query.posts.findMany({
+          where: eq(posts.isPublished, false),
+          with: { author: { columns: publicUserColumns } },
+          limit: 20,
+        }),
+        ctx.db.query.events.findMany({
+          where: eq(events.isPublished, false),
+          with: { organiser: { columns: publicUserColumns } },
+          limit: 20,
+        }),
+        ctx.db.query.reportedContent.findMany({
+          where: eq(reportedContent.status, "pending"),
+          limit: 20,
+        }),
+      ]);
     return { unpublishedPosts, unpublishedEvents, pendingReports };
   }),
 
   publishPost: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.update(posts).set({ isPublished: true, publishedAt: new Date() }).where(eq(posts.id, input.id));
-      await ctx.db.insert(auditLog).values({ adminId: ctx.userId, action: "publish_post", targetType: "post", targetId: input.id });
+      await ctx.db
+        .update(posts)
+        .set({ isPublished: true, publishedAt: new Date() })
+        .where(eq(posts.id, input.id));
+      await ctx.db.insert(auditLog).values({
+        adminId: ctx.userId,
+        action: "publish_post",
+        targetType: "post",
+        targetId: input.id,
+      });
       return { success: true };
     }),
 
   publishEvent: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.update(events).set({ isPublished: true }).where(eq(events.id, input.id));
-      await ctx.db.insert(auditLog).values({ adminId: ctx.userId, action: "publish_event", targetType: "event", targetId: input.id });
+      await ctx.db
+        .update(events)
+        .set({ isPublished: true })
+        .where(eq(events.id, input.id));
+      await ctx.db.insert(auditLog).values({
+        adminId: ctx.userId,
+        action: "publish_event",
+        targetType: "event",
+        targetId: input.id,
+      });
       return { success: true };
     }),
 
   resolveReport: adminProcedure
-    .input(z.object({ id: z.string(), status: z.enum(["resolved", "dismissed"]) }))
+    .input(
+      z.object({ id: z.string(), status: z.enum(["resolved", "dismissed"]) }),
+    )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.update(reportedContent).set({ status: input.status, resolvedBy: ctx.userId, resolvedAt: new Date() }).where(eq(reportedContent.id, input.id));
+      await ctx.db
+        .update(reportedContent)
+        .set({
+          status: input.status,
+          resolvedBy: ctx.userId,
+          resolvedAt: new Date(),
+        })
+        .where(eq(reportedContent.id, input.id));
       return { success: true };
     }),
 
   // Cohort management
   createCohort: adminProcedure
-    .input(z.object({ name: z.string(), description: z.string().optional(), isPublic: z.boolean().default(false) }))
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        isPublic: z.boolean().default(false),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-      const [cohort] = await ctx.db.insert(cohorts).values({ ...input, inviteCode, createdBy: ctx.userId }).returning();
+      const inviteCode = Math.random()
+        .toString(36)
+        .substring(2, 10)
+        .toUpperCase();
+      const [cohort] = await ctx.db
+        .insert(cohorts)
+        .values({ ...input, inviteCode, createdBy: ctx.userId })
+        .returning();
       return cohort;
     }),
 
