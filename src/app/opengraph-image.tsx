@@ -78,12 +78,12 @@ export default function OgImage() {
             gap: "12px",
           }}
         >
-          <svg width="48" height="48" viewBox="10 6.5 46 46" fill="#e6007d">
-            <circle cx="25" cy="13.6" r="3.2" />
-            <circle cx="33.1" cy="22.1" r="3.2" />
-            <circle cx="41" cy="29.5" r="3.2" />
-            <circle cx="33.2" cy="37.8" r="3.2" />
-            <circle cx="24.9" cy="45.3" r="3.2" />
+          <svg width="48" height="48" viewBox="93 62.5 396 396" fill="#dd026a">
+            <circle cx="221" cy="122.7" r="27.1" />
+            <circle cx="292.5" cy="195.6" r="27.1" />
+            <circle cx="361.1" cy="260.4" r="27.1" />
+            <circle cx="292.6" cy="333.6" r="27.1" />
+            <circle cx="221.1" cy="398.3" r="27.1" />
           </svg>
           <span
             style={{
