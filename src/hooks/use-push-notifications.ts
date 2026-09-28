@@ -8,11 +8,10 @@ export function usePushNotifications() {
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
-    if (typeof Notification !== "undefined") {
-      // Alleen client-side beschikbaar; initiële state moet server-gelijk blijven.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPermission(Notification.permission);
-    }
+    if (typeof Notification === "undefined") return;
+    // Na mount de echte browserstatus lezen (server kent die niet).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPermission(Notification.permission);
   }, []);
 
   async function subscribe() {
