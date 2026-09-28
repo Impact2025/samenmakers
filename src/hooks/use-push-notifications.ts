@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 
 export function usePushNotifications() {
-  const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [permission, setPermission] =
+    useState<NotificationPermission>("default");
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
     if (typeof Notification !== "undefined") {
+      // Alleen client-side beschikbaar; initiële state moet server-gelijk blijven.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPermission(Notification.permission);
     }
   }, []);
