@@ -9,6 +9,10 @@
       "schedule": "15 * * * *"
     },
     {
+      "path": "/api/jobs/session-mailings",
+      "schedule": "30 6 * * *"
+    },
+    {
       "path": "/api/jobs/publish-scheduled",
       "schedule": "0 * * * *"
     },

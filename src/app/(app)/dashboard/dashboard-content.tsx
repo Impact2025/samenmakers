@@ -14,6 +14,7 @@ import {
   PenLine,
   TrendingUp,
 } from "lucide-react";
+import { COHORT_ROLE_LABELS } from "@/lib/learning";
 import { Avatar } from "@/components/ui/avatar";
 import { ProgressBar } from "@/components/learning/progress-bar";
 import { StatCard, IconTile } from "@/components/ui/stat-card";
@@ -95,7 +96,7 @@ export function DashboardContent({
               {edition
                 ? `${edition.cohort.name} • ${edition.program.name}`
                 : teaching[0]
-                  ? `${teaching[0].role === "manager" ? "Manager" : "Docent"} • ${teaching[0].program.name}`
+                  ? `${COHORT_ROLE_LABELS[teaching[0].role] ?? "Docent"} • ${teaching[0].program.name}`
                   : "Actief netwerk"}
             </span>
           </span>

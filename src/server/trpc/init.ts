@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import { users, cohortMembers } from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import superjson from "superjson";
+import { withinAccessWindow } from "@/lib/session-cycle";
 import { z, ZodError } from "zod";
 export async function createTRPCContext(opts: { req: Request }) {
   const session = await auth();
@@ -116,6 +117,19 @@ export function cohortRoleProcedure(roles: readonly CohortRole[]) {
         membership &&
         membership.status !== "uitgeschreven" &&
         roles.includes(membership.role);
+      // Tijdelijke toegang (docenten): buiten het venster geen toegang.
+      const inWindow =
+        !membership ||
+        withinAccessWindow(
+          { from: membership.accessFrom, until: membership.accessUntil },
+          new Date(),
+        );
+      if (allowed && !inWindow && !isAdmin) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Je toegang tot deze editie is (nog) niet actief",
+        });
+      }
       if (!allowed && !isAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",

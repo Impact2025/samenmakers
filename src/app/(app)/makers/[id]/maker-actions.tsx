@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, Bookmark, Flag, MoreHorizontal } from "lucide-react";
+import {
+  Heart,
+  Bookmark,
+  Flag,
+  MessageCircle,
+  MoreHorizontal,
+} from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +22,11 @@ export function MakerActions({ userId }: { userId: string }) {
         router.push("/berichten");
       }
     },
+  });
+
+  const canStart = trpc.messages.canStart.useQuery({ targetId: userId });
+  const start = trpc.messages.start.useMutation({
+    onSuccess: ({ matchId }) => router.push(`/berichten/${matchId}`),
   });
 
   const bookmark = trpc.connections.bookmark.useMutation();
@@ -32,6 +43,17 @@ export function MakerActions({ userId }: { userId: string }) {
         <Heart size={16} />
         Connect
       </Button>
+
+      {canStart.data?.allowed && (
+        <Button
+          variant="secondary"
+          onClick={() => start.mutate({ targetId: userId })}
+          disabled={start.isPending}
+        >
+          <MessageCircle size={16} />
+          Bericht
+        </Button>
+      )}
 
       <Button
         variant="secondary"

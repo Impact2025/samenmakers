@@ -133,6 +133,7 @@ export function TicketsManager({
             ticket={editing === "new" ? null : editing}
             isPro={data.isPro}
             canSellPaid={data.canSellPaid}
+            defaultPriceCents={data.defaultPriceCents}
             onDone={() => {
               setEditing(null);
               refresh();
@@ -196,6 +197,7 @@ function TicketForm({
   ticket,
   isPro,
   canSellPaid,
+  defaultPriceCents,
   onDone,
 }: {
   eventId: string;
@@ -203,6 +205,7 @@ function TicketForm({
   ticket: TicketRow | null;
   isPro: boolean;
   canSellPaid: boolean;
+  defaultPriceCents: number;
   onDone: () => void;
 }) {
   const tz = timezone || DEFAULT_EVENT_TZ;
@@ -210,7 +213,9 @@ function TicketForm({
     name: ticket?.name ?? "",
     description: ticket?.description ?? "",
     kind: ticket?.kind ?? ("free" as "free" | "paid" | "donation"),
-    price: ticket ? (ticket.priceCents / 100).toFixed(2).replace(".", ",") : "",
+    price: ((ticket?.priceCents ?? defaultPriceCents) / 100)
+      .toFixed(2)
+      .replace(".", ","),
     vatBps: String(ticket?.vatBps ?? 2100),
     quantity: ticket?.quantity ? String(ticket.quantity) : "",
     maxPerOrder: String(ticket?.maxPerOrder ?? 10),

@@ -155,6 +155,8 @@ const eventInput = z
     thema: z.string().max(80).optional(),
     visibility: z.enum(["public", "members", "unlisted"]).default("public"),
     waitlistOfferHours: z.number().int().min(1).max(168).default(24),
+    // Alleen door beheerders te wijzigen; voor anderen wordt dit genegeerd.
+    memberFree: z.boolean().optional(),
   })
   .refine((v) => !v.endAt || new Date(v.endAt) > new Date(v.startAt), {
     message: "Einde moet na de start liggen",
@@ -657,7 +659,7 @@ export const eventsRouter = createTRPCRouter({
     .input(eventInput.and(z.object({ publish: z.boolean().default(false) })))
     .mutation(async ({ ctx, input }) => {
       assertTimezone(input.timezone);
-      const { publish, ...data } = input;
+      const { publish, memberFree, ...data } = input;
       const coords =
         data.format !== "online" && data.location
           ? await geocode(data.location)
@@ -666,6 +668,7 @@ export const eventsRouter = createTRPCRouter({
         .insert(events)
         .values({
           ...data,
+          memberFree: isAdmin(ctx) ? (memberFree ?? true) : true,
           isOnline: data.format === "online",
           maxAttendees: data.maxAttendees ?? null,
           startAt: new Date(data.startAt),
@@ -693,7 +696,7 @@ export const eventsRouter = createTRPCRouter({
         });
       }
       assertTimezone(input.data.timezone);
-      const d = input.data;
+      const { memberFree, ...d } = input.data;
       const startAt = new Date(d.startAt);
       const endAt = d.endAt ? new Date(d.endAt) : null;
       const maxAttendees = d.maxAttendees ?? null;
@@ -722,6 +725,7 @@ export const eventsRouter = createTRPCRouter({
         .update(events)
         .set({
           ...d,
+          ...(isAdmin(ctx) && memberFree !== undefined ? { memberFree } : {}),
           isOnline: d.format === "online",
           location: d.location ?? null,
           meetingUrl: d.meetingUrl ?? null,

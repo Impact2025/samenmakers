@@ -15,7 +15,7 @@ import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
 type Cohort = inferRouterOutputs<AppRouter>["programs"]["cohortById"];
-type Role = "cursist" | "docent" | "manager" | "alumnus";
+type Role = "cursist" | "docent" | "manager" | "facilitator" | "alumnus";
 type MemberStatus = "actief" | "gepauzeerd" | "afgerond" | "uitgeschreven";
 type CohortStatus = "concept" | "open" | "lopend" | "afgerond";
 
@@ -73,10 +73,12 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
   });
 
   const staff = cohort.members.filter(
-    (m) => m.role === "docent" || m.role === "manager",
+    (m) =>
+      m.role === "docent" || m.role === "manager" || m.role === "facilitator",
   );
   const others = cohort.members.filter(
-    (m) => m.role !== "docent" && m.role !== "manager",
+    (m) =>
+      m.role !== "docent" && m.role !== "manager" && m.role !== "facilitator",
   );
 
   const memberRow = (m: Cohort["members"][number]) => {

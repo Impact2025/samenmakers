@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
+  cohorts,
   users,
   emailCampaigns,
   emailCampaignRecipients,
@@ -33,6 +34,16 @@ async function resolveRecipients(db: typeof DbClient, segment: Segment) {
 }
 
 export const campaignsRouter = createTRPCRouter({
+  // Edities om een segment op te kiezen (bijv. alle cursisten van één leergang).
+  cohortOptions: adminProcedure.query(async ({ ctx }) => {
+    const rows = await ctx.db
+      .select({ id: cohorts.id, name: cohorts.name })
+      .from(cohorts)
+      .where(isNotNull(cohorts.programId))
+      .orderBy(desc(cohorts.createdAt));
+    return rows;
+  }),
+
   list: adminProcedure.query(async ({ ctx }) => {
     return ctx.db.query.emailCampaigns.findMany({
       orderBy: [desc(emailCampaigns.createdAt)],

@@ -144,6 +144,7 @@ export const COHORT_ROLE_LABELS: Record<string, string> = {
   cursist: "Cursist",
   docent: "Docent",
   manager: "Programmamanager",
+  facilitator: "Facilitator",
   alumnus: "Alumnus",
 };
 

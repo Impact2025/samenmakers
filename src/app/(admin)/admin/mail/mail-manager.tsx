@@ -18,6 +18,14 @@ type Segment = {
   fase?: "starter" | "groei" | "scale" | undefined;
   subscriptionStatus?: "none" | "active" | "past_due" | "canceled" | undefined;
   stage?: "lead" | "engaged" | "customer" | "churned" | undefined;
+  cohortRole?:
+    | "cursist"
+    | "docent"
+    | "manager"
+    | "facilitator"
+    | "alumnus"
+    | undefined;
+  cohortId?: string | undefined;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -36,6 +44,7 @@ export function MailManager() {
   const [topic, setTopic] = useState("");
   const [segment, setSegment] = useState<Segment>({});
 
+  const cohortOptions = trpc.campaigns.cohortOptions.useQuery();
   const preview = trpc.campaigns.preview.useQuery(segment);
 
   const setSeg = (patch: Partial<Segment>) =>
@@ -140,6 +149,39 @@ export function MailManager() {
                 <option value="active">Pro actief</option>
                 <option value="none">Gratis</option>
                 <option value="canceled">Opgezegd</option>
+              </select>
+              <select
+                aria-label="Rol in leergang"
+                value={segment.cohortRole ?? ""}
+                onChange={(e) =>
+                  setSeg({
+                    cohortRole: (e.target.value ||
+                      undefined) as Segment["cohortRole"],
+                  })
+                }
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
+              >
+                <option value="">Alle rollen</option>
+                <option value="cursist">Cursisten</option>
+                <option value="docent">Docenten</option>
+                <option value="facilitator">Facilitators</option>
+                <option value="manager">Programmamanagers</option>
+                <option value="alumnus">Alumni</option>
+              </select>
+              <select
+                aria-label="Leergang"
+                value={segment.cohortId ?? ""}
+                onChange={(e) =>
+                  setSeg({ cohortId: e.target.value || undefined })
+                }
+                className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
+              >
+                <option value="">Alle leergangen</option>
+                {cohortOptions.data?.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
               </select>
               <select
                 value={segment.stage ?? ""}

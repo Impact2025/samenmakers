@@ -11,6 +11,7 @@ import {
   accounts,
   sessions,
   verificationTokens,
+  loginEvents,
 } from "@/server/db/schema";
 import { env } from "@/env";
 import { z } from "zod";
@@ -164,6 +165,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   events: {
+    // Loginregistratie voor het admin-dashboard; mag een login nooit blokkeren.
+    async signIn({ user }) {
+      if (!user.id) return;
+      try {
+        await db.insert(loginEvents).values({ userId: user.id });
+      } catch (e) {
+        console.error("[auth] login niet vastgelegd", e);
+      }
+    },
     async createUser({ user }) {
       if (!user.id) return;
       await db

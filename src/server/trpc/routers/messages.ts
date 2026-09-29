@@ -3,7 +3,54 @@ import { eq, and, or, lt, desc, sql, inArray, isNull } from "drizzle-orm";
 import Pusher from "pusher";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc/init";
-import { messages, matches } from "@/server/db/schema";
+import { messages, matches, blockedUsers, users } from "@/server/db/schema";
+import { canMessage } from "@/lib/access";
+import { loadPerson } from "@/server/learning/access";
+import type { db as DbClient } from "@/server/db";
+
+const NO_ACCESS =
+  "Tijdens de opleiding kun je alleen berichten sturen aan je eigen klas en docenten";
+
+/** Mag deze gebruiker contact hebben met de ander? (klasgrenzen, geblokkeerd, actief) */
+async function assertCanMessage(
+  db: typeof DbClient,
+  meId: string,
+  otherId: string,
+) {
+  if (meId === otherId)
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Je kunt jezelf geen bericht sturen",
+    });
+  const [me, other, blocked, target] = await Promise.all([
+    loadPerson(db, meId),
+    loadPerson(db, otherId),
+    db.query.blockedUsers.findFirst({
+      where: or(
+        and(
+          eq(blockedUsers.blockerId, meId),
+          eq(blockedUsers.blockedId, otherId),
+        ),
+        and(
+          eq(blockedUsers.blockerId, otherId),
+          eq(blockedUsers.blockedId, meId),
+        ),
+      ),
+      columns: { id: true },
+    }),
+    db.query.users.findFirst({
+      where: eq(users.id, otherId),
+      columns: { status: true },
+    }),
+  ]);
+  if (!me || !other || !target || target.status !== "active" || blocked)
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Je kunt deze gebruiker geen bericht sturen",
+    });
+  if (!canMessage(me, other))
+    throw new TRPCError({ code: "FORBIDDEN", message: NO_ACCESS });
+}
 
 function getPusher() {
   try {
@@ -20,6 +67,55 @@ function getPusher() {
 }
 
 export const messagesRouter = createTRPCRouter({
+  // Kan ik deze persoon een bericht sturen? Voor het tonen van de knop.
+  canStart: protectedProcedure
+    .input(z.object({ targetId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        await assertCanMessage(ctx.db, ctx.userId, input.targetId);
+        return { allowed: true as const };
+      } catch (e) {
+        if (e instanceof TRPCError) return { allowed: false as const };
+        throw e;
+      }
+    }),
+
+  // Alle leden kunnen elkaar direct berichten (zonder eerst te matchen), binnen de klasgrenzen.
+  start: protectedProcedure
+    .input(z.object({ targetId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await assertCanMessage(ctx.db, ctx.userId, input.targetId);
+      const existing = await ctx.db.query.matches.findFirst({
+        where: or(
+          and(
+            eq(matches.userId, ctx.userId),
+            eq(matches.targetId, input.targetId),
+          ),
+          and(
+            eq(matches.userId, input.targetId),
+            eq(matches.targetId, ctx.userId),
+          ),
+        ),
+      });
+      if (existing) {
+        if (existing.status !== "matched")
+          await ctx.db
+            .update(matches)
+            .set({ status: "matched", updatedAt: new Date() })
+            .where(eq(matches.id, existing.id));
+        return { matchId: existing.id };
+      }
+      const [row] = await ctx.db
+        .insert(matches)
+        .values({
+          userId: ctx.userId,
+          targetId: input.targetId,
+          status: "matched",
+        })
+        .returning({ id: matches.id });
+      return { matchId: row!.id };
+    }),
+
   // Load conversation history
   history: protectedProcedure
     .input(
@@ -86,6 +182,12 @@ export const messagesRouter = createTRPCRouter({
           code: "FORBIDDEN",
           message: "Geen toegang tot dit gesprek",
         });
+
+      await assertCanMessage(
+        ctx.db,
+        ctx.userId,
+        match.userId === ctx.userId ? match.targetId : match.userId,
+      );
 
       const [message] = await ctx.db
         .insert(messages)

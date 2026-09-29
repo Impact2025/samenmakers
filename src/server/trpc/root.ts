@@ -18,6 +18,11 @@ import { endorsementsRouter } from "@/server/trpc/routers/endorsements";
 import { learningRouter } from "@/server/trpc/routers/learning";
 import { programsRouter } from "@/server/trpc/routers/programs";
 import { teachingRouter } from "@/server/trpc/routers/teaching";
+import { sessionsRouter } from "@/server/trpc/routers/sessions";
+import { assignmentsRouter } from "@/server/trpc/routers/assignments";
+import { materialsRouter } from "@/server/trpc/routers/materials";
+import { feedRouter } from "@/server/trpc/routers/feed";
+import { membershipRouter } from "@/server/trpc/routers/membership";
 
 export const appRouter = createTRPCRouter({
   users: usersRouter,
@@ -39,6 +44,11 @@ export const appRouter = createTRPCRouter({
   learning: learningRouter,
   programs: programsRouter,
   teaching: teachingRouter,
+  sessions: sessionsRouter,
+  assignments: assignmentsRouter,
+  materials: materialsRouter,
+  feed: feedRouter,
+  membership: membershipRouter,
 });
 
 export type AppRouter = typeof appRouter;

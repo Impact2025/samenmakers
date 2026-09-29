@@ -41,6 +41,15 @@ export default async function OrderPage({ params, searchParams }: Props) {
         </p>
       </header>
 
+      {data.memberPricing && (
+        <p
+          className="text-body-md text-on-surface bg-tertiary-fixed rounded-2xl p-4"
+          role="status"
+        >
+          Je bent lid: je komt gratis binnen bij dit event.
+        </p>
+      )}
+
       {geannuleerd && (
         <p
           className="text-body-md text-on-surface-variant bg-surface-container-lowest shadow-card rounded-2xl p-4"

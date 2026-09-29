@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "@/server/db";
-import { users, coupons, couponRedemptions } from "@/server/db/schema";
+import {
+  users,
+  coupons,
+  couponRedemptions,
+  memberships,
+} from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { env } from "@/env";
 import {
@@ -12,6 +17,50 @@ import {
 import { syncConnectStatus } from "@/server/events/connect";
 
 export const runtime = "nodejs";
+
+type MembershipStatus = "active" | "past_due" | "canceled";
+
+/** Zet de lidmaatschapsrij van een gebruiker gelijk aan het Stripe-abonnement. */
+async function syncMembership(
+  sub: Stripe.Subscription,
+  force?: MembershipStatus,
+) {
+  const userId = sub.metadata?.userId;
+  if (!userId) {
+    console.error("[stripe/webhook] lidmaatschap zonder userId", sub.id);
+    return;
+  }
+  const status: MembershipStatus =
+    force ??
+    (sub.status === "active" || sub.status === "trialing"
+      ? "active"
+      : sub.status === "past_due" || sub.status === "unpaid"
+        ? "past_due"
+        : "canceled");
+  const end = sub.items.data[0]?.current_period_end;
+  const currentPeriodEnd = end ? new Date(end * 1000) : null;
+  const price = Number.parseInt(sub.metadata?.priceCents ?? "", 10);
+  const now = new Date();
+  await db
+    .insert(memberships)
+    .values({
+      userId,
+      stripeSubscriptionId: sub.id,
+      status,
+      currentPeriodEnd,
+      priceCents: Number.isFinite(price) ? price : null,
+      termsAcceptedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: memberships.userId,
+      set: {
+        stripeSubscriptionId: sub.id,
+        status,
+        currentPeriodEnd,
+        updatedAt: now,
+      },
+    });
+}
 
 export async function POST(req: Request) {
   const stripe = new Stripe(env.STRIPE_SECRET_KEY);
@@ -111,6 +160,11 @@ export async function POST(req: Request) {
     case "customer.subscription.created":
     case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;
+      // Het alumni-jaarlidmaatschap staat los van het Pro-abonnement.
+      if (sub.metadata?.kind === "membership") {
+        await syncMembership(sub);
+        break;
+      }
       const customerId = sub.customer as string;
       const status =
         sub.status === "active" || sub.status === "trialing"
@@ -132,6 +186,10 @@ export async function POST(req: Request) {
 
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription;
+      if (sub.metadata?.kind === "membership") {
+        await syncMembership(sub, "canceled");
+        break;
+      }
       const customerId = sub.customer as string;
 
       await db
@@ -147,6 +205,22 @@ export async function POST(req: Request) {
 
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
+      // Mislukte betaling van het lidmaatschap raakt het Pro-abonnement niet.
+      const subRef = invoice.parent?.subscription_details?.subscription;
+      const invoiceSubId = typeof subRef === "string" ? subRef : subRef?.id;
+      if (invoiceSubId) {
+        const member = await db.query.memberships.findFirst({
+          where: eq(memberships.stripeSubscriptionId, invoiceSubId),
+          columns: { id: true },
+        });
+        if (member) {
+          await db
+            .update(memberships)
+            .set({ status: "past_due", updatedAt: new Date() })
+            .where(eq(memberships.id, member.id));
+          break;
+        }
+      }
       const customerId = invoice.customer as string;
 
       await db

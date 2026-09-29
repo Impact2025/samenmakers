@@ -5,7 +5,10 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 export const metadata: Metadata = { title: "Admin — Analytics" };
 
 export default async function AdminAnalyticsPage() {
-  const stats = await api.admin.analytics();
+  const [stats, members] = await Promise.all([
+    api.admin.analytics(),
+    api.admin.membership(),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -51,6 +54,72 @@ export default async function AdminAnalyticsPage() {
           </Card>
         ))}
       </div>
+
+      <section className="space-y-4">
+        <h2 className="text-headline-sm text-on-surface">
+          Leden, logins en activiteit
+        </h2>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+          {[
+            { label: "Accounts", value: members.accounts },
+            { label: "Cursisten", value: members.cursisten },
+            { label: "Docenten", value: members.docenten },
+            { label: "Facilitators", value: members.facilitators },
+            { label: "Alumni", value: members.alumni },
+          ].map(({ label, value }) => (
+            <Card key={label} hover={false}>
+              <CardBody className="p-5">
+                <p className="text-secondary text-label-sm uppercase">
+                  {label}
+                </p>
+                <p className="text-display-lg text-on-surface">{value}</p>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+          {[
+            {
+              label: "Logins 7 dagen",
+              value: members.logins7.total,
+              change: `${members.logins7.unique} unieke leden`,
+            },
+            {
+              label: "Logins 30 dagen",
+              value: members.logins30.total,
+              change: `${members.logins30.unique} unieke leden`,
+            },
+            {
+              label: "Inleveringen",
+              value: members.submissions7,
+              change: "afgelopen 7 dagen",
+            },
+            {
+              label: "Klasberichten",
+              value: members.feedPosts7,
+              change: "afgelopen 7 dagen",
+            },
+            {
+              label: "Chatberichten",
+              value: members.messages7,
+              change: "afgelopen 7 dagen",
+            },
+          ].map(({ label, value, change }) => (
+            <Card key={label} hover={false}>
+              <CardBody className="p-5">
+                <p className="text-secondary text-label-sm uppercase">
+                  {label}
+                </p>
+                <p className="text-display-lg text-on-surface">{value}</p>
+                <p className="text-secondary mt-1 text-xs">{change}</p>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+        <p className="text-body-sm text-secondary">
+          Logins worden geteld vanaf de livegang van deze functie.
+        </p>
+      </section>
 
       <Card hover={false}>
         <CardHeader>

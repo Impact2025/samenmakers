@@ -115,7 +115,10 @@ export const programsRouter = createTRPCRouter({
             (m) => m.role === "cursist" && m.status !== "uitgeschreven",
           ).length,
           staffCount: members.filter(
-            (m) => m.role === "docent" || m.role === "manager",
+            (m) =>
+              m.role === "docent" ||
+              m.role === "manager" ||
+              m.role === "facilitator",
           ).length,
         })),
       };
@@ -491,8 +494,9 @@ export const programsRouter = createTRPCRouter({
           createdBy: ctx.userId,
         })
         .returning();
+      // Docenten horen bij sessies en krijgen daar hun tijdvenster; die nemen we niet mee.
       const staff = source.members.filter(
-        (m) => m.role === "docent" || m.role === "manager",
+        (m) => m.role === "manager" || m.role === "facilitator",
       );
       if (staff.length > 0) {
         await ctx.db
@@ -519,7 +523,7 @@ export const programsRouter = createTRPCRouter({
         cohortId: z.string(),
         email: z.string().trim().email(),
         role: z
-          .enum(["cursist", "docent", "manager", "alumnus"])
+          .enum(["cursist", "docent", "manager", "facilitator", "alumnus"])
           .default("cursist"),
       }),
     )
@@ -552,7 +556,9 @@ export const programsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        role: z.enum(["cursist", "docent", "manager", "alumnus"]).optional(),
+        role: z
+          .enum(["cursist", "docent", "manager", "facilitator", "alumnus"])
+          .optional(),
         status: z
           .enum(["actief", "gepauzeerd", "afgerond", "uitgeschreven"])
           .optional(),

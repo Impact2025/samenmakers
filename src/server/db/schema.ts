@@ -214,6 +214,23 @@ export const cohortRoleEnum = pgEnum("cohort_role", [
   "docent",
   "manager",
   "alumnus",
+  "facilitator",
+]);
+
+export const attendanceStatusEnum = pgEnum("attendance_status", [
+  "aanwezig",
+  "afwezig",
+  "geoorloofd",
+]);
+
+export const feedPostKindEnum = pgEnum("feed_post_kind", [
+  "hulpvraag",
+  "aanbod",
+]);
+
+export const submissionStatusEnum = pgEnum("submission_status", [
+  "ingeleverd",
+  "beoordeeld",
 ]);
 
 export const enrollmentStatusEnum = pgEnum("enrollment_status", [
@@ -610,6 +627,9 @@ export const events = pgTable(
     latitude: doublePrecision("latitude"),
     longitude: doublePrecision("longitude"),
     waitlistOfferHours: integer("waitlist_offer_hours").default(24).notNull(),
+    // Leden (alumni met jaarlidmaatschap) komen gratis binnen. Uit voor meerdaagse
+    // programma's met eigen prijs. Alleen door beheerders aan te passen.
+    memberFree: boolean("member_free").default(true).notNull(),
     // Tickets (fase 2). Terugbetalen kan tot zoveel uur voor de start; null = niet.
     refundUntilHours: integer("refund_until_hours"),
     allowTransfer: boolean("allow_transfer").default(true).notNull(),
@@ -1056,6 +1076,9 @@ export const cohortMembers = pgTable(
     role: cohortRoleEnum("role").default("cursist").notNull(),
     status: enrollmentStatusEnum("status").default("actief").notNull(),
     completedAt: timestamp("completed_at", { withTimezone: true }),
+    // Tijdelijke toegang (docenten): null = onbegrensd.
+    accessFrom: timestamp("access_from", { withTimezone: true }),
+    accessUntil: timestamp("access_until", { withTimezone: true }),
     joinedAt: timestamp("joined_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -1206,6 +1229,274 @@ export const lessonProgress = pgTable(
     index("lesson_progress_user_idx").on(t.userId),
   ],
 );
+
+// =============================================
+// LEEROMGEVING — SESSIES, AANWEZIGHEID, OPDRACHTEN
+// =============================================
+
+// Een programmadag van een editie. De cyclus (briefing, huiswerkmail, deadline,
+// docenttoegang) volgt uit startsAt, zie src/lib/session-cycle.ts.
+export const cohortSessions = pgTable(
+  "cohort_sessions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    location: text("location"),
+    meetingUrl: text("meeting_url"),
+    teacherId: text("teacher_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    // Deadline voor huiswerk; standaard 3 dagen voor startsAt (ingevuld bij aanmaken).
+    homeworkDueAt: timestamp("homework_due_at", { withTimezone: true }),
+    briefingSentAt: timestamp("briefing_sent_at", { withTimezone: true }),
+    homeworkMailSentAt: timestamp("homework_mail_sent_at", {
+      withTimezone: true,
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("cohort_sessions_cohort_idx").on(t.cohortId, t.startsAt),
+    index("cohort_sessions_teacher_idx").on(t.teacherId),
+  ],
+);
+
+export const attendance = pgTable(
+  "attendance",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    sessionId: text("session_id")
+      .notNull()
+      .references(() => cohortSessions.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: attendanceStatusEnum("status").notNull(),
+    markedBy: text("marked_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("attendance_unique_idx").on(t.sessionId, t.userId),
+    index("attendance_user_idx").on(t.userId),
+  ],
+);
+
+export const assignments = pgTable(
+  "assignments",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").references(() => cohortSessions.id, {
+      onDelete: "set null",
+    }),
+    title: text("title").notNull(),
+    description: text("description"),
+    // Leeg = deadline van de gekoppelde sessie.
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    createdBy: text("created_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("assignments_cohort_idx").on(t.cohortId),
+    index("assignments_session_idx").on(t.sessionId),
+  ],
+);
+
+export const submissions = pgTable(
+  "submissions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    assignmentId: text("assignment_id")
+      .notNull()
+      .references(() => assignments.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    text: text("text"),
+    status: submissionStatusEnum("status").default("ingeleverd").notNull(),
+    isLate: boolean("is_late").default(false).notNull(),
+    feedback: text("feedback"),
+    reviewedBy: text("reviewed_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    submittedAt: timestamp("submitted_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("submissions_unique_idx").on(t.assignmentId, t.userId),
+    index("submissions_user_idx").on(t.userId),
+  ],
+);
+
+export const submissionFiles = pgTable(
+  "submission_files",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    submissionId: text("submission_id")
+      .notNull()
+      .references(() => submissions.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    name: text("name").notNull(),
+    sizeBytes: integer("size_bytes"),
+    mimeType: text("mime_type"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("submission_files_submission_idx").on(t.submissionId)],
+);
+
+// Lesmateriaal (presentaties, literatuur) dat docenten na een sessie uploaden.
+// Verschijnt na afronding van de opleiding in de kennisbank voor alumni.
+export const cohortMaterials = pgTable(
+  "cohort_materials",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").references(() => cohortSessions.id, {
+      onDelete: "set null",
+    }),
+    title: text("title").notNull(),
+    description: text("description"),
+    url: text("url").notNull(),
+    fileName: text("file_name").notNull(),
+    mimeType: text("mime_type"),
+    sizeBytes: integer("size_bytes"),
+    uploadedBy: text("uploaded_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("cohort_materials_cohort_idx").on(t.cohortId),
+    index("cohort_materials_session_idx").on(t.sessionId),
+  ],
+);
+
+// Community-feed per klas (cohortId) of voor alumni (cohortId leeg): hulpvragen en aanbiedingen.
+// Geen voormoderatie; beheerders krijgen een melding bij nieuwe posts.
+export const feedPosts = pgTable(
+  "feed_posts",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id").references(() => cohorts.id, {
+      onDelete: "cascade",
+    }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: feedPostKindEnum("kind").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("feed_posts_cohort_idx").on(t.cohortId, t.createdAt)],
+);
+
+// Eén rij per succesvolle login, voor het admin-dashboard (logins en unieke actieve leden).
+export const loginEvents = pgTable(
+  "login_events",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("login_events_created_at_idx").on(t.createdAt),
+    index("login_events_user_idx").on(t.userId),
+  ],
+);
+
+export const membershipStatusEnum = pgEnum("membership_status", [
+  "active",
+  "past_due",
+  "canceled",
+]);
+
+// Jaarlidmaatschap voor alumni (los van het Pro-abonnement op users).
+export const memberships = pgTable(
+  "memberships",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    stripeSubscriptionId: text("stripe_subscription_id").notNull(),
+    status: membershipStatusEnum("status").notNull(),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    // Prijs waarvoor dit lid is ingestapt (de admin kan de prijs later wijzigen).
+    priceCents: integer("price_cents"),
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("memberships_user_idx").on(t.userId),
+    uniqueIndex("memberships_subscription_idx").on(t.stripeSubscriptionId),
+  ],
+);
+
+// Door de admin in te stellen prijzen (in centen), bijv. membership_price_cents.
+export const platformSettings = pgTable("platform_settings", {
+  key: text("key").primaryKey(),
+  valueCents: integer("value_cents").notNull(),
+  updatedBy: text("updated_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
 
 // =============================================
 // REFERRALS
@@ -1634,6 +1925,67 @@ export const eventIssuedTicketsRelations = relations(
     }),
   }),
 );
+
+export const cohortSessionsRelations = relations(cohortSessions, ({ one }) => ({
+  cohort: one(cohorts, {
+    fields: [cohortSessions.cohortId],
+    references: [cohorts.id],
+  }),
+  teacher: one(users, {
+    fields: [cohortSessions.teacherId],
+    references: [users.id],
+  }),
+}));
+
+export const assignmentsRelations = relations(assignments, ({ one }) => ({
+  session: one(cohortSessions, {
+    fields: [assignments.sessionId],
+    references: [cohortSessions.id],
+  }),
+}));
+
+export const submissionsRelations = relations(submissions, ({ one, many }) => ({
+  assignment: one(assignments, {
+    fields: [submissions.assignmentId],
+    references: [assignments.id],
+  }),
+  files: many(submissionFiles),
+}));
+
+export const submissionFilesRelations = relations(
+  submissionFiles,
+  ({ one }) => ({
+    submission: one(submissions, {
+      fields: [submissionFiles.submissionId],
+      references: [submissions.id],
+    }),
+  }),
+);
+
+export const cohortMaterialsRelations = relations(
+  cohortMaterials,
+  ({ one }) => ({
+    cohort: one(cohorts, {
+      fields: [cohortMaterials.cohortId],
+      references: [cohorts.id],
+    }),
+    session: one(cohortSessions, {
+      fields: [cohortMaterials.sessionId],
+      references: [cohortSessions.id],
+    }),
+    uploader: one(users, {
+      fields: [cohortMaterials.uploadedBy],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const feedPostsRelations = relations(feedPosts, ({ one }) => ({
+  author: one(users, {
+    fields: [feedPosts.authorId],
+    references: [users.id],
+  }),
+}));
 
 export const cohortsRelations = relations(cohorts, ({ one, many }) => ({
   members: many(cohortMembers),

@@ -11,8 +11,10 @@ import {
 
 export function EditEventForm({
   event,
+  isAdmin = false,
 }: {
   event: EventFormInitial & { id: string };
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const [saved, setSaved] = useState(false);
@@ -26,6 +28,7 @@ export function EditEventForm({
   return (
     <>
       <EventForm
+        isAdmin={isAdmin}
         initial={event}
         submitting={update.isPending}
         error={update.error?.message}
