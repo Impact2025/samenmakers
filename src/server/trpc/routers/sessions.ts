@@ -1,8 +1,13 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, asc, eq, ne, sql } from "drizzle-orm";
 import { createTRPCRouter, cohortRoleProcedure } from "@/server/trpc/init";
-import { attendance, cohortMembers, cohortSessions } from "@/server/db/schema";
+import {
+  attendance,
+  cohortMembers,
+  cohortSessions,
+  users,
+} from "@/server/db/schema";
 import { publicUserColumns } from "@/server/db/user-columns";
 import { cyclePhase, sessionCycle, teacherWindow } from "@/lib/session-cycle";
 import type { db as DbClient } from "@/server/db";
@@ -72,8 +77,32 @@ const sessionInput = z.object({
   startsAt: z.coerce.date(),
   location: z.string().trim().max(200).optional(),
   meetingUrl: z.string().trim().url().max(500).optional().or(z.literal("")),
-  teacherId: z.string().min(1).nullable().optional(),
+  // Docent wordt via e-mailadres gekozen; leeg = geen docent.
+  teacherEmail: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email()
+    .optional()
+    .or(z.literal("")),
 });
+
+async function resolveTeacherId(
+  db: typeof DbClient,
+  email: string | undefined,
+): Promise<string | null> {
+  if (!email) return null;
+  const user = await db.query.users.findFirst({
+    where: sql`lower(${users.email}) = ${email}`,
+    columns: { id: true },
+  });
+  if (!user)
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Geen gebruiker gevonden met dit e-mailadres",
+    });
+  return user.id;
+}
 
 async function requireSession(
   db: typeof DbClient,
@@ -123,14 +152,15 @@ export const sessionsRouter = createTRPCRouter({
   create: cohortRoleProcedure(PLANNERS)
     .input(sessionInput)
     .mutation(async ({ ctx, input }) => {
-      const { cohortId, teacherId, meetingUrl, ...rest } = input;
+      const { cohortId, teacherEmail, meetingUrl, ...rest } = input;
+      const teacherId = await resolveTeacherId(ctx.db, teacherEmail);
       const [row] = await ctx.db
         .insert(cohortSessions)
         .values({
           ...rest,
           cohortId,
           meetingUrl: meetingUrl || null,
-          teacherId: teacherId ?? null,
+          teacherId,
           homeworkDueAt: sessionCycle(rest.startsAt).homeworkDueAt,
         })
         .returning();
@@ -141,7 +171,8 @@ export const sessionsRouter = createTRPCRouter({
   update: cohortRoleProcedure(PLANNERS)
     .input(sessionInput.extend({ sessionId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const { cohortId, sessionId, teacherId, meetingUrl, ...rest } = input;
+      const { cohortId, sessionId, teacherEmail, meetingUrl, ...rest } = input;
+      const teacherId = await resolveTeacherId(ctx.db, teacherEmail);
       const current = await requireSession(ctx.db, cohortId, sessionId);
       // Verschoven sessie: standaarddeadline schuift mee, een eigen deadline blijft staan.
       const usedDefault =
@@ -153,14 +184,14 @@ export const sessionsRouter = createTRPCRouter({
         .set({
           ...rest,
           meetingUrl: meetingUrl || null,
-          teacherId: teacherId ?? null,
+          teacherId,
           ...(usedDefault
             ? { homeworkDueAt: sessionCycle(rest.startsAt).homeworkDueAt }
             : {}),
         })
         .where(eq(cohortSessions.id, sessionId));
       // Oude en nieuwe docent allebei bijwerken (venster kan krimpen of groeien).
-      for (const id of new Set([current.teacherId, teacherId ?? null])) {
+      for (const id of new Set([current.teacherId, teacherId])) {
         if (id) await syncTeacherAccess(ctx.db, cohortId, id);
       }
       return { ok: true };

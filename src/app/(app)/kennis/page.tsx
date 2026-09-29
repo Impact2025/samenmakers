@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, Plus, Search } from "lucide-react";
+import { BookOpen, Lock, Plus, Search } from "lucide-react";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
 import { buttonClasses } from "@/components/ui/button";
@@ -46,6 +46,17 @@ export default async function KennisPage({ searchParams }: Props) {
         }
         className="mb-0"
       />
+
+      <Link
+        href="/kennis/materiaal"
+        className="bg-surface-container-low hover:bg-surface-container text-label-lg text-on-surface flex items-center justify-between gap-3 rounded-2xl p-4 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          <Lock size={16} className="text-secondary" />
+          Lesmateriaal uit de leergangen
+        </span>
+        <span className="text-label-md text-secondary">Alleen voor alumni</span>
+      </Link>
 
       <form action="/kennis" method="get" role="search" className="relative">
         {cat && <input type="hidden" name="category" value={cat} />}

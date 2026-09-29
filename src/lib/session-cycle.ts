@@ -100,3 +100,13 @@ export function dueMailings(
 export function isLate(submittedAt: Date, dueAt: Date | null): boolean {
   return dueAt !== null && submittedAt > dueAt;
 }
+
+export const PHASE_LABEL: Record<CyclePhase, string> = {
+  voorbereiding: "Voorbereiding",
+  briefing: "Docentbriefing",
+  huiswerk: "Huiswerk open",
+  inleverdeadline: "Deadline verstreken",
+  sessie: "Sessie vandaag",
+  nazorg: "Nazorg",
+  afgerond: "Afgerond",
+};

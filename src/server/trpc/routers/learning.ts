@@ -153,6 +153,7 @@ export const learningRouter = createTRPCRouter({
       },
       program: cohort.program,
       role: ctx.membership?.role ?? null,
+      isAdmin: ctx.isAdmin,
       isStaff:
         ctx.isAdmin ||
         (ctx.membership

@@ -11,6 +11,9 @@ import {
   Circle,
   CircleCheck,
   CircleDashed,
+  CalendarDays,
+  ClipboardList,
+  FileText,
   GraduationCap,
   Timer,
   Users,
@@ -105,13 +108,33 @@ export default async function LeerpadPage({ params }: Props) {
               <ArrowRight size={18} />
             </Link>
           )}
+          <Link
+            href={`/leren/${cohort.id}/sessies`}
+            className={buttonClasses("secondary", "lg")}
+          >
+            <CalendarDays size={18} /> Sessies
+          </Link>
+          <Link
+            href={`/leren/${cohort.id}/opdrachten`}
+            className={buttonClasses("secondary", "lg")}
+          >
+            <ClipboardList size={18} /> Opdrachten
+          </Link>
           {data.isStaff && (
-            <Link
-              href={`/leren/${cohort.id}/deelnemers`}
-              className={buttonClasses("secondary", "lg")}
-            >
-              <Users size={18} /> Cursistoverzicht
-            </Link>
+            <>
+              <Link
+                href={`/leren/${cohort.id}/deelnemers`}
+                className={buttonClasses("secondary", "lg")}
+              >
+                <Users size={18} /> Cursistoverzicht
+              </Link>
+              <Link
+                href={`/leren/${cohort.id}/materiaal`}
+                className={buttonClasses("secondary", "lg")}
+              >
+                <FileText size={18} /> Lesmateriaal
+              </Link>
+            </>
           )}
         </div>
       </header>
