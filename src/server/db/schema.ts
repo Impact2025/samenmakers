@@ -1366,6 +1366,39 @@ export const submissionFiles = pgTable(
   (t) => [index("submission_files_submission_idx").on(t.submissionId)],
 );
 
+// Lesmateriaal (presentaties, literatuur) dat docenten na een sessie uploaden.
+// Verschijnt na afronding van de opleiding in de kennisbank voor alumni.
+export const cohortMaterials = pgTable(
+  "cohort_materials",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").references(() => cohortSessions.id, {
+      onDelete: "set null",
+    }),
+    title: text("title").notNull(),
+    description: text("description"),
+    url: text("url").notNull(),
+    fileName: text("file_name").notNull(),
+    mimeType: text("mime_type"),
+    sizeBytes: integer("size_bytes"),
+    uploadedBy: text("uploaded_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("cohort_materials_cohort_idx").on(t.cohortId),
+    index("cohort_materials_session_idx").on(t.sessionId),
+  ],
+);
+
 // =============================================
 // REFERRALS
 // =============================================
@@ -1826,6 +1859,24 @@ export const submissionFilesRelations = relations(
     submission: one(submissions, {
       fields: [submissionFiles.submissionId],
       references: [submissions.id],
+    }),
+  }),
+);
+
+export const cohortMaterialsRelations = relations(
+  cohortMaterials,
+  ({ one }) => ({
+    cohort: one(cohorts, {
+      fields: [cohortMaterials.cohortId],
+      references: [cohorts.id],
+    }),
+    session: one(cohortSessions, {
+      fields: [cohortMaterials.sessionId],
+      references: [cohortSessions.id],
+    }),
+    uploader: one(users, {
+      fields: [cohortMaterials.uploadedBy],
+      references: [users.id],
     }),
   }),
 );

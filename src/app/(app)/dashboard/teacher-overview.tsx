@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { ProgressBar } from "@/components/learning/progress-bar";
+import { COHORT_ROLE_LABELS } from "@/lib/learning";
 import { buttonClasses } from "@/components/ui/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { SIGNAL_LABEL } from "@/lib/teaching";
@@ -95,7 +96,7 @@ export function TeacherOverview({ editions }: { editions: TeachingEditions }) {
                   </div>
                 </div>
                 <span className="bg-surface-container text-label-sm text-secondary shrink-0 rounded-full px-2.5 py-1 uppercase">
-                  {e.role === "manager" ? "Manager" : "Docent"}
+                  {COHORT_ROLE_LABELS[e.role] ?? "Docent"}
                 </span>
               </header>
 

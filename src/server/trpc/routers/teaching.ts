@@ -24,7 +24,7 @@ export const teachingRouter = createTRPCRouter({
     const mine = await ctx.db.query.cohortMembers.findMany({
       where: and(
         eq(cohortMembers.userId, ctx.userId),
-        inArray(cohortMembers.role, ["docent", "manager"]),
+        inArray(cohortMembers.role, ["docent", "manager", "facilitator"]),
         ne(cohortMembers.status, "uitgeschreven"),
       ),
       with: { cohort: { with: { program: true } } },

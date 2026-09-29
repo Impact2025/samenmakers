@@ -21,8 +21,14 @@ import {
 import { computeProgress, findNextLesson, moduleWindow } from "@/lib/learning";
 import type { db as DbClient } from "@/server/db";
 
-const ALL_ROLES = ["cursist", "docent", "manager", "alumnus"] as const;
-const STAFF_ROLES = ["docent", "manager"] as const;
+const ALL_ROLES = [
+  "cursist",
+  "docent",
+  "manager",
+  "facilitator",
+  "alumnus",
+] as const;
+const STAFF_ROLES = ["docent", "manager", "facilitator"] as const;
 
 async function requireEdition(db: typeof DbClient, cohortId: string) {
   const cohort = await db.query.cohorts.findFirst({
@@ -118,7 +124,10 @@ export const learningRouter = createTRPCRouter({
         (e) => e.role === "cursist" || e.role === "alumnus",
       ),
       teaching: editions.filter(
-        (e) => e.role === "docent" || e.role === "manager",
+        (e) =>
+          e.role === "docent" ||
+          e.role === "manager" ||
+          e.role === "facilitator",
       ),
     };
   }),
@@ -380,7 +389,12 @@ export const learningRouter = createTRPCRouter({
         },
         lessonCount: flat.length,
         staff: members
-          .filter((m) => m.role === "docent" || m.role === "manager")
+          .filter(
+            (m) =>
+              m.role === "docent" ||
+              m.role === "manager" ||
+              m.role === "facilitator",
+          )
           .map((m) => ({
             id: m.id,
             role: m.role,

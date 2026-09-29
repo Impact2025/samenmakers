@@ -67,3 +67,18 @@ CREATE TABLE IF NOT EXISTS "submission_files" (
   "created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 CREATE INDEX IF NOT EXISTS "submission_files_submission_idx" ON "submission_files" ("submission_id");
+CREATE TABLE IF NOT EXISTS "cohort_materials" (
+  "id" text PRIMARY KEY NOT NULL,
+  "cohort_id" text NOT NULL REFERENCES "cohorts"("id") ON DELETE CASCADE,
+  "session_id" text REFERENCES "cohort_sessions"("id") ON DELETE SET NULL,
+  "title" text NOT NULL,
+  "description" text,
+  "url" text NOT NULL,
+  "file_name" text NOT NULL,
+  "mime_type" text,
+  "size_bytes" integer,
+  "uploaded_by" text REFERENCES "users"("id") ON DELETE SET NULL,
+  "created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS "cohort_materials_cohort_idx" ON "cohort_materials" ("cohort_id");
+CREATE INDEX IF NOT EXISTS "cohort_materials_session_idx" ON "cohort_materials" ("session_id");
