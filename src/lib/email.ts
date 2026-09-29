@@ -325,12 +325,16 @@ export interface EventEmailInput {
   lines?: { text: string; url?: string }[];
   /** Optionele .ics-bijlage (bevestiging en wijziging). */
   ics?: string;
+  /** Koptekst boven de titel; standaard voor events. */
+  brand?: string;
+  /** Reden van de mail onderaan; standaard voor events. */
+  footer?: string;
 }
 
 export async function sendEventEmail(opts: EventEmailInput) {
   const html = `
     <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
-      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE EVENTS</p>
+      <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">${escapeHtml(opts.brand ?? "WE SHAPE THE FUTURE EVENTS")}</p>
       <h1 style="font-size: 26px; font-weight: 900; margin-bottom: 12px;">${escapeHtml(opts.heading)}</h1>
       <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px;">${escapeHtml(opts.intro)}</p>
       <table style="width:100%;border:1px solid #eee;margin-bottom:24px;border-collapse:collapse;">
@@ -355,7 +359,7 @@ export async function sendEventEmail(opts: EventEmailInput) {
         ${escapeHtml(opts.cta.label)} &rarr;
       </a>
       <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
-        Je ontvangt deze e-mail omdat je je hebt aangemeld voor dit event.
+        ${escapeHtml(opts.footer ?? "Je ontvangt deze e-mail omdat je je hebt aangemeld voor dit event.")}
         <a href="${APP_URL}/instellingen/notificaties" style="color: #555;">Notificaties beheren</a>
       </p>
     </div>`;
