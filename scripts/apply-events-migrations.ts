@@ -10,12 +10,15 @@ const FILES = [
   "security-fase1.sql",
   "onderwijs-fase2.sql",
 ];
+// Optioneel één bestand: npx tsx --env-file=.env.local scripts/apply-events-migrations.ts onderwijs-fase2.sql
+const only = process.argv[2];
+const TODO = only ? [only] : FILES;
 const sql = neon(
   process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL!,
 );
 
 async function main() {
-  for (const file of FILES) {
+  for (const file of TODO) {
     console.log(`\n== ${file}`);
     const raw = readFileSync(
       new URL(`../drizzle/${file}`, import.meta.url),
