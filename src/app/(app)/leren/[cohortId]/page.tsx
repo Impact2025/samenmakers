@@ -15,6 +15,7 @@ import {
   ClipboardList,
   FileText,
   GraduationCap,
+  MessagesSquare,
   Timer,
   Users,
 } from "lucide-react";
@@ -108,6 +109,12 @@ export default async function LeerpadPage({ params }: Props) {
               <ArrowRight size={18} />
             </Link>
           )}
+          <Link
+            href={`/leren/${cohort.id}/klas`}
+            className={buttonClasses("secondary", "lg")}
+          >
+            <MessagesSquare size={18} /> Klas
+          </Link>
           <Link
             href={`/leren/${cohort.id}/sessies`}
             className={buttonClasses("secondary", "lg")}

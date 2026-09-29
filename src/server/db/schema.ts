@@ -223,6 +223,11 @@ export const attendanceStatusEnum = pgEnum("attendance_status", [
   "geoorloofd",
 ]);
 
+export const feedPostKindEnum = pgEnum("feed_post_kind", [
+  "hulpvraag",
+  "aanbod",
+]);
+
 export const submissionStatusEnum = pgEnum("submission_status", [
   "ingeleverd",
   "beoordeeld",
@@ -1399,6 +1404,30 @@ export const cohortMaterials = pgTable(
   ],
 );
 
+// Community-feed per klas (cohortId) of voor alumni (cohortId leeg): hulpvragen en aanbiedingen.
+// Geen voormoderatie; beheerders krijgen een melding bij nieuwe posts.
+export const feedPosts = pgTable(
+  "feed_posts",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id").references(() => cohorts.id, {
+      onDelete: "cascade",
+    }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: feedPostKindEnum("kind").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("feed_posts_cohort_idx").on(t.cohortId, t.createdAt)],
+);
+
 // =============================================
 // REFERRALS
 // =============================================
@@ -1880,6 +1909,13 @@ export const cohortMaterialsRelations = relations(
     }),
   }),
 );
+
+export const feedPostsRelations = relations(feedPosts, ({ one }) => ({
+  author: one(users, {
+    fields: [feedPosts.authorId],
+    references: [users.id],
+  }),
+}));
 
 export const cohortsRelations = relations(cohorts, ({ one, many }) => ({
   members: many(cohortMembers),

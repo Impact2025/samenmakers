@@ -21,6 +21,7 @@ import { teachingRouter } from "@/server/trpc/routers/teaching";
 import { sessionsRouter } from "@/server/trpc/routers/sessions";
 import { assignmentsRouter } from "@/server/trpc/routers/assignments";
 import { materialsRouter } from "@/server/trpc/routers/materials";
+import { feedRouter } from "@/server/trpc/routers/feed";
 
 export const appRouter = createTRPCRouter({
   users: usersRouter,
@@ -45,6 +46,7 @@ export const appRouter = createTRPCRouter({
   sessions: sessionsRouter,
   assignments: assignmentsRouter,
   materials: materialsRouter,
+  feed: feedRouter,
 });
 
 export type AppRouter = typeof appRouter;

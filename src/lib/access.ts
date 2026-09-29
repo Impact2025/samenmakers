@@ -69,3 +69,27 @@ export function isAlumnus(p: Person): boolean {
 export function canViewLibrary(p: Person): boolean {
   return p.isAdmin || isAlumnus(p);
 }
+
+/**
+ * Feeds: een klasfeed (cohortId) is voor de deelnemers van die editie, de alumni-feed
+ * (null) voor alumni. Beheerders mogen overal in.
+ */
+export function canUseFeed(p: Person, cohortId: string | null): boolean {
+  if (p.isAdmin) return true;
+  if (cohortId === null) return isAlumnus(p);
+  return p.memberships.some(
+    (m) => m.cohortId === cohortId && m.status !== "uitgeschreven",
+  );
+}
+
+/** Wie mag een post van een ander weghalen? Beheerders en facilitators/managers van de klas. */
+export function canModerateFeed(p: Person, cohortId: string | null): boolean {
+  if (p.isAdmin) return true;
+  if (cohortId === null) return false;
+  return p.memberships.some(
+    (m) =>
+      m.cohortId === cohortId &&
+      m.status !== "uitgeschreven" &&
+      (m.role === "facilitator" || m.role === "manager"),
+  );
+}

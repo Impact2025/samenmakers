@@ -82,3 +82,14 @@ CREATE TABLE IF NOT EXISTS "cohort_materials" (
 );
 CREATE INDEX IF NOT EXISTS "cohort_materials_cohort_idx" ON "cohort_materials" ("cohort_id");
 CREATE INDEX IF NOT EXISTS "cohort_materials_session_idx" ON "cohort_materials" ("session_id");
+CREATE TYPE "public"."feed_post_kind" AS ENUM('hulpvraag', 'aanbod');
+CREATE TABLE IF NOT EXISTS "feed_posts" (
+  "id" text PRIMARY KEY NOT NULL,
+  "cohort_id" text REFERENCES "cohorts"("id") ON DELETE CASCADE,
+  "author_id" text NOT NULL REFERENCES "users"("id") ON DELETE CASCADE,
+  "kind" "feed_post_kind" NOT NULL,
+  "title" text NOT NULL,
+  "body" text NOT NULL,
+  "created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS "feed_posts_cohort_idx" ON "feed_posts" ("cohort_id", "created_at");

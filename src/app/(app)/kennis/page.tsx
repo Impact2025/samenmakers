@@ -58,6 +58,17 @@ export default async function KennisPage({ searchParams }: Props) {
         <span className="text-label-md text-secondary">Alleen voor alumni</span>
       </Link>
 
+      <Link
+        href="/alumni"
+        className="bg-surface-container-low hover:bg-surface-container text-label-lg text-on-surface flex items-center justify-between gap-3 rounded-2xl p-4 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          <Lock size={16} className="text-secondary" />
+          Alumni-community
+        </span>
+        <span className="text-label-md text-secondary">Alleen voor alumni</span>
+      </Link>
+
       <form action="/kennis" method="get" role="search" className="relative">
         {cat && <input type="hidden" name="category" value={cat} />}
         <label>

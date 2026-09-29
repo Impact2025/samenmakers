@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   canMessage,
+  canModerateFeed,
+  canUseFeed,
   canViewLibrary,
   classCohortIds,
   isAlumnus,
@@ -97,5 +99,41 @@ describe("kennisbank", () => {
     expect(
       canViewLibrary(person([m({ role: "alumnus", status: "uitgeschreven" })])),
     ).toBe(false);
+  });
+});
+
+describe("feeds", () => {
+  const alumnus = person([m({ role: "alumnus", cohortStatus: "afgerond" })]);
+  it("klasfeed is voor deelnemers van die klas", () => {
+    expect(canUseFeed(cursistA, "lsi")).toBe(true);
+    expect(canUseFeed(docent, "lsi")).toBe(true);
+    expect(canUseFeed(cursistOtherClass, "lsi")).toBe(false);
+    expect(canUseFeed(lid, "lsi")).toBe(false);
+  });
+  it("uitgeschreven deelnemers zien de klasfeed niet meer", () => {
+    expect(canUseFeed(person([m({ status: "uitgeschreven" })]), "lsi")).toBe(
+      false,
+    );
+  });
+  it("alumni-feed is voor alumni, niet voor cursisten of leden", () => {
+    expect(canUseFeed(alumnus, null)).toBe(true);
+    expect(canUseFeed(cursistA, null)).toBe(false);
+    expect(canUseFeed(lid, null)).toBe(false);
+  });
+  it("beheerders mogen overal in en modereren", () => {
+    const admin = person([], true);
+    expect(canUseFeed(admin, "lsi")).toBe(true);
+    expect(canUseFeed(admin, null)).toBe(true);
+    expect(canModerateFeed(admin, null)).toBe(true);
+  });
+  it("alleen facilitator en manager modereren een klasfeed", () => {
+    expect(canModerateFeed(person([m({ role: "facilitator" })]), "lsi")).toBe(
+      true,
+    );
+    expect(canModerateFeed(docent, "lsi")).toBe(false);
+    expect(canModerateFeed(cursistA, "lsi")).toBe(false);
+    expect(canModerateFeed(person([m({ role: "facilitator" })]), "lso")).toBe(
+      false,
+    );
   });
 });
