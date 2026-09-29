@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  canSubmit,
   cyclePhase,
   dueMailings,
   isLate,
@@ -91,5 +92,23 @@ describe("isLate", () => {
     expect(isLate(d("2026-11-09"), d("2026-11-08"))).toBe(true);
     expect(isLate(d("2026-11-08"), d("2026-11-08"))).toBe(false);
     expect(isLate(d("2026-11-09"), null)).toBe(false);
+  });
+});
+
+describe("canSubmit", () => {
+  const due = d("2026-11-08");
+  it("laat een eerste inlevering altijd toe, ook te laat", () => {
+    expect(canSubmit(false, due, d("2026-11-07"))).toBe(true);
+    expect(canSubmit(false, due, d("2026-11-09"))).toBe(true);
+  });
+  it("laat aanpassen toe tot en met de deadline", () => {
+    expect(canSubmit(true, due, d("2026-11-07"))).toBe(true);
+    expect(canSubmit(true, due, due)).toBe(true);
+  });
+  it("weigert aanpassen na de deadline", () => {
+    expect(canSubmit(true, due, d("2026-11-09"))).toBe(false);
+  });
+  it("laat aanpassen toe zonder deadline", () => {
+    expect(canSubmit(true, null, d("2030-01-01"))).toBe(true);
   });
 });

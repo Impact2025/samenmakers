@@ -110,3 +110,17 @@ export const PHASE_LABEL: Record<CyclePhase, string> = {
   nazorg: "Nazorg",
   afgerond: "Afgerond",
 };
+
+/**
+ * Een cursist ziet zijn inlevering altijd en mag die aanpassen tot de deadline.
+ * Een eerste inlevering na de deadline blijft mogelijk (met "te laat"-markering),
+ * maar een bestaande inlevering wijzigen na de deadline niet meer.
+ */
+export function canSubmit(
+  hasSubmission: boolean,
+  dueAt: Date | null,
+  now: Date,
+): boolean {
+  if (!hasSubmission) return true;
+  return dueAt === null || now <= dueAt;
+}

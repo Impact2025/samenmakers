@@ -164,7 +164,12 @@ function Submit({
         </div>
       )}
 
-      {!open ? (
+      {!assignment.canSubmit ? (
+        <p className="text-body-sm text-secondary">
+          De deadline is verstreken. Je ziet je inlevering nog, maar kunt die
+          niet meer aanpassen.
+        </p>
+      ) : !open ? (
         <Button
           variant={mine ? "secondary" : "primary"}
           size="sm"
@@ -192,8 +197,9 @@ function Submit({
         >
           {mine && (
             <p className="text-body-sm text-secondary">
-              Opnieuw inleveren vervangt je vorige inlevering en je feedback
-              vervalt tot je docent opnieuw kijkt.
+              Je kunt je inlevering aanpassen tot de deadline. Dat vervangt je
+              vorige inlevering en je feedback vervalt tot je docent opnieuw
+              kijkt.
             </p>
           )}
           <label className="flex flex-col gap-1.5">

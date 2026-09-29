@@ -10,7 +10,7 @@ import {
   submissions,
 } from "@/server/db/schema";
 import { publicUserColumns } from "@/server/db/user-columns";
-import { isLate, sessionCycle } from "@/lib/session-cycle";
+import { canSubmit, isLate, sessionCycle } from "@/lib/session-cycle";
 import { isBlobUrl } from "@/lib/upload";
 import type { db as DbClient } from "@/server/db";
 
@@ -100,6 +100,7 @@ export const assignmentsRouter = createTRPCRouter({
         description: a.description,
         sessionTitle: a.session?.title ?? null,
         dueAt: effectiveDue(a, a.session),
+        canSubmit: false,
         submittedCount: byAssignment.get(a.id) ?? 0,
         learnerCount: learnerCount[0]?.n ?? 0,
         mine: null,
@@ -124,6 +125,7 @@ export const assignmentsRouter = createTRPCRouter({
         description: a.description,
         sessionTitle: a.session?.title ?? null,
         dueAt: effectiveDue(a, a.session),
+        canSubmit: canSubmit(!!s, effectiveDue(a, a.session), new Date()),
         submittedCount: 0,
         learnerCount: 0,
         mine: s
@@ -203,7 +205,21 @@ export const assignmentsRouter = createTRPCRouter({
         input.assignmentId,
       );
       const now = new Date();
-      const late = isLate(now, effectiveDue(assignment, assignment.session));
+      const due = effectiveDue(assignment, assignment.session);
+      const existing = await ctx.db.query.submissions.findFirst({
+        where: and(
+          eq(submissions.assignmentId, assignment.id),
+          eq(submissions.userId, ctx.userId),
+        ),
+        columns: { id: true },
+      });
+      if (!canSubmit(!!existing, due, now))
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "De deadline is verstreken, je kunt je inlevering niet meer aanpassen",
+        });
+      const late = isLate(now, due);
 
       const [row] = await ctx.db
         .insert(submissions)

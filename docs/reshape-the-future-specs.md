@@ -103,4 +103,4 @@ Bijgewerkt op 29 september 2026.
 4. ~~Looptijd lidmaatschap~~ Besloten (29 september): 12 maanden vanaf betaling, verlengt automatisch, opzeggen via de betaalportal (loopt door tot einde periode).
 5. ~~Alumni en lidmaatschap~~ Besloten (29 september): het lidmaatschap is juist voor alumni en kost €150; bezoekers kopen los een event.
 6. ~~Prijzen~~ Besloten (29 september): de admin bepaalt de prijzen (lidmaatschap, standaard eventprijs, en per event via de ticketinstellingen).
-7. Moeten cursisten hun ingeleverde opdracht kunnen zien en aanpassen tot de deadline?
+7. ~~Inleveringen aanpassen~~ Besloten (29 september): cursisten zien hun inlevering altijd en kunnen die aanpassen tot de deadline. Een eerste inlevering na de deadline kan nog wel (met "te laat"-markering).
