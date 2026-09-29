@@ -214,6 +214,18 @@ export const cohortRoleEnum = pgEnum("cohort_role", [
   "docent",
   "manager",
   "alumnus",
+  "facilitator",
+]);
+
+export const attendanceStatusEnum = pgEnum("attendance_status", [
+  "aanwezig",
+  "afwezig",
+  "geoorloofd",
+]);
+
+export const submissionStatusEnum = pgEnum("submission_status", [
+  "ingeleverd",
+  "beoordeeld",
 ]);
 
 export const enrollmentStatusEnum = pgEnum("enrollment_status", [
@@ -1056,6 +1068,9 @@ export const cohortMembers = pgTable(
     role: cohortRoleEnum("role").default("cursist").notNull(),
     status: enrollmentStatusEnum("status").default("actief").notNull(),
     completedAt: timestamp("completed_at", { withTimezone: true }),
+    // Tijdelijke toegang (docenten): null = onbegrensd.
+    accessFrom: timestamp("access_from", { withTimezone: true }),
+    accessUntil: timestamp("access_until", { withTimezone: true }),
     joinedAt: timestamp("joined_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -1205,6 +1220,150 @@ export const lessonProgress = pgTable(
     index("lesson_progress_cohort_idx").on(t.cohortId),
     index("lesson_progress_user_idx").on(t.userId),
   ],
+);
+
+// =============================================
+// LEEROMGEVING — SESSIES, AANWEZIGHEID, OPDRACHTEN
+// =============================================
+
+// Een programmadag van een editie. De cyclus (briefing, huiswerkmail, deadline,
+// docenttoegang) volgt uit startsAt, zie src/lib/session-cycle.ts.
+export const cohortSessions = pgTable(
+  "cohort_sessions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    location: text("location"),
+    meetingUrl: text("meeting_url"),
+    teacherId: text("teacher_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    // Deadline voor huiswerk; standaard 3 dagen voor startsAt (ingevuld bij aanmaken).
+    homeworkDueAt: timestamp("homework_due_at", { withTimezone: true }),
+    briefingSentAt: timestamp("briefing_sent_at", { withTimezone: true }),
+    homeworkMailSentAt: timestamp("homework_mail_sent_at", {
+      withTimezone: true,
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("cohort_sessions_cohort_idx").on(t.cohortId, t.startsAt),
+    index("cohort_sessions_teacher_idx").on(t.teacherId),
+  ],
+);
+
+export const attendance = pgTable(
+  "attendance",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    sessionId: text("session_id")
+      .notNull()
+      .references(() => cohortSessions.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: attendanceStatusEnum("status").notNull(),
+    markedBy: text("marked_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("attendance_unique_idx").on(t.sessionId, t.userId),
+    index("attendance_user_idx").on(t.userId),
+  ],
+);
+
+export const assignments = pgTable(
+  "assignments",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    cohortId: text("cohort_id")
+      .notNull()
+      .references(() => cohorts.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").references(() => cohortSessions.id, {
+      onDelete: "set null",
+    }),
+    title: text("title").notNull(),
+    description: text("description"),
+    // Leeg = deadline van de gekoppelde sessie.
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    createdBy: text("created_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("assignments_cohort_idx").on(t.cohortId),
+    index("assignments_session_idx").on(t.sessionId),
+  ],
+);
+
+export const submissions = pgTable(
+  "submissions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    assignmentId: text("assignment_id")
+      .notNull()
+      .references(() => assignments.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    text: text("text"),
+    status: submissionStatusEnum("status").default("ingeleverd").notNull(),
+    isLate: boolean("is_late").default(false).notNull(),
+    feedback: text("feedback"),
+    reviewedBy: text("reviewed_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    submittedAt: timestamp("submitted_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("submissions_unique_idx").on(t.assignmentId, t.userId),
+    index("submissions_user_idx").on(t.userId),
+  ],
+);
+
+export const submissionFiles = pgTable(
+  "submission_files",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    submissionId: text("submission_id")
+      .notNull()
+      .references(() => submissions.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    name: text("name").notNull(),
+    sizeBytes: integer("size_bytes"),
+    mimeType: text("mime_type"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("submission_files_submission_idx").on(t.submissionId)],
 );
 
 // =============================================
