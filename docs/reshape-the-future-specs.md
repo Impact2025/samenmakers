@@ -95,12 +95,12 @@ Bijgewerkt op 29 september 2026.
 - **Lidmaatschap (besloten 29 september):** alleen voor alumni, €150 per jaar (door admin aan te passen). Bezoekers en cursisten kopen per event een ticket (standaard €50). Leden komen gratis binnen bij events met de vlag 'gratis voor leden' (aan voor de meeste events, uit voor meerdaagse programma's met eigen prijs; alleen admins zetten die om). Bestaande leden houden de prijs waarvoor ze zijn ingestapt.
 - **Alumnus:** iemand die de leergang heeft afgerond (status afgerond) of expliciet alumnus is. Zet een editie op afgerond en de cursisten op afgerond om de kennisbank te openen.
 
-## 5. Open vragen voor het vervolgoverleg
+## 5. Open vragen en besluiten
 
-1. Is "facilitator" een eigen rol per editie (aanbevolen) of moet die ook platformbreed werken?
+1. ~~Facilitator~~ Besloten (29 september): eigen rol per editie.
 2. ~~Coach~~ Besloten (29 september): geen eigen rol, voorlopig buiten scope.
 3. ~~Klasgrenzen bij 1-op-1 berichten~~ Besloten (29 september): cursisten berichten tijdens de opleiding alleen hun eigen klas en docenten; alle andere leden kunnen elkaar vrij berichten.
-4. Lidmaatschap loopt nu 12 maanden vanaf betaling en verlengt automatisch; opzeggen via de betaalportal (loopt door tot einde periode). Klopt dat, of moet het per kalenderjaar?
+4. ~~Looptijd lidmaatschap~~ Besloten (29 september): 12 maanden vanaf betaling, verlengt automatisch, opzeggen via de betaalportal (loopt door tot einde periode).
 5. ~~Alumni en lidmaatschap~~ Besloten (29 september): het lidmaatschap is juist voor alumni en kost €150; bezoekers kopen los een event.
 6. ~~Prijzen~~ Besloten (29 september): de admin bepaalt de prijzen (lidmaatschap, standaard eventprijs, en per event via de ticketinstellingen).
 7. Moeten cursisten hun ingeleverde opdracht kunnen zien en aanpassen tot de deadline?
