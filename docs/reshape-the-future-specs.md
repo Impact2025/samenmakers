@@ -66,25 +66,25 @@ Registratie per sessie, beheerd door de facilitator.
 
 Bijgewerkt op 29 september 2026.
 
-| Onderdeel                                            | Status                                                                               |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Programma's, edities, modules, lessen, voortgang     | gebouwd (fase 1)                                                                     |
-| Docentdashboard met signalering                      | gebouwd                                                                              |
-| Rol facilitator                                      | gebouwd (per editie, in alle schermen en het beheer)                                 |
-| Docenttoegang met tijdvenster                        | gebouwd (2 weken voor tot 2 weken na de sessie, automatisch bij koppelen aan sessie) |
-| Sessies plannen                                      | gebouwd (`/leren/[editie]/sessies`)                                                  |
-| Aanwezigheidsregistratie                             | gebouwd (facilitator en manager registreren, docent kijkt mee)                       |
-| Opdrachten inleveren met bestanden                   | gebouwd (`/leren/[editie]/opdrachten`, te-laat-markering, feedback)                  |
-| Lesmateriaal uploaden door docenten                  | gebouwd (`/leren/[editie]/materiaal`)                                                |
-| Kennisbank alleen voor alumni                        | gebouwd (`/kennis/materiaal`; ook cursisten na afronding)                            |
-| Klasfeed en alumni-feed met adminmelding             | gebouwd (`/leren/[editie]/klas`, `/alumni`; geen voormoderatie)                      |
-| 1-op-1 berichten voor alle leden                     | gebouwd, cursisten tijdens de opleiding alleen naar de eigen klas en docenten        |
-| Tijdgestuurde mails briefing (T-3w), huiswerk (T-2w) | gebouwd (dagelijkse cron `/api/jobs/session-mailings`)                               |
-| Admin: aantallen, logins en activiteit               | gebouwd (analytics-pagina; logins tellen vanaf livegang)                             |
-| Admin: e-mail naar groepen (docenten, coaches)       | gebouwd (segment op rol en leergang in het mailscherm); "coach" wacht op vraag 2     |
-| Lidmaatschap €150 en eventprijs €50                  | **nog niet gebouwd**, wacht op antwoord op vraag 4 en 5                              |
-| Aanmeldproces leden met voorwaarden en betaling      | **nog niet gebouwd**, hangt aan lidmaatschap                                         |
-| Algemene voorwaarden en privacyverklaring            | juridisch, buiten de code (Nicole/Vincent)                                           |
+| Onderdeel                                            | Status                                                                                                                                   |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Programma's, edities, modules, lessen, voortgang     | gebouwd (fase 1)                                                                                                                         |
+| Docentdashboard met signalering                      | gebouwd                                                                                                                                  |
+| Rol facilitator                                      | gebouwd (per editie, in alle schermen en het beheer)                                                                                     |
+| Docenttoegang met tijdvenster                        | gebouwd (2 weken voor tot 2 weken na de sessie, automatisch bij koppelen aan sessie)                                                     |
+| Sessies plannen                                      | gebouwd (`/leren/[editie]/sessies`)                                                                                                      |
+| Aanwezigheidsregistratie                             | gebouwd (facilitator en manager registreren, docent kijkt mee)                                                                           |
+| Opdrachten inleveren met bestanden                   | gebouwd (`/leren/[editie]/opdrachten`, te-laat-markering, feedback)                                                                      |
+| Lesmateriaal uploaden door docenten                  | gebouwd (`/leren/[editie]/materiaal`)                                                                                                    |
+| Kennisbank alleen voor alumni                        | gebouwd (`/kennis/materiaal`; ook cursisten na afronding)                                                                                |
+| Klasfeed en alumni-feed met adminmelding             | gebouwd (`/leren/[editie]/klas`, `/alumni`; geen voormoderatie)                                                                          |
+| 1-op-1 berichten voor alle leden                     | gebouwd, cursisten tijdens de opleiding alleen naar de eigen klas en docenten                                                            |
+| Tijdgestuurde mails briefing (T-3w), huiswerk (T-2w) | gebouwd (dagelijkse cron `/api/jobs/session-mailings`)                                                                                   |
+| Admin: aantallen, logins en activiteit               | gebouwd (analytics-pagina; logins tellen vanaf livegang)                                                                                 |
+| Admin: e-mail naar groepen (docenten, coaches)       | gebouwd (segment op rol en leergang in het mailscherm); "coach" wacht op vraag 2                                                         |
+| Lidmaatschap €150 (alumni) en €50 per event          | gebouwd: `/lidmaatschap`, Stripe-jaarabonnement, leden gratis bij events met 'gratis voor leden'; prijzen door admin op `/admin/prijzen` |
+| Aanmelden en betalen met voorwaarden                 | gebouwd: akkoord met voorwaarden en privacyverklaring vóór betalen; losse events kopen kan zonder account                                |
+| Algemene voorwaarden en privacyverklaring            | juridisch, buiten de code (Nicole/Vincent)                                                                                               |
 
 ### Technische keuzes en beperkingen
 
@@ -92,6 +92,7 @@ Bijgewerkt op 29 september 2026.
 - **Bestanden:** huiswerk en lesmateriaal staan op publieke Vercel Blob met een niet-raadbare URL. De kennisbank is afgeschermd in de app, niet op bestandsniveau. Voor gevoelig materiaal zijn ondertekende URL's nodig.
 - **Berichten:** een direct bericht maakt intern een gespreksrij aan (`matches` met status matched), zodat de bestaande chat en meldingen blijven werken.
 - **Docenten in een gekopieerde editie:** worden niet meegekopieerd, omdat hun toegang bij hun sessies hoort.
+- **Lidmaatschap (besloten 29 september):** alleen voor alumni, €150 per jaar (door admin aan te passen). Bezoekers en cursisten kopen per event een ticket (standaard €50). Leden komen gratis binnen bij events met de vlag 'gratis voor leden' (aan voor de meeste events, uit voor meerdaagse programma's met eigen prijs; alleen admins zetten die om). Bestaande leden houden de prijs waarvoor ze zijn ingestapt.
 - **Alumnus:** iemand die de leergang heeft afgerond (status afgerond) of expliciet alumnus is. Zet een editie op afgerond en de cursisten op afgerond om de kennisbank te openen.
 
 ## 5. Open vragen voor het vervolgoverleg
@@ -99,7 +100,7 @@ Bijgewerkt op 29 september 2026.
 1. Is "facilitator" een eigen rol per editie (aanbevolen) of moet die ook platformbreed werken?
 2. Wat is het verschil tussen "coach" (genoemd bij groepsmail) en docent? Aparte rol of label?
 3. ~~Klasgrenzen bij 1-op-1 berichten~~ Besloten (29 september): cursisten berichten tijdens de opleiding alleen hun eigen klas en docenten; alle andere leden kunnen elkaar vrij berichten.
-4. Gaat het lidmaatschap €150 per kalenderjaar of per 12 maanden vanaf betaling? Wat gebeurt er bij opzeggen?
-5. Krijgen alumni automatisch lidmaatschap, of betalen zij ook €150?
-6. Prijs van de meerdaagse programma's en wie stelt die in (admin per event)?
+4. Lidmaatschap loopt nu 12 maanden vanaf betaling en verlengt automatisch; opzeggen via de betaalportal (loopt door tot einde periode). Klopt dat, of moet het per kalenderjaar?
+5. ~~Alumni en lidmaatschap~~ Besloten (29 september): het lidmaatschap is juist voor alumni en kost €150; bezoekers kopen los een event.
+6. ~~Prijzen~~ Besloten (29 september): de admin bepaalt de prijzen (lidmaatschap, standaard eventprijs, en per event via de ticketinstellingen).
 7. Moeten cursisten hun ingeleverde opdracht kunnen zien en aanpassen tot de deadline?

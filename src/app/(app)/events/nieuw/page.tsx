@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
+import { auth } from "@/server/auth/config";
 import { NewEventForm } from "./new-event-form";
 
 export const metadata: Metadata = { title: "Nieuw event" };
 
-export default function NieuwEventPage() {
+export default async function NieuwEventPage() {
+  const session = await auth();
   return (
     <div className="flex flex-col gap-4">
       <Link
@@ -20,7 +22,7 @@ export default function NieuwEventPage() {
         description="Beschikbaar voor Pro-leden"
         className="mb-0"
       />
-      <NewEventForm />
+      <NewEventForm isAdmin={session?.user?.role === "admin"} />
     </div>
   );
 }

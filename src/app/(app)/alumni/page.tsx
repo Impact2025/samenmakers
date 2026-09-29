@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { TRPCError } from "@trpc/server";
 import { Lock } from "lucide-react";
 import { api } from "@/trpc/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { FeedPanel } from "@/components/community/feed-panel";
+import { buttonClasses } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Alumni" };
 
@@ -28,6 +30,11 @@ export default async function AlumniPage() {
         title="Alumni-community"
         description="Hulpvragen en aanbiedingen van en voor alumni."
         className="mb-0"
+        action={
+          <Link href="/lidmaatschap" className={buttonClasses("tonal", "sm")}>
+            Lidmaatschap
+          </Link>
+        }
       />
       {posts === null ? (
         <EmptyState

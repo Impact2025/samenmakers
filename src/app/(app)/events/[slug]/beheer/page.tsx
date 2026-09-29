@@ -10,6 +10,7 @@ import { EditEventForm } from "./edit-event-form";
 import { EventCheckinPanel } from "./event-checkin-panel";
 import { TicketsManager } from "./tickets-manager";
 import { features } from "@/lib/features";
+import { auth } from "@/server/auth/config";
 
 export const metadata: Metadata = {
   title: "Event beheren",
@@ -34,6 +35,7 @@ export default async function ManageEventPage({ params }: Props) {
     });
   if (!event) notFound();
   const attendees = await api.events.attendees({ eventId: event.id });
+  const session = await auth();
 
   const stats = [
     {
@@ -125,7 +127,10 @@ export default async function ManageEventPage({ params }: Props) {
             dan krijgen deelnemers automatisch bericht.
           </p>
           <div className="bg-surface-container-lowest shadow-card rounded-2xl p-5 sm:p-6">
-            <EditEventForm event={event} />
+            <EditEventForm
+              event={event}
+              isAdmin={session?.user?.role === "admin"}
+            />
           </div>
         </section>
       )}

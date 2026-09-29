@@ -5,7 +5,7 @@ import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { EventForm } from "@/components/events/event-form";
 
-export function NewEventForm() {
+export function NewEventForm({ isAdmin = false }: { isAdmin?: boolean }) {
   const router = useRouter();
   const create = trpc.events.create.useMutation({
     onSuccess: (event, vars) => {
@@ -17,6 +17,7 @@ export function NewEventForm() {
 
   return (
     <EventForm
+      isAdmin={isAdmin}
       submitting={create.isPending}
       error={create.error?.message}
       onSubmit={(values, intent) =>

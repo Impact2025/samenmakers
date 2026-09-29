@@ -24,6 +24,7 @@ export interface EventFormValues {
   thema?: string;
   visibility: "public" | "members" | "unlisted";
   waitlistOfferHours: number;
+  memberFree?: boolean;
 }
 
 export interface EventFormInitial {
@@ -41,6 +42,7 @@ export interface EventFormInitial {
   thema: string | null;
   visibility: "public" | "members" | "unlisted";
   waitlistOfferHours: number;
+  memberFree?: boolean;
 }
 
 const field =
@@ -57,7 +59,10 @@ export function EventForm({
   error,
   actions,
   onSubmit,
+  isAdmin = false,
 }: {
+  /** Beheerders bepalen of leden gratis binnenkomen. */
+  isAdmin?: boolean;
   initial?: EventFormInitial | undefined;
   submitting: boolean;
   error?: string | null | undefined;
@@ -81,6 +86,7 @@ export function EventForm({
     visibility:
       initial?.visibility ?? ("public" as EventFormValues["visibility"]),
     waitlistOfferHours: String(initial?.waitlistOfferHours ?? 24),
+    memberFree: initial?.memberFree ?? true,
   });
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -121,6 +127,7 @@ export function EventForm({
           : null,
         visibility: form.visibility,
         waitlistOfferHours: parseInt(form.waitlistOfferHours, 10) || 24,
+        ...(isAdmin ? { memberFree: form.memberFree } : {}),
         ...(form.description.trim()
           ? { description: form.description.trim() }
           : {}),
@@ -413,6 +420,25 @@ export function EventForm({
             <option value="unlisted">Verborgen — alleen via de link</option>
           </select>
         </div>
+        {isAdmin && (
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4"
+              checked={form.memberFree}
+              onChange={(e) => set("memberFree", e.target.checked)}
+            />
+            <span>
+              <span className="text-label-lg text-on-surface block">
+                Gratis voor leden
+              </span>
+              <span className="text-body-sm text-secondary block">
+                Alumni met een jaarlidmaatschap komen gratis binnen. Zet dit uit
+                voor meerdaagse programma&apos;s met een eigen prijs.
+              </span>
+            </span>
+          </label>
+        )}
       </fieldset>
 
       {error && (

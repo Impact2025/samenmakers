@@ -627,6 +627,9 @@ export const events = pgTable(
     latitude: doublePrecision("latitude"),
     longitude: doublePrecision("longitude"),
     waitlistOfferHours: integer("waitlist_offer_hours").default(24).notNull(),
+    // Leden (alumni met jaarlidmaatschap) komen gratis binnen. Uit voor meerdaagse
+    // programma's met eigen prijs. Alleen door beheerders aan te passen.
+    memberFree: boolean("member_free").default(true).notNull(),
     // Tickets (fase 2). Terugbetalen kan tot zoveel uur voor de start; null = niet.
     refundUntilHours: integer("refund_until_hours"),
     allowTransfer: boolean("allow_transfer").default(true).notNull(),
@@ -1447,6 +1450,53 @@ export const loginEvents = pgTable(
     index("login_events_user_idx").on(t.userId),
   ],
 );
+
+export const membershipStatusEnum = pgEnum("membership_status", [
+  "active",
+  "past_due",
+  "canceled",
+]);
+
+// Jaarlidmaatschap voor alumni (los van het Pro-abonnement op users).
+export const memberships = pgTable(
+  "memberships",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    stripeSubscriptionId: text("stripe_subscription_id").notNull(),
+    status: membershipStatusEnum("status").notNull(),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    // Prijs waarvoor dit lid is ingestapt (de admin kan de prijs later wijzigen).
+    priceCents: integer("price_cents"),
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("memberships_user_idx").on(t.userId),
+    uniqueIndex("memberships_subscription_idx").on(t.stripeSubscriptionId),
+  ],
+);
+
+// Door de admin in te stellen prijzen (in centen), bijv. membership_price_cents.
+export const platformSettings = pgTable("platform_settings", {
+  key: text("key").primaryKey(),
+  valueCents: integer("value_cents").notNull(),
+  updatedBy: text("updated_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
 
 // =============================================
 // REFERRALS

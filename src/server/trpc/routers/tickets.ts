@@ -13,10 +13,13 @@ import {
   eventOrders,
   eventIssuedTickets,
   users,
+  memberships,
 } from "@/server/db/schema";
 import type { Database } from "@/server/db";
 import { apiLimit } from "@/lib/ratelimit";
 import { features } from "@/lib/features";
+import { applyMemberPricing, isActiveMember } from "@/lib/membership";
+import { loadPrices } from "@/server/settings";
 import { seatsTakenSql, ticketTakenSql } from "@/server/events/capacity";
 import { derivePhase, acceptsRegistrations } from "@/server/events/status";
 import {
@@ -204,7 +207,16 @@ export const ticketsRouter = createTRPCRouter({
           })
         : null;
 
+      // Leden komen gratis binnen: toon dat ook zo. De echte prijs rekent checkout zelf uit.
+      const memberRow = ctx.session?.user?.id
+        ? await ctx.db.query.memberships.findFirst({
+            where: eq(memberships.userId, ctx.session.user.id),
+          })
+        : null;
+      const memberPricing = event.memberFree && isActiveMember(memberRow, now);
+
       return {
+        memberPricing,
         event: {
           id: event.id,
           slug: event.slug,
@@ -227,7 +239,11 @@ export const ticketsRouter = createTRPCRouter({
               : eventLeft === null
                 ? typeLeft
                 : Math.min(typeLeft, eventLeft);
-          return { ...t, left, state: salesState(t, now) };
+          const shown =
+            memberPricing && t.kind === "paid"
+              ? { ...t, kind: "free" as const, priceCents: 0 }
+              : t;
+          return { ...shown, left, state: salesState(t, now) };
         }),
         fields: fields.map((f) => ({
           id: f.id,
@@ -323,9 +339,19 @@ export const ticketsRouter = createTRPCRouter({
         });
       }
 
-      const priced = priceOrder(types, input.items);
-      if (!priced.ok)
-        throw new TRPCError({ code: "BAD_REQUEST", message: priced.error });
+      const base = priceOrder(types, input.items);
+      if (!base.ok)
+        throw new TRPCError({ code: "BAD_REQUEST", message: base.error });
+      // Alumni met een actief jaarlidmaatschap komen gratis binnen bij "gratis voor leden"-events.
+      const member = userId
+        ? await ctx.db.query.memberships.findFirst({
+            where: eq(memberships.userId, userId),
+          })
+        : null;
+      const priced = applyMemberPricing(base, {
+        isMember: isActiveMember(member, new Date()),
+        memberFree: event.memberFree,
+      });
       const answers = validateAnswers(fields, input.answers);
 
       // Betaald: via het Connect-account van de organisator, of (admin-events) via het platform.
@@ -654,7 +680,10 @@ export const ticketsRouter = createTRPCRouter({
         }),
       ]);
       const paid = orders.filter((o) => o.status === "paid");
+      const prices = await loadPrices(ctx.db);
       return {
+        // Standaardprijs (door de admin bepaald) als voorstel bij een nieuw betaald ticket.
+        defaultPriceCents: prices.eventCents,
         settings: {
           refundUntilHours: event.refundUntilHours,
           allowTransfer: event.allowTransfer,

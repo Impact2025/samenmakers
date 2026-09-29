@@ -12,11 +12,16 @@ import {
   reportedContent,
   cohorts,
   cohortMembers,
+  platformSettings,
+  memberships,
   loginEvents,
   feedPosts,
   submissions,
 } from "@/server/db/schema";
 import { subDays } from "@/lib/date-utils";
+import { isValidPrice, isActiveMember } from "@/lib/membership";
+import { loadPrices, PRICE_KEYS } from "@/server/settings";
+import { TRPCError } from "@trpc/server";
 
 export const adminRouter = createTRPCRouter({
   // Platform analytics
@@ -161,6 +166,61 @@ export const adminRouter = createTRPCRouter({
       messages7: n(msgs7),
     };
   }),
+
+  // Prijzen die de admin bepaalt: jaarlidmaatschap en standaardprijs per event.
+  prices: adminProcedure.query(async ({ ctx }) => {
+    const [prices, rows] = await Promise.all([
+      loadPrices(ctx.db),
+      ctx.db.select().from(memberships),
+    ]);
+    const now = new Date();
+    return {
+      ...prices,
+      activeMembers: rows.filter((m) => isActiveMember(m, now)).length,
+    };
+  }),
+
+  setPrices: adminProcedure
+    .input(
+      z.object({
+        membershipCents: z.number().int(),
+        eventCents: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (
+        !isValidPrice(input.membershipCents) ||
+        !isValidPrice(input.eventCents)
+      )
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Vul een bedrag in tussen €0,50 en €10.000",
+        });
+      const rows = [
+        { key: PRICE_KEYS.membership, valueCents: input.membershipCents },
+        { key: PRICE_KEYS.event, valueCents: input.eventCents },
+      ];
+      for (const r of rows) {
+        await ctx.db
+          .insert(platformSettings)
+          .values({ ...r, updatedBy: ctx.userId })
+          .onConflictDoUpdate({
+            target: platformSettings.key,
+            set: {
+              valueCents: r.valueCents,
+              updatedBy: ctx.userId,
+              updatedAt: new Date(),
+            },
+          });
+      }
+      await ctx.db.insert(auditLog).values({
+        adminId: ctx.userId,
+        action: "set_prices",
+        targetType: "settings",
+        details: JSON.stringify(input),
+      });
+      return { ok: true };
+    }),
 
   // User management
   users: adminProcedure

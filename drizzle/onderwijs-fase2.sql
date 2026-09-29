@@ -100,3 +100,24 @@ CREATE TABLE IF NOT EXISTS "login_events" (
 );
 CREATE INDEX IF NOT EXISTS "login_events_created_at_idx" ON "login_events" ("created_at");
 CREATE INDEX IF NOT EXISTS "login_events_user_idx" ON "login_events" ("user_id");
+ALTER TABLE "events" ADD COLUMN IF NOT EXISTS "member_free" boolean DEFAULT true NOT NULL;
+CREATE TYPE "public"."membership_status" AS ENUM('active', 'past_due', 'canceled');
+CREATE TABLE IF NOT EXISTS "memberships" (
+  "id" text PRIMARY KEY NOT NULL,
+  "user_id" text NOT NULL REFERENCES "users"("id") ON DELETE CASCADE,
+  "stripe_subscription_id" text NOT NULL,
+  "status" "membership_status" NOT NULL,
+  "current_period_end" timestamp with time zone,
+  "price_cents" integer,
+  "terms_accepted_at" timestamp with time zone,
+  "created_at" timestamp with time zone DEFAULT now() NOT NULL,
+  "updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS "memberships_user_idx" ON "memberships" ("user_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "memberships_subscription_idx" ON "memberships" ("stripe_subscription_id");
+CREATE TABLE IF NOT EXISTS "platform_settings" (
+  "key" text PRIMARY KEY NOT NULL,
+  "value_cents" integer NOT NULL,
+  "updated_by" text REFERENCES "users"("id") ON DELETE SET NULL,
+  "updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
