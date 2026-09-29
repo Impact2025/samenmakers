@@ -60,7 +60,7 @@ Registratie per sessie, beheerd door de facilitator.
 - **Jaarlidmaatschap €150**: gratis toegang tot de meeste events.
 - **Niet-leden en cursisten: €50 per los event**, behalve meerdaagse programma's met eigen prijs.
 - Algemene voorwaarden en privacyverklaring afstemmen op gebruik van de app (juridisch, buiten de code).
-- **Admin-dashboard**: aantal leden, logins, activiteit; e-mail naar specifieke groepen (docenten, coaches).
+- **Admin-dashboard**: aantal leden, logins, activiteit; e-mail naar specifieke groepen (docenten, facilitators, cursisten, alumni). Coaches krijgen voorlopig geen eigen rol (besloten 29 september).
 
 ## 4. Status tegenover de codebase
 
@@ -81,7 +81,7 @@ Bijgewerkt op 29 september 2026.
 | 1-op-1 berichten voor alle leden                     | gebouwd, cursisten tijdens de opleiding alleen naar de eigen klas en docenten                                                            |
 | Tijdgestuurde mails briefing (T-3w), huiswerk (T-2w) | gebouwd (dagelijkse cron `/api/jobs/session-mailings`)                                                                                   |
 | Admin: aantallen, logins en activiteit               | gebouwd (analytics-pagina; logins tellen vanaf livegang)                                                                                 |
-| Admin: e-mail naar groepen (docenten, coaches)       | gebouwd (segment op rol en leergang in het mailscherm); "coach" wacht op vraag 2                                                         |
+| Admin: e-mail naar groepen (docenten, coaches)       | gebouwd (segment op rol en leergang in het mailscherm); coach is geen eigen rol                                                          |
 | Lidmaatschap €150 (alumni) en €50 per event          | gebouwd: `/lidmaatschap`, Stripe-jaarabonnement, leden gratis bij events met 'gratis voor leden'; prijzen door admin op `/admin/prijzen` |
 | Aanmelden en betalen met voorwaarden                 | gebouwd: akkoord met voorwaarden en privacyverklaring vóór betalen; losse events kopen kan zonder account                                |
 | Algemene voorwaarden en privacyverklaring            | juridisch, buiten de code (Nicole/Vincent)                                                                                               |
@@ -98,7 +98,7 @@ Bijgewerkt op 29 september 2026.
 ## 5. Open vragen voor het vervolgoverleg
 
 1. Is "facilitator" een eigen rol per editie (aanbevolen) of moet die ook platformbreed werken?
-2. Wat is het verschil tussen "coach" (genoemd bij groepsmail) en docent? Aparte rol of label?
+2. ~~Coach~~ Besloten (29 september): geen eigen rol, voorlopig buiten scope.
 3. ~~Klasgrenzen bij 1-op-1 berichten~~ Besloten (29 september): cursisten berichten tijdens de opleiding alleen hun eigen klas en docenten; alle andere leden kunnen elkaar vrij berichten.
 4. Lidmaatschap loopt nu 12 maanden vanaf betaling en verlengt automatisch; opzeggen via de betaalportal (loopt door tot einde periode). Klopt dat, of moet het per kalenderjaar?
 5. ~~Alumni en lidmaatschap~~ Besloten (29 september): het lidmaatschap is juist voor alumni en kost €150; bezoekers kopen los een event.
