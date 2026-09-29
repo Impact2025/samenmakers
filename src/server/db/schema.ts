@@ -1794,6 +1794,42 @@ export const eventIssuedTicketsRelations = relations(
   }),
 );
 
+export const cohortSessionsRelations = relations(cohortSessions, ({ one }) => ({
+  cohort: one(cohorts, {
+    fields: [cohortSessions.cohortId],
+    references: [cohorts.id],
+  }),
+  teacher: one(users, {
+    fields: [cohortSessions.teacherId],
+    references: [users.id],
+  }),
+}));
+
+export const assignmentsRelations = relations(assignments, ({ one }) => ({
+  session: one(cohortSessions, {
+    fields: [assignments.sessionId],
+    references: [cohortSessions.id],
+  }),
+}));
+
+export const submissionsRelations = relations(submissions, ({ one, many }) => ({
+  assignment: one(assignments, {
+    fields: [submissions.assignmentId],
+    references: [assignments.id],
+  }),
+  files: many(submissionFiles),
+}));
+
+export const submissionFilesRelations = relations(
+  submissionFiles,
+  ({ one }) => ({
+    submission: one(submissions, {
+      fields: [submissionFiles.submissionId],
+      references: [submissions.id],
+    }),
+  }),
+);
+
 export const cohortsRelations = relations(cohorts, ({ one, many }) => ({
   members: many(cohortMembers),
   program: one(programs, {

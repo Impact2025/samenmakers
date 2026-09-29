@@ -66,3 +66,82 @@ export async function validateImage(
   if (!sniffed) return { ok: false, error: "Alleen JPG, PNG of WebP" };
   return { ok: true, ...sniffed };
 }
+
+// Documenten (huiswerk, docentmateriaal): afbeeldingen, PDF en Office-bestanden.
+// Type en extensie komen uit de inhoud (en voor Office uit een vaste lijst extensies),
+// nooit uit het door de client opgegeven type. HTML/SVG/scripts blijven geweigerd.
+
+export const MAX_DOCUMENT_BYTES = 15 * 1024 * 1024;
+
+const OFFICE_TYPES: Record<string, string> = {
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+};
+
+export type DocumentCheck =
+  | { ok: true; contentType: string; ext: string }
+  | { ok: false; error: string };
+
+export function sniffDocument(
+  bytes: Uint8Array,
+  fileName: string,
+): { contentType: string; ext: string } | null {
+  const image = sniffImage(bytes);
+  if (image) return image;
+  // "%PDF"
+  if (
+    bytes[0] === 0x25 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x44 &&
+    bytes[3] === 0x46
+  )
+    return { contentType: "application/pdf", ext: "pdf" };
+  // Office Open XML is een zip ("PK\x03\x04"); het soort volgt uit een toegestane extensie.
+  if (
+    bytes[0] === 0x50 &&
+    bytes[1] === 0x4b &&
+    bytes[2] === 0x03 &&
+    bytes[3] === 0x04
+  ) {
+    const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+    const contentType = OFFICE_TYPES[ext];
+    if (contentType) return { contentType, ext };
+  }
+  return null;
+}
+
+export async function validateDocument(
+  file: unknown,
+  maxBytes = MAX_DOCUMENT_BYTES,
+): Promise<DocumentCheck> {
+  if (!(file instanceof File))
+    return { ok: false, error: "Geen bestand meegegeven" };
+  if (file.size === 0) return { ok: false, error: "Leeg bestand" };
+  if (file.size > maxBytes)
+    return {
+      ok: false,
+      error: `Maximaal ${Math.round(maxBytes / 1024 / 1024)} MB`,
+    };
+  const head = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const sniffed = sniffDocument(head, file.name);
+  if (!sniffed)
+    return {
+      ok: false,
+      error: "Alleen JPG, PNG, WebP, PDF, Word, PowerPoint of Excel",
+    };
+  return { ok: true, ...sniffed };
+}
+
+/** Bestanden die via onze uploadroutes zijn opgeslagen staan op Vercel Blob. */
+export function isBlobUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return (
+      u.protocol === "https:" &&
+      u.hostname.endsWith(".public.blob.vercel-storage.com")
+    );
+  } catch {
+    return false;
+  }
+}
