@@ -1428,6 +1428,26 @@ export const feedPosts = pgTable(
   (t) => [index("feed_posts_cohort_idx").on(t.cohortId, t.createdAt)],
 );
 
+// Eén rij per succesvolle login, voor het admin-dashboard (logins en unieke actieve leden).
+export const loginEvents = pgTable(
+  "login_events",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("login_events_created_at_idx").on(t.createdAt),
+    index("login_events_user_idx").on(t.userId),
+  ],
+);
+
 // =============================================
 // REFERRALS
 // =============================================

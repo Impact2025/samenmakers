@@ -18,6 +18,11 @@ describe("buildSegmentConditions", () => {
     expect(buildSegmentConditions({ status: "active" })).toBeDefined();
     expect(buildSegmentConditions({ weeklyDigestOnly: true })).toBeDefined();
     expect(buildSegmentConditions({ tag: "vip" })).toBeDefined();
+    expect(buildSegmentConditions({ cohortRole: "docent" })).toBeDefined();
+    expect(buildSegmentConditions({ cohortId: "c1" })).toBeDefined();
+    expect(
+      buildSegmentConditions({ cohortRole: "cursist", cohortId: "c1" }),
+    ).toBeDefined();
   });
 
   it("combines multiple filters into a single condition", () => {

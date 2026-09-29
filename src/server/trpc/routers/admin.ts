@@ -12,6 +12,9 @@ import {
   reportedContent,
   cohorts,
   cohortMembers,
+  loginEvents,
+  feedPosts,
+  submissions,
 } from "@/server/db/schema";
 import { subDays } from "@/lib/date-utils";
 
@@ -84,6 +87,78 @@ export const adminRouter = createTRPCRouter({
       mrr: Number(proUsers[0]?.count ?? 0) * 9,
       totalCohorts: Number(totalCohorts[0]?.count ?? 0),
       totalCohortMembers: Number(totalCohortMembers[0]?.count ?? 0),
+    };
+  }),
+
+  // Ledenbeheer: aantallen per groep, logins en activiteit (7 en 30 dagen).
+  membership: adminProcedure.query(async ({ ctx }) => {
+    const now = new Date();
+    const d7 = subDays(now, 7);
+    const d30 = subDays(now, 30);
+    const n = (rows: { count: number | string }[]) =>
+      Number(rows[0]?.count ?? 0);
+
+    const loginCounts = (since: Date) =>
+      ctx.db
+        .select({
+          total: count(),
+          unique: sql<number>`count(distinct ${loginEvents.userId})`,
+        })
+        .from(loginEvents)
+        .where(gte(loginEvents.createdAt, since));
+
+    const [accounts, roleRows, logins7, logins30, feed7, subs7, msgs7] =
+      await Promise.all([
+        ctx.db
+          .select({ count: count() })
+          .from(users)
+          .where(eq(users.status, "active")),
+        ctx.db
+          .select({
+            role: cohortMembers.role,
+            count: sql<number>`count(distinct ${cohortMembers.userId})`,
+          })
+          .from(cohortMembers)
+          .where(sql`${cohortMembers.status} <> 'uitgeschreven'`)
+          .groupBy(cohortMembers.role),
+        loginCounts(d7),
+        loginCounts(d30),
+        ctx.db
+          .select({ count: count() })
+          .from(feedPosts)
+          .where(gte(feedPosts.createdAt, d7)),
+        ctx.db
+          .select({ count: count() })
+          .from(submissions)
+          .where(gte(submissions.submittedAt, d7)),
+        ctx.db
+          .select({ count: count() })
+          .from(messages)
+          .where(gte(messages.createdAt, d7)),
+      ]);
+
+    const byRole = Object.fromEntries(
+      roleRows.map((r) => [r.role, Number(r.count)]),
+    ) as Record<string, number>;
+
+    return {
+      accounts: n(accounts),
+      cursisten: byRole.cursist ?? 0,
+      docenten: byRole.docent ?? 0,
+      facilitators: byRole.facilitator ?? 0,
+      managers: byRole.manager ?? 0,
+      alumni: byRole.alumnus ?? 0,
+      logins7: {
+        total: Number(logins7[0]?.total ?? 0),
+        unique: Number(logins7[0]?.unique ?? 0),
+      },
+      logins30: {
+        total: Number(logins30[0]?.total ?? 0),
+        unique: Number(logins30[0]?.unique ?? 0),
+      },
+      feedPosts7: n(feed7),
+      submissions7: n(subs7),
+      messages7: n(msgs7),
     };
   }),
 

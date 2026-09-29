@@ -52,7 +52,7 @@ Registratie per sessie, beheerd door de facilitator.
 - **Geen voormoderatie**; de beheerder krijgt wel een notificatie bij nieuwe posts.
 - Cursisten hebben wel toegang tot algemene community-activiteiten (events) om kennis te maken met het alumninetwerk.
 - **Kennisbank (alle presentaties en lesmateriaal) alleen voor alumni**, pas na afronding van de opleiding.
-- **Alle leden kunnen elkaar 1-op-1 berichten sturen.**
+- **Alle leden kunnen elkaar 1-op-1 berichten sturen.** Uitzondering (besloten 29 september): cursisten berichten tijdens de opleiding alleen hun eigen klas en docenten, en zijn zelf ook alleen daardoor bereikbaar.
 
 ### 3.5 Ledenbeheer en betalingen
 
@@ -64,26 +64,41 @@ Registratie per sessie, beheerd door de facilitator.
 
 ## 4. Status tegenover de codebase
 
-| Onderdeel                                        | Status                                             |
-| ------------------------------------------------ | -------------------------------------------------- |
-| Programma's, edities, modules, lessen, voortgang | gebouwd (fase 1)                                   |
-| Docentdashboard met signalering                  | gebouwd                                            |
-| Rol facilitator                                  | nieuw                                              |
-| Docenttoegang met tijdvenster                    | nieuw                                              |
-| Opdrachten inleveren met bestanden               | nieuw                                              |
-| Aanwezigheidsregistratie                         | nieuw                                              |
-| Klasgroepen + feeds per groep + adminmelding     | nieuw                                              |
-| Kennisbank alleen voor alumni                    | nieuw (bestaande kennisbank is publiek/Pro)        |
-| 1-op-1 berichten voor alle leden                 | aanpassen (nu alleen na wederzijdse match)         |
-| Lidmaatschap €150 en eventprijs €50              | nieuw (bestaand: Pro-abonnement en ticketsysteem)  |
-| Admin: statistieken en groepsmail                | uitbreiden (bestaande campagnemodule en segmenten) |
-| Tijdgestuurde mails T-3w / T-2w / T-3d           | nieuw (Vercel Cron)                                |
+Bijgewerkt op 29 september 2026.
+
+| Onderdeel                                            | Status                                                                               |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Programma's, edities, modules, lessen, voortgang     | gebouwd (fase 1)                                                                     |
+| Docentdashboard met signalering                      | gebouwd                                                                              |
+| Rol facilitator                                      | gebouwd (per editie, in alle schermen en het beheer)                                 |
+| Docenttoegang met tijdvenster                        | gebouwd (2 weken voor tot 2 weken na de sessie, automatisch bij koppelen aan sessie) |
+| Sessies plannen                                      | gebouwd (`/leren/[editie]/sessies`)                                                  |
+| Aanwezigheidsregistratie                             | gebouwd (facilitator en manager registreren, docent kijkt mee)                       |
+| Opdrachten inleveren met bestanden                   | gebouwd (`/leren/[editie]/opdrachten`, te-laat-markering, feedback)                  |
+| Lesmateriaal uploaden door docenten                  | gebouwd (`/leren/[editie]/materiaal`)                                                |
+| Kennisbank alleen voor alumni                        | gebouwd (`/kennis/materiaal`; ook cursisten na afronding)                            |
+| Klasfeed en alumni-feed met adminmelding             | gebouwd (`/leren/[editie]/klas`, `/alumni`; geen voormoderatie)                      |
+| 1-op-1 berichten voor alle leden                     | gebouwd, cursisten tijdens de opleiding alleen naar de eigen klas en docenten        |
+| Tijdgestuurde mails briefing (T-3w), huiswerk (T-2w) | gebouwd (dagelijkse cron `/api/jobs/session-mailings`)                               |
+| Admin: aantallen, logins en activiteit               | gebouwd (analytics-pagina; logins tellen vanaf livegang)                             |
+| Admin: e-mail naar groepen (docenten, coaches)       | gebouwd (segment op rol en leergang in het mailscherm); "coach" wacht op vraag 2     |
+| Lidmaatschap €150 en eventprijs €50                  | **nog niet gebouwd**, wacht op antwoord op vraag 4 en 5                              |
+| Aanmeldproces leden met voorwaarden en betaling      | **nog niet gebouwd**, hangt aan lidmaatschap                                         |
+| Algemene voorwaarden en privacyverklaring            | juridisch, buiten de code (Nicole/Vincent)                                           |
+
+### Technische keuzes en beperkingen
+
+- **Migratie:** `drizzle/onderwijs-fase2.sql` moet op de database worden toegepast (`scripts/apply-events-migrations.ts`). Tot dan werken de nieuwe schermen niet.
+- **Bestanden:** huiswerk en lesmateriaal staan op publieke Vercel Blob met een niet-raadbare URL. De kennisbank is afgeschermd in de app, niet op bestandsniveau. Voor gevoelig materiaal zijn ondertekende URL's nodig.
+- **Berichten:** een direct bericht maakt intern een gespreksrij aan (`matches` met status matched), zodat de bestaande chat en meldingen blijven werken.
+- **Docenten in een gekopieerde editie:** worden niet meegekopieerd, omdat hun toegang bij hun sessies hoort.
+- **Alumnus:** iemand die de leergang heeft afgerond (status afgerond) of expliciet alumnus is. Zet een editie op afgerond en de cursisten op afgerond om de kennisbank te openen.
 
 ## 5. Open vragen voor het vervolgoverleg
 
 1. Is "facilitator" een eigen rol per editie (aanbevolen) of moet die ook platformbreed werken?
 2. Wat is het verschil tussen "coach" (genoemd bij groepsmail) en docent? Aparte rol of label?
-3. Kan een cursist 1-op-1 berichten sturen naar iedereen, ook buiten de eigen klas, of gelden klasgrenzen tijdens de opleiding?
+3. ~~Klasgrenzen bij 1-op-1 berichten~~ Besloten (29 september): cursisten berichten tijdens de opleiding alleen hun eigen klas en docenten; alle andere leden kunnen elkaar vrij berichten.
 4. Gaat het lidmaatschap €150 per kalenderjaar of per 12 maanden vanaf betaling? Wat gebeurt er bij opzeggen?
 5. Krijgen alumni automatisch lidmaatschap, of betalen zij ook €150?
 6. Prijs van de meerdaagse programma's en wie stelt die in (admin per event)?

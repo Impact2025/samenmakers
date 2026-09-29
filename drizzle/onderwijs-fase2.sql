@@ -93,3 +93,10 @@ CREATE TABLE IF NOT EXISTS "feed_posts" (
   "created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 CREATE INDEX IF NOT EXISTS "feed_posts_cohort_idx" ON "feed_posts" ("cohort_id", "created_at");
+CREATE TABLE IF NOT EXISTS "login_events" (
+  "id" text PRIMARY KEY NOT NULL,
+  "user_id" text NOT NULL REFERENCES "users"("id") ON DELETE CASCADE,
+  "created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+CREATE INDEX IF NOT EXISTS "login_events_created_at_idx" ON "login_events" ("created_at");
+CREATE INDEX IF NOT EXISTS "login_events_user_idx" ON "login_events" ("user_id");
