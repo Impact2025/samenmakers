@@ -1,4 +1,4 @@
-# Samenmakers Eventsysteem — Projectplan
+# Weave Eventsysteem — Projectplan
 
 Status: fase 1 gebouwd (migratie nog toe te passen) · Bouwt voort op het bestaande eventsysteem en sluit aan op [leeromgeving-plan.md](leeromgeving-plan.md)
 
