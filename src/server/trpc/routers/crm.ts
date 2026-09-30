@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { count, desc, eq, or, sql } from "drizzle-orm";
+import { asc, count, desc, eq, or, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
@@ -14,9 +14,27 @@ import { segmentSchema, buildSegmentConditions } from "@/server/admin/segment";
 export const crmRouter = createTRPCRouter({
   // Filtered contact list.
   contacts: adminProcedure
-    .input(segmentSchema.extend({ limit: z.number().min(1).max(200).default(50) }))
+    .input(
+      segmentSchema.extend({
+        limit: z.number().min(1).max(200).default(50),
+        offset: z.number().min(0).default(0),
+        sort: z
+          .enum(["nieuwst", "oudst", "naam", "laatste_contact"])
+          .default("nieuwst"),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const where = buildSegmentConditions(input);
+      const orderBy = {
+        nieuwst: [desc(users.createdAt)],
+        oudst: [asc(users.createdAt)],
+        naam: [asc(sql`lower(coalesce(${users.naam}, ${users.name}))`)],
+        laatste_contact: [sql`${users.crmLastContactedAt} desc nulls last`],
+      }[input.sort];
+      const [totaal] = await ctx.db
+        .select({ n: count() })
+        .from(users)
+        .where(where);
       const rows = await ctx.db
         .select({
           id: users.id,
@@ -34,9 +52,10 @@ export const crmRouter = createTRPCRouter({
         })
         .from(users)
         .where(where)
-        .orderBy(desc(users.createdAt))
-        .limit(input.limit);
-      return rows;
+        .orderBy(...orderBy)
+        .limit(input.limit)
+        .offset(input.offset);
+      return { items: rows, total: totaal?.n ?? 0 };
     }),
 
   contact: adminProcedure
@@ -47,23 +66,30 @@ export const crmRouter = createTRPCRouter({
       });
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
-      const [activities, matchCount, postCount, eventCount] = await Promise.all([
-        ctx.db.query.crmActivities.findMany({
-          where: eq(crmActivities.contactId, input.id),
-          orderBy: [desc(crmActivities.createdAt)],
-          limit: 50,
-          with: { admin: { columns: { naam: true, name: true } } },
-        }),
-        ctx.db
-          .select({ c: count() })
-          .from(matches)
-          .where(or(eq(matches.userId, input.id), eq(matches.targetId, input.id))),
-        ctx.db.select({ c: count() }).from(posts).where(eq(posts.authorId, input.id)),
-        ctx.db
-          .select({ c: count() })
-          .from(eventAttendees)
-          .where(eq(eventAttendees.userId, input.id)),
-      ]);
+      const [activities, matchCount, postCount, eventCount] = await Promise.all(
+        [
+          ctx.db.query.crmActivities.findMany({
+            where: eq(crmActivities.contactId, input.id),
+            orderBy: [desc(crmActivities.createdAt)],
+            limit: 50,
+            with: { admin: { columns: { naam: true, name: true } } },
+          }),
+          ctx.db
+            .select({ c: count() })
+            .from(matches)
+            .where(
+              or(eq(matches.userId, input.id), eq(matches.targetId, input.id)),
+            ),
+          ctx.db
+            .select({ c: count() })
+            .from(posts)
+            .where(eq(posts.authorId, input.id)),
+          ctx.db
+            .select({ c: count() })
+            .from(eventAttendees)
+            .where(eq(eventAttendees.userId, input.id)),
+        ],
+      );
 
       return {
         user,
@@ -77,7 +103,9 @@ export const crmRouter = createTRPCRouter({
     }),
 
   addNote: adminProcedure
-    .input(z.object({ contactId: z.string(), content: z.string().min(1).max(2000) }))
+    .input(
+      z.object({ contactId: z.string(), content: z.string().min(1).max(2000) }),
+    )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(crmActivities).values({
         contactId: input.contactId,
@@ -154,6 +182,9 @@ export const crmRouter = createTRPCRouter({
     const rows = await ctx.db
       .select({ tag: sql<string>`distinct unnest(${users.crmTags})` })
       .from(users);
-    return rows.map((r) => r.tag).filter(Boolean).sort();
+    return rows
+      .map((r) => r.tag)
+      .filter(Boolean)
+      .sort();
   }),
 });
