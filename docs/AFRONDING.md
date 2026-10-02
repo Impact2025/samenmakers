@@ -50,7 +50,7 @@ Volgens `docs/LIVEGANG.md`:
 
 1. [ ] Escrow: Deployment & Architecture Runbook schrijven (`docs/RUNBOOK.md`) en deponeren.
 2. [ ] Escrow: afgeschermde repository met kopie van de code.
-3. [ ] Data-export (JSON/CSV) van alle organisatiedata controleren of toevoegen.
+3. [x] Data-export (JSON/CSV) van alle organisatiedata controleren of toevoegen.
 4. [ ] Tweede factuur (termijn 2, 1.815 incl. btw) versturen.
 5. [ ] Algemene voorwaarden en privacyverklaring afstemmen op de app (Vincent + juridisch).
 6. [ ] Naam afstemmen: offerte zegt "ImpactOS – Community", app heet nu "Weave".

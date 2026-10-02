@@ -35,6 +35,22 @@ export default function AdminGdprPage() {
             <div className="hairline-b flex items-center justify-between py-3">
               <div>
                 <p className="text-on-surface text-sm font-semibold">
+                  Volledige data-export (alle tabellen, JSON)
+                </p>
+                <code className="text-secondary text-xs">
+                  GET /api/admin/export
+                </code>
+              </div>
+              <a
+                href="/api/admin/export"
+                className="text-primary text-xs font-semibold"
+              >
+                Downloaden
+              </a>
+            </div>
+            <div className="hairline-b flex items-center justify-between py-3">
+              <div>
+                <p className="text-on-surface text-sm font-semibold">
                   Account verwijdering endpoint
                 </p>
                 <code className="text-secondary text-xs">

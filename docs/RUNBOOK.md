@@ -91,7 +91,7 @@ Taken verwachten `CRON_SECRET` als bearer-token (Vercel stuurt dit mee).
 - Vercel Blob: geen automatische versiegeschiedenis. Bestanden zijn hier opnieuw aan te
   leveren door cursisten/docenten; overweeg periodieke export als dit onvoldoende is.
 - Data-export voor de opdrachtgever: tabellen als JSON/CSV exporteerbaar (per gebruiker via
-  `/api/gdpr/export`; volledige organisatie-export: nog te bouwen, zie `docs/AFRONDING.md`).
+  `/api/gdpr/export`; volledige organisatie-export voor beheerders via `/api/admin/export`).
 
 ## 8. Monitoring en incidenten
 
