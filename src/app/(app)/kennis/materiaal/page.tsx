@@ -90,7 +90,7 @@ export default async function MateriaalBibliotheekPage({
                   className="bg-surface-container-lowest shadow-card rounded-2xl p-4"
                 >
                   <a
-                    href={m.url}
+                    href={`/api/bestanden/materiaal/${m.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-label-lg text-primary-container inline-flex items-center gap-1.5"

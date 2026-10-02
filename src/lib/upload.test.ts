@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
+  contentDisposition,
+  documentBlobAccess,
   isBlobUrl,
+  isPrivateBlobUrl,
   sniffDocument,
   sniffImage,
   validateDocument,
@@ -98,6 +101,54 @@ describe("validateDocument", () => {
     expect((await validateDocument(new File([], "x.pdf"))).ok).toBe(false);
     const big = new File(["%PDF-1.7\n"], "x.pdf");
     expect((await validateDocument(big, 4)).ok).toBe(false);
+  });
+});
+
+describe("documentBlobAccess", () => {
+  it("is standaard privé", () => {
+    expect(documentBlobAccess(undefined)).toBe("private");
+    expect(documentBlobAccess("")).toBe("private");
+    expect(documentBlobAccess("anything")).toBe("private");
+  });
+
+  it("staat publiek alleen expliciet toe", () => {
+    expect(documentBlobAccess("public")).toBe("public");
+  });
+});
+
+describe("isPrivateBlobUrl", () => {
+  it("herkent alleen privé-opslag", () => {
+    expect(
+      isPrivateBlobUrl("https://abc.private.blob.vercel-storage.com/a.pdf"),
+    ).toBe(true);
+    expect(
+      isPrivateBlobUrl("https://abc.public.blob.vercel-storage.com/a.pdf"),
+    ).toBe(false);
+    expect(
+      isPrivateBlobUrl(
+        "https://evil.example/?x=.private.blob.vercel-storage.com",
+      ),
+    ).toBe(false);
+  });
+
+  it("wordt ook door isBlobUrl geaccepteerd", () => {
+    expect(isBlobUrl("https://abc.private.blob.vercel-storage.com/a.pdf")).toBe(
+      true,
+    );
+  });
+});
+
+describe("contentDisposition", () => {
+  it("haalt aanhalingstekens en regeleinden uit de naam", () => {
+    const h = contentDisposition('plan"\r\nX-Evil: 1.pdf', false);
+    expect(h).not.toMatch(/[\r\n"]/);
+    expect(h.startsWith("attachment; filename*=UTF-8''")).toBe(true);
+  });
+
+  it("codeert spaties en accenten", () => {
+    expect(contentDisposition("Businessplan één.pdf", true)).toBe(
+      "inline; filename*=UTF-8''Businessplan%20%C3%A9%C3%A9n.pdf",
+    );
   });
 });
 

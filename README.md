@@ -1,4 +1,4 @@
-# Samenmakers
+# Weave
 
 Het platform waar purpose-driven ondernemers elkaar vinden en versterken.
 

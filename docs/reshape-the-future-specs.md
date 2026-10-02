@@ -89,7 +89,7 @@ Bijgewerkt op 29 september 2026.
 ### Technische keuzes en beperkingen
 
 - **Migratie:** `drizzle/onderwijs-fase2.sql` moet op de database worden toegepast (`scripts/apply-events-migrations.ts`). Tot dan werken de nieuwe schermen niet.
-- **Bestanden:** huiswerk en lesmateriaal staan op publieke Vercel Blob met een niet-raadbare URL. De kennisbank is afgeschermd in de app, niet op bestandsniveau. Voor gevoelig materiaal zijn ondertekende URL's nodig.
+- **Bestanden:** huiswerk en lesmateriaal gaan standaard in privé-opslag (Vercel Blob, `access: private`) en zijn alleen te downloaden via `/api/bestanden/inlevering/[id]` en `/api/bestanden/materiaal/[id]`. Elk verzoek controleert sessie en rol (`src/lib/file-access.ts`): een inlevering zien de cursist zelf, de staf van de editie (docenten binnen hun toegangsvenster) en beheerders; lesmateriaal de staf, alumni en beheerders. De API geeft geen blob-URL's meer terug. Oudere bestanden op publieke opslag lopen via dezelfde route, maar blijven publiek bereikbaar op hun oude URL tot ze zijn overgezet.
 - **Berichten:** een direct bericht maakt intern een gespreksrij aan (`matches` met status matched), zodat de bestaande chat en meldingen blijven werken.
 - **Docenten in een gekopieerde editie:** worden niet meegekopieerd, omdat hun toegang bij hun sessies hoort.
 - **Lidmaatschap (besloten 29 september):** alleen voor alumni, €150 per jaar (door admin aan te passen). Bezoekers en cursisten kopen per event een ticket (standaard €50). Leden komen gratis binnen bij events met de vlag 'gratis voor leden' (aan voor de meeste events, uit voor meerdaagse programma's met eigen prijs; alleen admins zetten die om). Bestaande leden houden de prijs waarvoor ze zijn ingestapt.

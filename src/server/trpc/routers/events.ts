@@ -918,21 +918,63 @@ export const eventsRouter = createTRPCRouter({
     .input(
       z.object({
         status: z.enum(["draft", "published", "cancelled"]).optional(),
+        format: z.enum(["in_person", "online", "hybrid"]).optional(),
+        when: z.enum(["upcoming", "past"]).optional(),
+        q: z.string().trim().max(100).optional(),
+        sort: z
+          .enum(["datum_nieuw", "datum_oud", "titel"])
+          .default("datum_nieuw"),
         limit: z.number().min(1).max(200).default(100),
+        offset: z.number().min(0).default(0),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const rows = await ctx.db
-        .select({
-          ...cardColumns,
-          organiserNaam: users.naam,
-          organiserName: users.name,
-        })
-        .from(events)
-        .innerJoin(users, eq(users.id, events.organiserId))
-        .where(input.status ? eq(events.status, input.status) : undefined)
-        .orderBy(desc(events.startAt))
-        .limit(input.limit);
-      return rows.map(withPhase);
+      const conds = [];
+      if (input.status) conds.push(eq(events.status, input.status));
+      if (input.format) conds.push(eq(events.format, input.format));
+      if (input.when === "upcoming")
+        conds.push(gte(events.startAt, new Date()));
+      if (input.when === "past") conds.push(lt(events.startAt, new Date()));
+      // Elk woord moet in minstens één veld voorkomen (titel, locatie, regio, thema, organisator).
+      for (const word of (input.q ?? "").split(/\s+/).filter(Boolean)) {
+        const pattern = `%${word.replace(/[\\%_]/g, "\\$&")}%`;
+        conds.push(
+          or(
+            ilike(events.title, pattern),
+            ilike(events.location, pattern),
+            ilike(events.regio, pattern),
+            ilike(events.thema, pattern),
+            ilike(users.naam, pattern),
+            ilike(users.name, pattern),
+          ),
+        );
+      }
+      const where = conds.length > 0 ? and(...conds) : undefined;
+      const orderBy = {
+        datum_nieuw: desc(events.startAt),
+        datum_oud: asc(events.startAt),
+        titel: asc(events.title),
+      }[input.sort];
+
+      const [rows, [totaal]] = await Promise.all([
+        ctx.db
+          .select({
+            ...cardColumns,
+            organiserNaam: users.naam,
+            organiserName: users.name,
+          })
+          .from(events)
+          .innerJoin(users, eq(users.id, events.organiserId))
+          .where(where)
+          .orderBy(orderBy)
+          .limit(input.limit)
+          .offset(input.offset),
+        ctx.db
+          .select({ n: sql<number>`count(*)::int` })
+          .from(events)
+          .innerJoin(users, eq(users.id, events.organiserId))
+          .where(where),
+      ]);
+      return { items: rows.map(withPhase), total: totaal?.n ?? 0 };
     }),
 });

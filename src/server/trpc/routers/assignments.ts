@@ -138,7 +138,6 @@ export const assignmentsRouter = createTRPCRouter({
               submittedAt: s.submittedAt,
               files: s.files.map((f) => ({
                 id: f.id,
-                url: f.url,
                 name: f.name,
               })),
             }
@@ -306,7 +305,6 @@ export const assignmentsRouter = createTRPCRouter({
                     submittedAt: s.submittedAt,
                     files: s.files.map((f) => ({
                       id: f.id,
-                      url: f.url,
                       name: f.name,
                     })),
                   }

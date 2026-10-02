@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
 import { auth } from "@/server/auth/config";
+import { AdminLogin } from "@/components/layout/admin-login";
 import { AdminNav } from "@/components/layout/admin-nav";
 
 export default async function AdminLayout({
@@ -8,7 +8,14 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session?.user || session.user.role !== "admin") redirect("/dashboard");
+  if (!session?.user) return <AdminLogin />;
+  if (session.user.role !== "admin") {
+    return (
+      <AdminLogin
+        ingelogdAls={session.user.email ?? session.user.name ?? "Dit account"}
+      />
+    );
+  }
 
   return (
     <div className="bg-surface flex min-h-screen">

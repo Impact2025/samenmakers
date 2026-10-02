@@ -1,10 +1,10 @@
-# Samenmakers Leeromgeving — Projectplan
+# Weave Leeromgeving — Projectplan
 
 Status: concept · Referentie: We Shape the Future (leergangen, alumni, community)
 
 ## 1. Doel
 
-Samenmakers groeit van netwerkplatform naar een volledige leeromgeving voor sociaal ondernemers. Organisaties (zoals een opleider of hogeschool) draaien hier meerdere programma's, met meerdere edities (cohorten) per programma. De leeromgeving is onderdeel van het **Pro-plan**. Na afloop stromen deelnemers door naar een alumnicommunity.
+Weave groeit van netwerkplatform naar een volledige leeromgeving voor sociaal ondernemers. Organisaties (zoals een opleider of hogeschool) draaien hier meerdere programma's, met meerdere edities (cohorten) per programma. De leeromgeving is onderdeel van het **Pro-plan**. Na afloop stromen deelnemers door naar een alumnicommunity.
 
 Succescriteria:
 

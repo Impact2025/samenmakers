@@ -98,18 +98,14 @@ function StatusBadge({ mine }: { mine: Assignment["mine"] }) {
   );
 }
 
-function FileList({
-  files,
-}: {
-  files: { id: string; url: string; name: string }[];
-}) {
+function FileList({ files }: { files: { id: string; name: string }[] }) {
   if (files.length === 0) return null;
   return (
     <ul className="mt-2 flex flex-col gap-1">
       {files.map((f) => (
         <li key={f.id}>
           <a
-            href={f.url}
+            href={`/api/bestanden/inlevering/${f.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-label-md text-primary-container inline-flex items-center gap-1.5"

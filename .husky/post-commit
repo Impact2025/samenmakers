@@ -1,0 +1,2 @@
+# Dossier-sync (WeAreImpact): alleen actief als het script en DOSSIER_SLUG er zijn; faalt nooit hard.
+[ -f "$HOME/.claude/scripts/dossier-sync.mjs" ] && node "$HOME/.claude/scripts/dossier-sync.mjs" commit || true
