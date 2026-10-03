@@ -27,6 +27,10 @@
     {
       "path": "/api/jobs/management-weekly",
       "schedule": "30 7 * * 1"
+    },
+    {
+      "path": "/api/jobs/system-watch",
+      "schedule": "0 8 * * *"
     }
   ]
 }

@@ -11,6 +11,7 @@ import { NextResponse } from "next/server";
 import { dueReminder } from "@/server/events/status";
 import { fillOpenSpots } from "@/server/events/booking";
 import { notifyFillResult, sendReminder } from "@/server/events/notify";
+import { withJobRun } from "@/server/monitoring/job-run";
 
 // Vercel Cron: elk uur (vercel.json).
 // 1. Wachtlijst 2.0: verlopen aanbiedingen vervallen, vrije plekken worden aangeboden.
@@ -21,7 +22,7 @@ export const maxDuration = 300;
 
 const HOUR = 60 * 60 * 1000;
 
-export async function GET(request: Request) {
+async function run(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -164,3 +165,6 @@ export async function GET(request: Request) {
   );
   return NextResponse.json({ ok: true, offered, expired, reminders });
 }
+
+export const GET = (request: Request) =>
+  withJobRun("event-reminders", () => run(request));

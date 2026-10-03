@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import type { PlatformMetrics } from "@/server/admin/metrics";
 import { renderMarkdown } from "@/lib/markdown";
+import type { JobProblem } from "@/lib/job-health";
 
 let _resend: Resend | null = null;
 function getResend() {
@@ -189,9 +190,39 @@ function kpiRow(label: string, value: string | number, sub?: string) {
     </tr>`;
 }
 
+/** Korte technische waarschuwing naar beheer (mislukte taken, systeemproblemen). */
+export async function sendAlertEmail(opts: {
+  subject: string;
+  lines: string[];
+  to?: string;
+}) {
+  await getResend().emails.send({
+    from: FROM,
+    to: opts.to ?? MANAGEMENT_EMAIL,
+    subject: `⚠️ ${opts.subject}`,
+    html: `
+      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase;">WE SHAPE THE FUTURE · SYSTEEM</p>
+        <h1 style="font-size: 20px; font-weight: 900;">${escapeHtml(opts.subject)}</h1>
+        ${opts.lines.map((l) => `<p style="font-size:14px;line-height:1.5;color:#333;">${escapeHtml(l)}</p>`).join("")}
+        <p style="font-size:12px;color:#aaa;margin-top:24px;">Logs: Vercel → Logs. ${new Date().toLocaleString("nl-NL")}</p>
+      </div>`,
+  });
+}
+
+function systemStatusHtml(problems: JobProblem[]) {
+  const head = `<h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin:24px 0 8px;">Systeemstatus</h2>`;
+  if (problems.length === 0)
+    return `${head}<p style="font-size:13px;color:#2D6A4F;background:#f0f7f3;padding:12px;">✅ Alle geplande taken draaien zoals verwacht.</p>`;
+  return `${head}<div style="font-size:13px;color:#b91c1c;background:#fef2f2;padding:12px;">
+    ${problems.map((p) => `<p style="margin:4px 0;"><strong>${escapeHtml(p.job)}</strong> (${p.kind}): ${escapeHtml(p.detail)}</p>`).join("")}
+  </div>`;
+}
+
 export async function sendManagementDigest(opts: {
   metrics: PlatformMetrics;
   insight: string | null;
+  problems?: JobProblem[];
   to?: string;
 }) {
   const m = opts.metrics;
@@ -256,6 +287,7 @@ export async function sendManagementDigest(opts: {
         </table>
 
         ${backlogFlag}
+        ${opts.problems ? systemStatusHtml(opts.problems) : ""}
         ${insightHtml}
 
         <a href="${APP_URL}/admin" style="display: inline-block; margin-top:32px; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">

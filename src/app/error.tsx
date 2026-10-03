@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +13,7 @@ interface Props {
 export default function Error({ error, reset }: Props) {
   useEffect(() => {
     console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

@@ -29,6 +29,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Beveiligingsaudit (productie)
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Type-check
         run: npm run type-check
 

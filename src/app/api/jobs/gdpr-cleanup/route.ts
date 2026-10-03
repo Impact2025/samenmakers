@@ -3,13 +3,14 @@ import { users } from "@/server/db/schema";
 import { eq, and, lte } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { subDays } from "@/lib/date-utils";
+import { withJobRun } from "@/server/monitoring/job-run";
 
 // Called by Vercel Cron: every day at 02:00
 // Permanently anonymises accounts that have been in pending_deletion for 30+ days
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+async function run(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,9 +21,13 @@ export async function GET(request: Request) {
   const toDelete = await db
     .select({ id: users.id })
     .from(users)
-    .where(and(eq(users.status, "pending_deletion"), lte(users.updatedAt, cutoff)));
+    .where(
+      and(eq(users.status, "pending_deletion"), lte(users.updatedAt, cutoff)),
+    );
 
-  console.log(`[gdpr-cleanup] ${toDelete.length} accounts scheduled for anonymisation`);
+  console.log(
+    `[gdpr-cleanup] ${toDelete.length} accounts scheduled for anonymisation`,
+  );
 
   for (const user of toDelete) {
     await db
@@ -45,3 +50,6 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ ok: true, anonymised: toDelete.length });
 }
+
+export const GET = (request: Request) =>
+  withJobRun("gdpr-cleanup", () => run(request));

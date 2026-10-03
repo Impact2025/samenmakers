@@ -80,7 +80,8 @@ Volledige lijst en uitleg: `.env.example`. Productie (Vercel → Settings → En
 | `/api/jobs/publish-scheduled`            | elk uur                         | Geplande publicaties                                                                   |
 | `/api/jobs/gdpr-cleanup`                 | dagelijks 02:00                 | AVG-retentie en verwijderverzoeken                                                     |
 | `/api/jobs/weekly-digest`                | maandag 08:00                   | Weekoverzicht                                                                          |
-| `/api/jobs/management-daily` / `-weekly` | dagelijks 07:00 / maandag 07:30 | KPI-mails beheer                                                                       |
+| `/api/jobs/management-daily` / `-weekly` | dagelijks 07:00 / maandag 07:30 | KPI-mails beheer, incl. systeemstatus                                                  |
+| `/api/jobs/system-watch`                 | dagelijks 08:00                 | Alertmail alleen als een taak mislukte of niet draaide                                 |
 
 Taken verwachten `CRON_SECRET` als bearer-token (Vercel stuurt dit mee).
 
@@ -95,9 +96,34 @@ Taken verwachten `CRON_SECRET` als bearer-token (Vercel stuurt dit mee).
 
 ## 8. Monitoring en incidenten
 
-- Uptime-monitoring op de hoofdpagina en de inlogpagina (extern, bijv. UptimeRobot).
-- Foutlogs: Vercel → Logs. Stripe-webhookfouten: Stripe-dashboard → Webhooks.
-- Mailaflevering: Resend-dashboard.
+Alle meldingen gaan per e-mail naar `MANAGEMENT_EMAIL` (standaard v.munster@weareimpact.nl).
+Stilte betekent dat alles draait.
+
+| Laag                | Wat                                                                              | Waar                                |
+| ------------------- | -------------------------------------------------------------------------------- | ----------------------------------- |
+| Beschikbaarheid     | `GET /api/health` (200 = app + database ok, 503 = database antwoordt niet)       | Externe uptime-check, zie hieronder |
+| Fouten              | Sentry (`NEXT_PUBLIC_SENTRY_DSN`), zonder persoonsgegevens, mail bij nieuwe fout | sentry.io                           |
+| Geplande taken      | Elke run staat in `job_runs`; bij een fout meteen een alertmail                  | `src/server/monitoring/job-run.ts`  |
+| Taak blijft weg     | `/api/jobs/system-watch` (dagelijks 08:00) mailt alleen bij mislukt/te laat      | `src/lib/job-health.ts` (schema's)  |
+| Dagelijks overzicht | Blok "Systeemstatus" in de dagelijkse managementmail (07:00)                     | `management-daily`                  |
+| Afhankelijkheden    | Dependabot (maandag) + `npm audit` in CI; productie-audit moet op 0 staan        | `.github/dependabot.yml`, CI        |
+
+**Eenmalig instellen (accounts, gratis tier):**
+
+1. Sentry: project "Next.js" aanmaken, DSN in Vercel zetten als `NEXT_PUBLIC_SENTRY_DSN`
+   (Production + Preview). Alerts → "Send a notification for new issues" naar e-mail.
+2. Uptime: UptimeRobot of Better Stack, monitor op `https://<domein>/api/health` (elke
+   5 min, alert per e-mail) en een op `/inloggen`.
+3. Tabel `job_runs` aanbrengen: `npx tsx --env-file=.env.local scripts/apply-sql.ts drizzle/monitoring-fase1.sql`.
+
+**Nieuwe cron toevoegen:** wikkel de handler in `withJobRun("naam", ...)`, voeg de taak met de
+maximale leeftijd van een run toe aan `JOBS` in `src/lib/job-health.ts` en zet hem in `vercel.json`.
+
+**Bij een melding:** taak mislukt of te laat → Vercel → Logs (filter op de taaknaam), daarna de
+route handmatig aanroepen met `Authorization: Bearer $CRON_SECRET`. Stripe-webhookfouten: Stripe-dashboard →
+Webhooks. Mailaflevering: Resend-dashboard. Rollback: sectie 5.
+
+**Maandelijks:** een Neon-back-up terugzetten naar een testbranch om te bewijzen dat herstel werkt.
 
 ## 9. Overdracht bij noodlicentie
 
