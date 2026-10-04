@@ -111,10 +111,11 @@ export interface Nav {
 
 /**
  * Menu per ervaring. Een docent ziet zijn edities vooraan en geen matching of mentorship;
- * een alumnus de alumni-community en het lesmateriaal. Alle routes blijven bereikbaar,
+ * een alumnus de alumni-community en het lesmateriaal. Mentorship blijft zichtbaar voor wie
+ * zelf mentor of mentee is. Alle routes blijven bereikbaar,
  * dit bepaalt alleen wat er in het menu staat. Zonder leeromgeving geldt het standaardmenu.
  */
-export function navFor(persona: Persona): Nav {
+export function navFor(persona: Persona, mentor = false): Nav {
   const standard: Nav = {
     primary: primaryNav,
     secondary: secondaryNav,
@@ -132,7 +133,8 @@ export function navFor(persona: Persona): Nav {
           network,
           events,
         ],
-        secondary: [feed, knowledge, saved],
+        // Docenten die ook mentor zijn houden de weg naar hun mentorprofiel.
+        secondary: [feed, knowledge, ...(mentor ? [mentorship] : []), saved],
         account: accountNav,
       };
     case "cursist":

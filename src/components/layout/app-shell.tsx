@@ -13,6 +13,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     getPersona(),
   ]);
 
+  const mentor = !!me?.mentorshipRole && me.mentorshipRole !== "none";
+
   const topBarUser = me
     ? {
         naam: me.naam ?? me.name ?? "Maker",
@@ -28,14 +30,23 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         unreadNotifications={unreadNotifications}
         unreadMessages={unreadMessages}
         persona={persona}
+        mentor={mentor}
       />
-      <Sidebar unreadMessages={unreadMessages} persona={persona} />
+      <Sidebar
+        unreadMessages={unreadMessages}
+        persona={persona}
+        mentor={mentor}
+      />
       <main className="pb-bottom-nav min-h-screen pt-16 lg:pb-12 lg:pl-64">
         <div className="mx-auto max-w-3xl px-5 pt-5 lg:px-8 lg:pt-8 xl:max-w-4xl">
           {children}
         </div>
       </main>
-      <BottomNav unreadCount={unreadMessages} persona={persona} />
+      <BottomNav
+        unreadCount={unreadMessages}
+        persona={persona}
+        mentor={mentor}
+      />
     </div>
   );
 }

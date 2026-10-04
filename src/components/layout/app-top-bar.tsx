@@ -28,6 +28,7 @@ interface AppTopBarProps {
   unreadNotifications?: number;
   unreadMessages?: number;
   persona?: Persona;
+  mentor?: boolean;
 }
 
 const iconBtn =
@@ -38,8 +39,9 @@ export function AppTopBar({
   unreadNotifications = 0,
   unreadMessages = 0,
   persona = "lid",
+  mentor = false,
 }: AppTopBarProps) {
-  const nav = navFor(persona);
+  const nav = navFor(persona, mentor);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const title = pageTitle(pathname);

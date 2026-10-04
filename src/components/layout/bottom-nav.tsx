@@ -9,11 +9,13 @@ import { navFor, isActive } from "./nav-items";
 interface BottomNavProps {
   unreadCount?: number;
   persona?: Persona;
+  mentor?: boolean;
 }
 
 export function BottomNav({
   unreadCount = 0,
   persona = "lid",
+  mentor = false,
 }: BottomNavProps) {
   const pathname = usePathname();
 
@@ -23,7 +25,7 @@ export function BottomNav({
       className="pb-safe bg-surface-container-lowest/90 shadow-bar-up fixed inset-x-0 bottom-0 z-50 backdrop-blur-xl lg:hidden"
     >
       <div className="flex h-16 items-center justify-around px-1">
-        {navFor(persona).primary.map((item) => {
+        {navFor(persona, mentor).primary.map((item) => {
           const active = isActive(pathname, item);
           const Icon = item.icon;
           const showBadge = item.href === "/berichten" && unreadCount > 0;
