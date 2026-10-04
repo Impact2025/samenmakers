@@ -3,7 +3,7 @@ import { eq, and, desc, ilike } from "drizzle-orm";
 import {
   createTRPCRouter,
   protectedProcedure,
-  proProcedure,
+  proOrStaffProcedure,
 } from "@/server/trpc/init";
 import { questions, questionAnswers } from "@/server/db/schema";
 import { publicUserColumns } from "@/server/db/user-columns";
@@ -75,7 +75,7 @@ export const questionsRouter = createTRPCRouter({
       return question;
     }),
 
-  answer: proProcedure
+  answer: proOrStaffProcedure
     .input(
       z.object({
         questionId: z.string(),

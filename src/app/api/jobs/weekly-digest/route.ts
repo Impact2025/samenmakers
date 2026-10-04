@@ -4,12 +4,13 @@ import { eq, gte, and, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { subDays } from "@/lib/date-utils";
 import { sendWeeklyDigest } from "@/lib/email";
+import { withJobRun } from "@/server/monitoring/job-run";
 
 // Called by Vercel Cron: every Monday at 08:00
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+async function run(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,9 +19,16 @@ export async function GET(request: Request) {
   const since = subDays(new Date(), 7);
 
   const subscribers = await db
-    .select({ id: users.id, email: users.email, naam: users.naam, name: users.name })
+    .select({
+      id: users.id,
+      email: users.email,
+      naam: users.naam,
+      name: users.name,
+    })
     .from(users)
-    .where(and(eq(users.weeklyDigestEnabled, true), eq(users.status, "active")));
+    .where(
+      and(eq(users.weeklyDigestEnabled, true), eq(users.status, "active")),
+    );
 
   const recentPosts = await db
     .select({ id: posts.id, title: posts.title, slug: posts.slug })
@@ -46,7 +54,10 @@ export async function GET(request: Request) {
   const matchCountByUser = new Map<string, number>();
   for (const m of recentMatched) {
     matchCountByUser.set(m.userId, (matchCountByUser.get(m.userId) ?? 0) + 1);
-    matchCountByUser.set(m.targetId, (matchCountByUser.get(m.targetId) ?? 0) + 1);
+    matchCountByUser.set(
+      m.targetId,
+      (matchCountByUser.get(m.targetId) ?? 0) + 1,
+    );
   }
 
   let sent = 0;
@@ -62,10 +73,15 @@ export async function GET(request: Request) {
       newMatches,
       recentPosts,
       upcomingEvents,
-    }).then(() => sent++).catch(() => failed++);
+    })
+      .then(() => sent++)
+      .catch(() => failed++);
   }
 
   console.log(`[weekly-digest] sent=${sent} failed=${failed}`);
 
   return NextResponse.json({ ok: true, sent, failed });
 }
+
+export const GET = (request: Request) =>
+  withJobRun("weekly-digest", () => run(request));

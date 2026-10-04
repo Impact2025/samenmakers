@@ -1,4 +1,4 @@
-// Samenmakers Service Worker — handles web push notifications
+// Weave Service Worker — handles web push notifications
 
 self.addEventListener("push", (event) => {
   if (!event.data) return;
@@ -7,10 +7,10 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data.json();
   } catch {
-    data = { title: "Samenmakers", body: event.data.text() };
+    data = { title: "Weave", body: event.data.text() };
   }
 
-  const { title = "Samenmakers", body = "", url = "/" } = data;
+  const { title = "Weave", body = "", url = "/" } = data;
 
   event.waitUntil(
     self.registration.showNotification(title, {

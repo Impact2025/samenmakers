@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { trpc } from "@/trpc/client";
 import { Card, CardBody } from "@/components/ui/card";
@@ -17,6 +17,13 @@ export const STAGE_LABEL: Record<string, string> = {
 };
 
 const STAGES = ["lead", "engaged", "customer", "churned"] as const;
+const SORTS = [
+  { value: "nieuwst", label: "Nieuwste eerst" },
+  { value: "oudst", label: "Oudste eerst" },
+  { value: "naam", label: "Naam A–Z" },
+  { value: "laatste_contact", label: "Laatst gecontacteerd" },
+] as const;
+const PAGE_SIZE = 50;
 const SUBS = [
   { value: "active", label: "Pro actief" },
   { value: "none", label: "Gratis" },
@@ -38,15 +45,33 @@ export function CrmContacts() {
       | undefined;
     stage?: (typeof STAGES)[number] | undefined;
   }>({ search: "" });
+  const [sort, setSort] = useState<(typeof SORTS)[number]["value"]>("nieuwst");
+  const [limit, setLimit] = useState(PAGE_SIZE);
 
-  const contacts = trpc.crm.contacts.useQuery({
-    ...filters,
-    search: filters.search || undefined,
-    limit: 100,
-  });
+  // Zoekterm pas na een korte pauze versturen, niet bij elke toetsaanslag.
+  const [search, setSearch] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(filters.search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [filters.search]);
 
-  const set = (patch: Partial<typeof filters>) =>
+  const contacts = trpc.crm.contacts.useQuery(
+    { ...filters, search: search || undefined, sort, limit },
+    { placeholderData: (prev) => prev },
+  );
+
+  const set = (patch: Partial<typeof filters>) => {
+    setLimit(PAGE_SIZE);
     setFilters((f) => ({ ...f, ...patch }));
+  };
+  const filtersActief = Boolean(
+    filters.search ||
+    filters.sector ||
+    filters.regio ||
+    filters.fase ||
+    filters.subscriptionStatus ||
+    filters.stage,
+  );
 
   return (
     <div className="space-y-6">
@@ -56,7 +81,7 @@ export function CrmContacts() {
           <input
             value={filters.search}
             onChange={(e) => set({ search: e.target.value })}
-            placeholder="Zoek naam/e-mail"
+            placeholder="Zoek op naam, e-mail, sector, regio, expertise of tag"
             className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 col-span-2 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px] lg:col-span-2"
           />
           <select
@@ -132,6 +157,33 @@ export function CrmContacts() {
               </option>
             ))}
           </select>
+          <select
+            value={sort}
+            onChange={(e) => {
+              setLimit(PAGE_SIZE);
+              setSort(e.target.value as typeof sort);
+            }}
+            aria-label="Sorteren"
+            className="bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary-container focus:ring-primary-container/15 rounded-xl border border-transparent px-4 py-3 pb-2 text-sm outline-none focus:ring-[3px]"
+          >
+            {SORTS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          {filtersActief && (
+            <button
+              type="button"
+              onClick={() => {
+                setLimit(PAGE_SIZE);
+                setFilters({ search: "" });
+              }}
+              className="text-secondary text-sm hover:underline"
+            >
+              Filters wissen
+            </button>
+          )}
         </CardBody>
       </Card>
 
@@ -142,14 +194,14 @@ export function CrmContacts() {
             <div className="p-8">
               <Spinner />
             </div>
-          ) : !contacts.data?.length ? (
+          ) : !contacts.data?.items.length ? (
             <p className="text-secondary p-8 text-sm">
               Geen contacten gevonden.
             </p>
           ) : (
             <>
               <p className="text-secondary px-4 pt-4 text-xs">
-                {contacts.data.length} contacten
+                {contacts.data.total} contacten
               </p>
               <table className="w-full text-sm">
                 <thead>
@@ -172,7 +224,7 @@ export function CrmContacts() {
                   </tr>
                 </thead>
                 <tbody>
-                  {contacts.data.map((c) => (
+                  {contacts.data.items.map((c) => (
                     <tr
                       key={c.id}
                       className="border-hairline/50 hover:bg-surface-container-low border-b last:border-0"
@@ -216,6 +268,19 @@ export function CrmContacts() {
                   ))}
                 </tbody>
               </table>
+              {contacts.data.items.length < contacts.data.total && (
+                <div className="p-4 text-center">
+                  <button
+                    type="button"
+                    onClick={() => setLimit((l) => l + PAGE_SIZE)}
+                    disabled={contacts.isFetching}
+                    className="text-primary text-sm font-semibold hover:underline disabled:opacity-50"
+                  >
+                    Meer laden ({contacts.data.items.length} van{" "}
+                    {contacts.data.total})
+                  </button>
+                </div>
+              )}
             </>
           )}
         </CardBody>

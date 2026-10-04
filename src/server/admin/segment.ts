@@ -30,12 +30,17 @@ export type Segment = z.infer<typeof segmentSchema>;
 export function buildSegmentConditions(input: Segment): SQL | undefined {
   const conds: SQL[] = [];
 
-  if (input.search) {
-    const term = `%${input.search}%`;
+  // Elk woord moet in minstens één veld voorkomen (naam, e-mail, sector, regio, expertise, tags).
+  for (const word of (input.search ?? "").split(/\s+/).filter(Boolean)) {
+    const term = `%${word.replace(/[\\%_]/g, "\\$&")}%`;
     const searchCond = or(
       ilike(users.naam, term),
       ilike(users.name, term),
       ilike(users.email, term),
+      ilike(users.sector, term),
+      ilike(users.regio, term),
+      sql`array_to_string(${users.expertise}, ' ') ilike ${term}`,
+      sql`array_to_string(${users.crmTags}, ' ') ilike ${term}`,
     );
     if (searchCond) conds.push(searchCond);
   }

@@ -5,7 +5,7 @@ import { auth } from "@/server/auth/config";
 import { db } from "@/server/db";
 import { cohortMembers } from "@/server/db/schema";
 import { withinAccessWindow } from "@/lib/session-cycle";
-import { validateDocument } from "@/lib/upload";
+import { documentBlobAccess, validateDocument } from "@/lib/upload";
 
 export const runtime = "nodejs";
 
@@ -48,13 +48,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: check.error }, { status: 400 });
   }
 
+  // Huiswerk en lesmateriaal zijn vertrouwelijk: standaard in privé-opslag, te downloaden via
+  // /api/bestanden na controle van sessie en rol.
+  const access = documentBlobAccess();
   const blob = await put(
     `onderwijs/${cohortId}/${session.user.id}.${check.ext}`,
     file as File,
     {
-      access: "public",
+      access,
       contentType: check.contentType,
       addRandomSuffix: true,
+      ...(access === "private" && process.env.BLOB_PRIVATE_READ_WRITE_TOKEN
+        ? { token: process.env.BLOB_PRIVATE_READ_WRITE_TOKEN }
+        : {}),
     },
   );
 

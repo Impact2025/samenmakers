@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TeachingBadges } from "@/components/learning/teaching-badges";
 import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
@@ -86,6 +87,7 @@ export default async function MakerProfilePage({ params }: Props) {
               </span>
             )}
           </div>
+          <TeachingBadges userId={user.id} />
           {user.missie && (
             <p className="text-body-md text-on-surface-variant mt-1 max-w-md">
               &ldquo;{user.missie}&rdquo;

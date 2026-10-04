@@ -239,8 +239,8 @@ describe("CRM router", () => {
       role: "admin",
     });
     const contacts = await caller.crm.contacts({ limit: 100 });
-    expect(Array.isArray(contacts)).toBe(true);
-    expect(contacts.length).toBeGreaterThanOrEqual(3);
+    expect(Array.isArray(contacts.items)).toBe(true);
+    expect(contacts.items.length).toBeGreaterThanOrEqual(3);
   });
 
   it("contact returns detail for a specific user", async () => {

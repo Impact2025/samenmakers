@@ -16,14 +16,8 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 import { Logo } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
-import {
-  primaryNav,
-  secondaryNav,
-  accountNav,
-  isActive,
-  pageTitle,
-  type NavItem,
-} from "./nav-items";
+import type { Persona } from "@/lib/persona";
+import { navFor, isActive, pageTitle, type NavItem } from "./nav-items";
 
 interface AppTopBarProps {
   user: {
@@ -33,6 +27,8 @@ interface AppTopBarProps {
   } | null;
   unreadNotifications?: number;
   unreadMessages?: number;
+  persona?: Persona;
+  mentor?: boolean;
 }
 
 const iconBtn =
@@ -42,7 +38,10 @@ export function AppTopBar({
   user,
   unreadNotifications = 0,
   unreadMessages = 0,
+  persona = "lid",
+  mentor = false,
 }: AppTopBarProps) {
+  const nav = navFor(persona, mentor);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const title = pageTitle(pathname);
@@ -168,10 +167,10 @@ export function AppTopBar({
           )}
 
           <MenuGroup
-            items={[...primaryNav, ...secondaryNav]}
+            items={[...nav.primary, ...nav.secondary]}
             pathname={pathname}
           />
-          <MenuGroup items={accountNav} pathname={pathname} />
+          <MenuGroup items={nav.account} pathname={pathname} />
 
           {user?.isAdmin && (
             <Link

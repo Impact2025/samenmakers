@@ -2,7 +2,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { auth } from "@/server/auth/config";
 import { db } from "@/server/db";
 import { users, cohortMembers } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import superjson from "superjson";
 import { withinAccessWindow } from "@/lib/session-cycle";
 import { z, ZodError } from "zod";
@@ -70,6 +70,40 @@ const isPro = t.middleware(({ ctx, next }) => {
 });
 
 export const proProcedure = t.procedure.use(isPro);
+
+// Pro of onderwijsstaf — docenten, facilitators en managers van een editie hoeven geen
+// Pro-abonnement te hebben om de community te helpen met antwoorden en artikelen.
+const isProOrStaff = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session?.user?.id) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const { isPro: pro, role } = ctx.session.user;
+  if (!pro && role !== "admin") {
+    const seat = await ctx.db.query.cohortMembers.findFirst({
+      where: and(
+        eq(cohortMembers.userId, ctx.session.user.id),
+        inArray(cohortMembers.role, ["docent", "facilitator", "manager"]),
+        ne(cohortMembers.status, "uitgeschreven"),
+      ),
+      columns: { id: true },
+    });
+    if (!seat) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Pro abonnement vereist",
+      });
+    }
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      session: ctx.session,
+      userId: ctx.session.user.id,
+    },
+  });
+});
+
+export const proOrStaffProcedure = t.procedure.use(isProOrStaff);
 
 // Admin — must have role "admin"
 const isAdmin = t.middleware(({ ctx, next }) => {

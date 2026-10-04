@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { gatherPlatformMetrics } from "@/server/admin/metrics";
 import { generateManagementInsight } from "@/lib/ai/management-insight";
 import { sendManagementDigest } from "@/lib/email";
+import { getJobProblems } from "@/server/monitoring/job-status";
+import { withJobRun } from "@/server/monitoring/job-run";
 
 // Called by Vercel Cron: every day at 07:00
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-export async function GET(request: Request) {
+async function run(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,7 +18,8 @@ export async function GET(request: Request) {
 
   const metrics = await gatherPlatformMetrics("daily");
   const insight = await generateManagementInsight(metrics);
-  await sendManagementDigest({ metrics, insight });
+  const problems = await getJobProblems();
+  await sendManagementDigest({ metrics, insight, problems });
 
   console.log(
     `[management-daily] sent (users=${metrics.totalUsers}, mrr=${metrics.mrr}, ai=${insight ? "yes" : "no"})`,
@@ -24,3 +27,6 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ ok: true, period: "daily", aiInsight: !!insight });
 }
+
+export const GET = (request: Request) =>
+  withJobRun("management-daily", () => run(request));

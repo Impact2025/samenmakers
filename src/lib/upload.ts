@@ -133,15 +133,45 @@ export async function validateDocument(
   return { ok: true, ...sniffed };
 }
 
-/** Bestanden die via onze uploadroutes zijn opgeslagen staan op Vercel Blob. */
+/** Bestanden die via onze uploadroutes zijn opgeslagen staan op Vercel Blob (publiek of privé). */
 export function isBlobUrl(value: string): boolean {
   try {
     const u = new URL(value);
     return (
       u.protocol === "https:" &&
-      u.hostname.endsWith(".public.blob.vercel-storage.com")
+      (u.hostname.endsWith(".public.blob.vercel-storage.com") ||
+        u.hostname.endsWith(".private.blob.vercel-storage.com"))
     );
   } catch {
     return false;
   }
+}
+
+/** Privé-blobs zijn alleen met onze serversleutel op te halen, niet via de URL zelf. */
+export function isPrivateBlobUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return (
+      u.protocol === "https:" &&
+      u.hostname.endsWith(".private.blob.vercel-storage.com")
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Huiswerk en lesmateriaal zijn vertrouwelijk en gaan standaard privé de opslag in.
+ * Alleen BLOB_DOCUMENT_ACCESS=public (bijvoorbeeld lokaal met een publieke store) zet dat uit.
+ */
+export function documentBlobAccess(
+  setting: string | undefined = process.env.BLOB_DOCUMENT_ACCESS,
+): "public" | "private" {
+  return setting === "public" ? "public" : "private";
+}
+
+/** Bestandsnaam veilig voor de Content-Disposition-header (RFC 5987). */
+export function contentDisposition(name: string, inline: boolean): string {
+  const clean = name.replace(/[\r\n"\\/]/g, "_").slice(0, 200) || "bestand";
+  return `${inline ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(clean)}`;
 }

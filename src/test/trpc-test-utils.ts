@@ -94,17 +94,18 @@ function makeSelectApi(stores: Store) {
       // for integration test purposes
       return {
         where: (_where?: any) => {
+          const rows = () => Object.values(stores).flat();
+          // limit() geeft een array met .offset(), zodat zowel `await ...limit(n)` als `...limit(n).offset(m)` werkt.
+          const limited = (n: number) =>
+            Object.assign(rows().slice(0, n), {
+              offset: (_m: number) => rows().slice(0, n),
+            });
           const chain = {
-            orderBy: (..._args: any[]) => ({
-              limit: (n: number) => {
-                const allRows = Object.values(stores).flat();
-                return allRows.slice(0, n);
-              },
-            }),
-            limit: (n: number) => {
-              const allRows = Object.values(stores).flat();
-              return allRows.slice(0, n);
-            },
+            orderBy: (..._args: any[]) => ({ limit: limited }),
+            limit: limited,
+            // `await select({ n: count() }).where(...)`: één rij met het aantal.
+            then: (resolve: (v: unknown) => unknown) =>
+              resolve([{ n: rows().length }]),
           };
           return chain;
         },

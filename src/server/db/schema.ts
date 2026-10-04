@@ -2171,3 +2171,26 @@ export const emailCampaignRecipientsRelations = relations(
     }),
   }),
 );
+
+// =============================================
+// MONITORING
+// =============================================
+
+// Eén rij per run van een geplande taak (src/app/api/jobs). Gevoed door withJobRun;
+// de systeembewaking en de dagelijkse beheermail lezen hieruit.
+export const jobRuns = pgTable(
+  "job_runs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    job: text("job").notNull(),
+    status: text("status").$type<"ok" | "error">().notNull(),
+    durationMs: integer("duration_ms").notNull(),
+    error: text("error"),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [index("job_runs_job_started_idx").on(t.job, t.startedAt)],
+);

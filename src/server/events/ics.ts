@@ -59,7 +59,7 @@ export function buildIcs(
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Samenmakers//Events//NL",
+    "PRODID:-//Weave//Events//NL",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
   ];

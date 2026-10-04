@@ -5,6 +5,7 @@ import { cohortMembers, cohortSessions, users } from "@/server/db/schema";
 import { sendEventEmail } from "@/lib/email";
 import { dueMailings, sessionCycle } from "@/lib/session-cycle";
 import { formatDate, formatDateTime } from "@/lib/date-utils";
+import { withJobRun } from "@/server/monitoring/job-run";
 
 // Vercel Cron: dagelijks (vercel.json). Per komende sessie:
 //  - 3 weken vooraf: briefing met de docent (docent + facilitators)
@@ -43,7 +44,7 @@ async function recipients(
   ) as ((typeof rows)[number] & { email: string })[];
 }
 
-export async function GET(request: Request) {
+async function run(request: Request) {
   if (
     request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
   ) {
@@ -181,3 +182,6 @@ export async function GET(request: Request) {
   );
   return NextResponse.json({ ok: true, briefings, homework, failed });
 }
+
+export const GET = (request: Request) =>
+  withJobRun("session-mailings", () => run(request));

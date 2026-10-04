@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { publicUserColumns } from "@/server/db/user-columns";
-import { eq, desc, gte, count, sql, and } from "drizzle-orm";
+import {
+  eq,
+  desc,
+  asc,
+  gte,
+  count,
+  sql,
+  and,
+  or,
+  ilike,
+  isNotNull,
+} from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
   users,
@@ -226,20 +237,71 @@ export const adminRouter = createTRPCRouter({
   users: adminProcedure
     .input(
       z.object({
-        limit: z.number().default(50),
+        limit: z.number().min(1).max(200).default(50),
+        offset: z.number().min(0).default(0),
+        q: z.string().trim().max(100).optional(),
         status: z
           .enum(["active", "suspended", "banned", "pending_deletion"])
           .optional(),
+        role: z.enum(["user", "admin"]).optional(),
+        subscriptionStatus: z
+          .enum(["none", "active", "past_due", "canceled"])
+          .optional(),
+        sector: z.string().max(100).optional(),
+        sort: z.enum(["nieuwst", "oudst", "naam", "email"]).default("nieuwst"),
       }),
     )
     .query(async ({ ctx, input }) => {
       const conditions = [];
       if (input.status) conditions.push(eq(users.status, input.status));
-      return ctx.db.query.users.findMany({
-        where: conditions.length > 0 ? and(...conditions) : undefined,
-        orderBy: [desc(users.createdAt)],
-        limit: input.limit,
-      });
+      if (input.role) conditions.push(eq(users.role, input.role));
+      if (input.subscriptionStatus)
+        conditions.push(eq(users.subscriptionStatus, input.subscriptionStatus));
+      if (input.sector) conditions.push(eq(users.sector, input.sector));
+
+      // Elk woord moet in minstens één veld voorkomen (naam, e-mail, sector, regio, expertise).
+      for (const word of (input.q ?? "").split(/\s+/).filter(Boolean)) {
+        const pattern = `%${word.replace(/[\\%_]/g, "\\$&")}%`;
+        conditions.push(
+          or(
+            ilike(users.naam, pattern),
+            ilike(users.name, pattern),
+            ilike(users.email, pattern),
+            ilike(users.sector, pattern),
+            ilike(users.regio, pattern),
+            sql`array_to_string(${users.expertise}, ' ') ilike ${pattern}`,
+          ),
+        );
+      }
+      const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const orderBy = {
+        nieuwst: [desc(users.createdAt)],
+        oudst: [asc(users.createdAt)],
+        naam: [asc(sql`lower(coalesce(${users.naam}, ${users.name}))`)],
+        email: [asc(users.email)],
+      }[input.sort];
+
+      const [items, [totaal], sectorRows] = await Promise.all([
+        ctx.db.query.users.findMany({
+          where,
+          orderBy,
+          limit: input.limit,
+          offset: input.offset,
+        }),
+        ctx.db.select({ n: count() }).from(users).where(where),
+        ctx.db
+          .selectDistinct({ sector: users.sector })
+          .from(users)
+          .where(isNotNull(users.sector))
+          .orderBy(asc(users.sector)),
+      ]);
+
+      return {
+        items,
+        total: totaal?.n ?? 0,
+        sectors: sectorRows.map((r) => r.sector!).filter(Boolean),
+      };
     }),
 
   updateUser: adminProcedure

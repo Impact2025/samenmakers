@@ -3,34 +3,38 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  primaryNav,
-  secondaryNav,
-  accountNav,
-  isActive,
-  type NavItem,
-} from "./nav-items";
+import type { Persona } from "@/lib/persona";
+import { navFor, isActive, type NavItem } from "./nav-items";
 
-export function Sidebar({ unreadMessages = 0 }: { unreadMessages?: number }) {
+export function Sidebar({
+  unreadMessages = 0,
+  persona = "lid",
+  mentor = false,
+}: {
+  unreadMessages?: number;
+  persona?: Persona;
+  mentor?: boolean;
+}) {
   const pathname = usePathname();
+  const nav = navFor(persona, mentor);
 
   return (
     <aside className="bg-surface fixed top-0 left-0 z-40 hidden h-screen w-64 flex-col px-3 pt-20 pb-6 lg:flex">
       <nav className="no-scrollbar flex flex-col gap-6 overflow-y-auto">
         <Group
-          items={primaryNav}
+          items={nav.primary}
           pathname={pathname}
           unreadMessages={unreadMessages}
         />
         <Group
           title="Meer"
-          items={secondaryNav}
+          items={nav.secondary}
           pathname={pathname}
           unreadMessages={unreadMessages}
         />
         <Group
           title="Account"
-          items={accountNav}
+          items={nav.account}
           pathname={pathname}
           unreadMessages={unreadMessages}
         />
