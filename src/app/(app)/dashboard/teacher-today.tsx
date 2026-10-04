@@ -42,9 +42,7 @@ export function TeacherToday({ editions }: { editions: TeachingEditions }) {
           : "Inleveringen te beoordelen",
       sub: reviewTotal === 0 ? "Alles beoordeeld" : null,
       warn: reviewTotal > 0,
-      href: review[0]
-        ? `/leren/${review[0].cohort.id}/opdrachten`
-        : `/leren/${editions[0]!.cohort.id}/opdrachten`,
+      href: "/leren/beoordelen",
     },
     {
       key: "attention",

@@ -73,14 +73,14 @@ function shortcutsFor(persona: Persona, cohortId?: string) {
           icon: GraduationCap,
           tone: "text-primary-container",
         },
+        {
+          href: "/leren/beoordelen",
+          label: "Beoordelen",
+          icon: ClipboardList,
+          tone: "text-tertiary",
+        },
         ...(cohortId
           ? [
-              {
-                href: `/leren/${cohortId}/opdrachten`,
-                label: "Beoordelen",
-                icon: ClipboardList,
-                tone: "text-tertiary",
-              },
               {
                 href: `/leren/${cohortId}/sessies`,
                 label: "Sessies",

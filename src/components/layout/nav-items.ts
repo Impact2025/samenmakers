@@ -12,6 +12,7 @@ import {
   Settings,
   UserCircle,
   Award,
+  ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
 import { features } from "@/lib/features";
@@ -23,6 +24,8 @@ export interface NavItem {
   icon: LucideIcon;
   /** Extra paden die dit item actief maken. */
   match?: string[];
+  /** Paden die dit item juist niet actief maken (eigen menu-item). */
+  exclude?: string[];
 }
 
 /** Hoofdtabs — onderbalk op mobiel, bovenste groep in de sidebar. */
@@ -128,13 +131,28 @@ export function navFor(persona: Persona, mentor = false): Nav {
       return {
         primary: [
           home,
-          { href: "/leren", label: "Mijn edities", icon: GraduationCap },
+          {
+            href: "/leren",
+            label: "Mijn edities",
+            icon: GraduationCap,
+            exclude: ["/leren/beoordelen"],
+          },
+          {
+            href: "/leren/beoordelen",
+            label: "Beoordelen",
+            icon: ClipboardCheck,
+          },
           messages,
           network,
-          events,
         ],
         // Docenten die ook mentor zijn houden de weg naar hun mentorprofiel.
-        secondary: [feed, knowledge, ...(mentor ? [mentorship] : []), saved],
+        secondary: [
+          events,
+          feed,
+          knowledge,
+          ...(mentor ? [mentorship] : []),
+          saved,
+        ],
         account: accountNav,
       };
     case "cursist":
@@ -177,6 +195,8 @@ export function navFor(persona: Persona, mentor = false): Nav {
 }
 
 export function isActive(pathname: string, item: NavItem) {
+  if (item.exclude?.some((p) => pathname === p || pathname.startsWith(p + "/")))
+    return false;
   return [item.href, ...(item.match ?? [])].some(
     (p) => pathname === p || pathname.startsWith(p + "/"),
   );
@@ -191,6 +211,7 @@ const titles: [string, string][] = [
   ["/matching", "Matching"],
   ["/events", "Evenementen"],
   ["/tickets", "Ticket"],
+  ["/leren/beoordelen", "Beoordelen"],
   ["/leren", "Leertraject"],
   ["/alumni", "Alumni"],
   ["/berichten", "Berichten"],

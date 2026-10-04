@@ -3,7 +3,7 @@ import { eq, and, desc, ilike } from "drizzle-orm";
 import {
   createTRPCRouter,
   protectedProcedure,
-  proProcedure,
+  proOrStaffProcedure,
   adminProcedure,
 } from "@/server/trpc/init";
 import {
@@ -61,7 +61,7 @@ export const postsRouter = createTRPCRouter({
       });
     }),
 
-  create: proProcedure
+  create: proOrStaffProcedure
     .input(
       z.object({
         title: z.string().min(3).max(160),

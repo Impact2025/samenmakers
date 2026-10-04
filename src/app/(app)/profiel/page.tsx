@@ -17,6 +17,7 @@ import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
 import { buttonClasses } from "@/components/ui/button";
 import { ProgressBar } from "@/components/learning/progress-bar";
+import { TeachingBadges } from "@/components/learning/teaching-badges";
 import { CopyReferralButton } from "./copy-referral-button";
 
 export const metadata: Metadata = { title: "Mijn profiel" };
@@ -90,6 +91,7 @@ export default async function MyProfilePage() {
               </span>
             )}
           </div>
+          <TeachingBadges userId={me.id} />
           {me.missie && (
             <p className="text-body-md text-on-surface-variant mt-1 max-w-md">
               &ldquo;{me.missie}&rdquo;
