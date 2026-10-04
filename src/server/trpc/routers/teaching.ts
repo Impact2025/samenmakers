@@ -1,6 +1,11 @@
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { and, asc, count, eq, gte, inArray, ne } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc/init";
-import { cohortMembers } from "@/server/db/schema";
+import {
+  assignments,
+  cohortMembers,
+  cohortSessions,
+  submissions,
+} from "@/server/db/schema";
 import {
   loadCurriculum,
   loadStatusMapsForCohort,
@@ -129,6 +134,38 @@ export const teachingRouter = createTRPCRouter({
               .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())[0] ??
             null;
 
+          // Wat er nu van de docent verwacht wordt: inleveringen zonder feedback en de
+          // eerstvolgende sessie.
+          const [[pending], nextSession] = await Promise.all([
+            ctx.db
+              .select({ n: count() })
+              .from(submissions)
+              .innerJoin(
+                assignments,
+                eq(assignments.id, submissions.assignmentId),
+              )
+              .where(
+                and(
+                  eq(assignments.cohortId, cohort.id),
+                  eq(submissions.status, "ingeleverd"),
+                ),
+              ),
+            ctx.db.query.cohortSessions.findFirst({
+              where: and(
+                eq(cohortSessions.cohortId, cohort.id),
+                gte(cohortSessions.startsAt, now),
+              ),
+              orderBy: asc(cohortSessions.startsAt),
+              columns: {
+                id: true,
+                title: true,
+                startsAt: true,
+                location: true,
+                meetingUrl: true,
+              },
+            }),
+          ]);
+
           const currentModule =
             modules.find((mod) => {
               const w = moduleWindow(
@@ -159,6 +196,8 @@ export const teachingRouter = createTRPCRouter({
             attention,
             nextLive,
             currentModule,
+            toReview: pending?.n ?? 0,
+            nextSession: nextSession ?? null,
           };
         }),
     );

@@ -2,11 +2,13 @@ import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
+  Award,
   BookOpen,
   CalendarDays,
   ChevronRight,
   Clock,
   ClipboardList,
+  GraduationCap,
   Handshake,
   Heart,
   MessageCircle,
@@ -24,6 +26,8 @@ import { buttonClasses } from "@/components/ui/button";
 import { formatRelative, formatDueIn } from "@/lib/date-utils";
 import { eventWhere, formatEventShort } from "@/lib/event-format";
 import { TeacherOverview, type TeachingEditions } from "./teacher-overview";
+import { TeacherToday } from "./teacher-today";
+import type { Persona } from "@/lib/persona";
 import type { AppRouter } from "@/server/trpc/root";
 import type { inferRouterOutputs } from "@trpc/server";
 
@@ -42,9 +46,86 @@ interface Props {
   questions: Questions;
   edition: Edition | null;
   teaching: TeachingEditions;
+  persona: Persona;
 }
 
-const shortcuts = [
+const kennisbank = {
+  href: "/kennis",
+  label: "Kennisbank",
+  icon: BookOpen,
+  tone: "text-secondary",
+};
+const berichten = {
+  href: "/berichten",
+  label: "Berichten",
+  icon: MessageCircle,
+  tone: "text-tertiary",
+};
+
+// Snelkoppelingen per ervaring: een docent heeft niets aan "Vind een match".
+function shortcutsFor(persona: Persona, cohortId?: string) {
+  switch (persona) {
+    case "docent":
+      return [
+        {
+          href: "/leren",
+          label: "Mijn edities",
+          icon: GraduationCap,
+          tone: "text-primary-container",
+        },
+        ...(cohortId
+          ? [
+              {
+                href: `/leren/${cohortId}/opdrachten`,
+                label: "Beoordelen",
+                icon: ClipboardList,
+                tone: "text-tertiary",
+              },
+              {
+                href: `/leren/${cohortId}/sessies`,
+                label: "Sessies",
+                icon: CalendarDays,
+                tone: "text-secondary",
+              },
+            ]
+          : []),
+        berichten,
+      ];
+    case "alumnus":
+      return [
+        {
+          href: "/alumni",
+          label: "Alumni-community",
+          icon: Award,
+          tone: "text-primary-container",
+        },
+        {
+          href: "/kennis/materiaal",
+          label: "Lesmateriaal",
+          icon: BookOpen,
+          tone: "text-tertiary",
+        },
+        defaultShortcuts[0]!,
+        defaultShortcuts[3]!,
+      ];
+    case "cursist":
+      return [
+        {
+          href: "/leren",
+          label: "Verder leren",
+          icon: GraduationCap,
+          tone: "text-primary-container",
+        },
+        berichten,
+        defaultShortcuts[1]!,
+        kennisbank,
+      ];
+    default:
+      return defaultShortcuts;
+  }
+}
+
+const defaultShortcuts = [
   {
     href: "/matching",
     label: "Vind een match",
@@ -79,7 +160,10 @@ export function DashboardContent({
   questions,
   edition,
   teaching,
+  persona,
 }: Props) {
+  const isTeacher = persona === "docent";
+  const shortcuts = shortcutsFor(persona, teaching[0]?.cohort.id);
   const firstName = (me?.naam ?? me?.name)?.split(" ")[0] ?? "Maker";
   const completeness = me?.profileCompleteness ?? 0;
   const conversations = matches.filter((m) => m.messages.length > 0);
@@ -115,7 +199,8 @@ export function DashboardContent({
         )}
       </section>
 
-      {/* Docent: overzicht van eigen edities */}
+      {/* Docent: wat vraagt nu aandacht, en overzicht van eigen edities */}
+      <TeacherToday editions={teaching} />
       <TeacherOverview editions={teaching} />
 
       {/* Voortgang: leertraject of profiel */}
@@ -185,37 +270,39 @@ export function DashboardContent({
         ))}
       </section>
 
-      {/* KPI's */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard
-          value={matches.length}
-          label="Matches in je netwerk"
-          icon={<Handshake size={18} />}
-          tone="primary"
-          href="/matching"
-        />
-        <StatCard
-          value={conversations.length}
-          label="Lopende gesprekken"
-          icon={<MessageCircle size={18} />}
-          href="/berichten"
-        />
-        <StatCard
-          value={events.length}
-          label="Komende evenementen"
-          icon={<CalendarDays size={18} />}
-          href="/events"
-          className="hidden lg:flex"
-        />
-        <StatCard
-          value={edition ? edition.progress.done : `${completeness}%`}
-          label={edition ? "Lessen afgerond" : "Profiel compleet"}
-          icon={<TrendingUp size={18} />}
-          tone="tertiary"
-          href={edition ? `/leren/${edition.cohort.id}` : "/profiel"}
-          className="hidden lg:flex"
-        />
-      </section>
+      {/* KPI's: netwerkcijfers zijn ruis voor een docent */}
+      {!isTeacher && (
+        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatCard
+            value={matches.length}
+            label="Matches in je netwerk"
+            icon={<Handshake size={18} />}
+            tone="primary"
+            href="/matching"
+          />
+          <StatCard
+            value={conversations.length}
+            label="Lopende gesprekken"
+            icon={<MessageCircle size={18} />}
+            href="/berichten"
+          />
+          <StatCard
+            value={events.length}
+            label="Komende evenementen"
+            icon={<CalendarDays size={18} />}
+            href="/events"
+            className="hidden lg:flex"
+          />
+          <StatCard
+            value={edition ? edition.progress.done : `${completeness}%`}
+            label={edition ? "Lessen afgerond" : "Profiel compleet"}
+            icon={<TrendingUp size={18} />}
+            tone="tertiary"
+            href={edition ? `/leren/${edition.cohort.id}` : "/profiel"}
+            className="hidden lg:flex"
+          />
+        </section>
+      )}
 
       {/* Eerstvolgend event */}
       <section>

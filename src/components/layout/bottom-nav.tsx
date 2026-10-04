@@ -3,13 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { primaryNav, isActive } from "./nav-items";
+import type { Persona } from "@/lib/persona";
+import { navFor, isActive } from "./nav-items";
 
 interface BottomNavProps {
   unreadCount?: number;
+  persona?: Persona;
 }
 
-export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
+export function BottomNav({
+  unreadCount = 0,
+  persona = "lid",
+}: BottomNavProps) {
   const pathname = usePathname();
 
   return (
@@ -18,7 +23,7 @@ export function BottomNav({ unreadCount = 0 }: BottomNavProps) {
       className="pb-safe bg-surface-container-lowest/90 shadow-bar-up fixed inset-x-0 bottom-0 z-50 backdrop-blur-xl lg:hidden"
     >
       <div className="flex h-16 items-center justify-around px-1">
-        {primaryNav.map((item) => {
+        {navFor(persona).primary.map((item) => {
           const active = isActive(pathname, item);
           const Icon = item.icon;
           const showBadge = item.href === "/berichten" && unreadCount > 0;

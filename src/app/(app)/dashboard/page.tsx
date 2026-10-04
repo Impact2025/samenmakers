@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { api } from "@/trpc/server";
 import { features } from "@/lib/features";
+import { getPersona } from "@/server/learning/persona";
 import { DashboardContent } from "./dashboard-content";
 
 export const metadata: Metadata = { title: "Home" };
@@ -29,7 +30,7 @@ function greeting() {
 }
 
 async function DashboardData() {
-  const [me, matches, events, questions, learning, teaching] =
+  const [me, matches, events, questions, learning, teaching, persona] =
     await Promise.all([
       api.users.me(),
       api.matches.myMatches(),
@@ -41,6 +42,7 @@ async function DashboardData() {
       features.leren
         ? api.teaching.overview().catch(() => [])
         : Promise.resolve([]),
+      getPersona(),
     ]);
 
   return (
@@ -52,6 +54,7 @@ async function DashboardData() {
       questions={questions.items}
       edition={learning?.learning[0] ?? null}
       teaching={teaching}
+      persona={persona}
     />
   );
 }
