@@ -116,6 +116,21 @@ Stilte betekent dat alles draait.
    5 min, alert per e-mail) en een op `/inloggen`.
 3. Tabel `job_runs` aanbrengen: `npx tsx --env-file=.env.local scripts/apply-sql.ts drizzle/monitoring-fase1.sql`.
 
+**Beheer en veiligheid**
+
+- `/admin/systeem` toont per geplande taak de laatste run, recente fouten en wat op actie wacht;
+  het beheerdashboard zet dit bovenaan als "vraagt actie".
+- Elke beheerhandeling (mutation via `adminProcedure`) komt automatisch in de audit log. Procedures
+  die zelf met meer detail loggen staan in `MANUALLY_AUDITED` (`src/server/trpc/init.ts`); een nieuwe
+  procedure die zelf logt moet daar bij.
+- Een beheerder kan zichzelf niet schorsen, blokkeren of de eigen beheerdersrol intrekken, en de laatste
+  actieve beheerder kan niet worden uitgeschakeld (`src/lib/admin-guards.ts`).
+- Ondersteuning bij een gebruiker (menu "Opties"): wachtwoord-reset sturen, e-mail als bevestigd markeren.
+  Editie beheren: cursisten in bulk koppelen via een geplakte lijst met e-mailadressen.
+- Cron-routes weigeren altijd als `CRON_SECRET` ontbreekt of korter is dan 32 tekens (`src/lib/cron-auth.ts`).
+- Content-Security-Policy staat in `Report-Only`: de browser meldt schendingen in de console zonder iets te
+  blokkeren. Na een schone periode omzetten naar `Content-Security-Policy` in `next.config.ts`.
+
 **Nieuwe cron toevoegen:** wikkel de handler in `withJobRun("naam", ...)`, voeg de taak met de
 maximale leeftijd van een run toe aan `JOBS` in `src/lib/job-health.ts` en zet hem in `vercel.json`.
 

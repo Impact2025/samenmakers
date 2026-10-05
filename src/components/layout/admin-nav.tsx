@@ -21,6 +21,7 @@ import {
   X,
   ArrowLeft,
   Euro,
+  Activity,
 } from "lucide-react";
 import { LogoMark } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ const adminNav = [
   { href: "/admin/programmas", label: "Onderwijs", icon: Library },
   { href: "/admin/cohorten", label: "Cohorten", icon: Settings },
   { href: "/admin/gdpr", label: "GDPR", icon: Shield },
+  { href: "/admin/systeem", label: "Systeem", icon: Activity },
   { href: "/admin/audit-log", label: "Audit log", icon: ClipboardList },
 ];
 

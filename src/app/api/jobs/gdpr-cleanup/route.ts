@@ -4,6 +4,7 @@ import { eq, and, lte } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { subDays } from "@/lib/date-utils";
 import { withJobRun } from "@/server/monitoring/job-run";
+import { isCronAuthorized } from "@/lib/cron-auth";
 
 // Called by Vercel Cron: every day at 02:00
 // Permanently anonymises accounts that have been in pending_deletion for 30+ days
@@ -11,8 +12,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 async function run(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

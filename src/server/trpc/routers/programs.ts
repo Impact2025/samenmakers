@@ -1,6 +1,18 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, gt, lt, max } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gt,
+  inArray,
+  lt,
+  max,
+  sql,
+} from "drizzle-orm";
+import { parseEmailList } from "@/lib/email-list";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
   auditLog,
@@ -550,6 +562,61 @@ export const programsRouter = createTRPCRouter({
         role: input.role,
       });
       return { success: true };
+    }),
+
+  // Meerdere bestaande gebruikers in één keer aan een editie koppelen (geplakte lijst).
+  // Bestaande leden blijven ongemoeid; onbekende adressen komen terug om uit te nodigen.
+  memberImport: adminProcedure
+    .input(
+      z.object({
+        cohortId: z.string(),
+        emails: z.string().max(20_000),
+        role: z
+          .enum(["cursist", "docent", "manager", "facilitator", "alumnus"])
+          .default("cursist"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { emails, truncated } = parseEmailList(input.emails);
+      if (emails.length === 0)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Geen e-mailadressen gevonden in de tekst.",
+        });
+      const found = await ctx.db.query.users.findMany({
+        where: inArray(sql`lower(${users.email})`, emails),
+        columns: { id: true, email: true },
+      });
+      const existing = await ctx.db.query.cohortMembers.findMany({
+        where: eq(cohortMembers.cohortId, input.cohortId),
+        columns: { userId: true },
+      });
+      const already = new Set(existing.map((m) => m.userId));
+      const toAdd = found.filter((u) => !already.has(u.id));
+      if (toAdd.length > 0)
+        await ctx.db
+          .insert(cohortMembers)
+          .values(
+            toAdd.map((u) => ({
+              cohortId: input.cohortId,
+              userId: u.id,
+              role: input.role,
+            })),
+          )
+          .onConflictDoNothing();
+      const foundEmails = new Set(found.map((u) => u.email?.toLowerCase()));
+      const result = {
+        added: toAdd.length,
+        alreadyMember: found.length - toAdd.length,
+        notFound: emails.filter((e) => !foundEmails.has(e)),
+        truncated,
+      };
+      await audit(ctx, "import_cohort_members", "cohort", input.cohortId, {
+        role: input.role,
+        ...result,
+        notFound: result.notFound.length,
+      });
+      return result;
     }),
 
   memberUpdate: adminProcedure

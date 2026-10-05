@@ -11,6 +11,7 @@ import {
   or,
   ilike,
   isNotNull,
+  ne,
 } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
@@ -28,11 +29,16 @@ import {
   loginEvents,
   feedPosts,
   submissions,
+  jobRuns,
 } from "@/server/db/schema";
 import { subDays } from "@/lib/date-utils";
 import { isValidPrice, isActiveMember } from "@/lib/membership";
 import { loadPrices, PRICE_KEYS } from "@/server/settings";
 import { TRPCError } from "@trpc/server";
+import { checkUserChange } from "@/lib/admin-guards";
+import { JOBS, evaluateJobHealth } from "@/lib/job-health";
+import { createResetToken } from "@/server/auth/password-reset";
+import { sendPasswordResetEmail } from "@/lib/email";
 
 export const adminRouter = createTRPCRouter({
   // Platform analytics
@@ -318,6 +324,36 @@ export const adminRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
+
+      const target = await ctx.db.query.users.findFirst({
+        where: eq(users.id, id),
+        columns: { role: true },
+      });
+      if (!target)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Gebruiker niet gevonden",
+        });
+      const [others] = await ctx.db
+        .select({ n: count() })
+        .from(users)
+        .where(
+          and(
+            eq(users.role, "admin"),
+            eq(users.status, "active"),
+            ne(users.id, id),
+          ),
+        );
+      const blocked = checkUserChange({
+        actorId: ctx.userId,
+        targetId: id,
+        targetRole: target.role,
+        change: { status: data.status, role: data.role },
+        otherActiveAdmins: others?.n ?? 0,
+      });
+      if (blocked)
+        throw new TRPCError({ code: "BAD_REQUEST", message: blocked });
+
       await ctx.db
         .update(users)
         .set({ ...data, updatedAt: new Date() })
@@ -425,6 +461,106 @@ export const adminRouter = createTRPCRouter({
       return cohort;
     }),
 
+  // Ondersteuning: stuur de gebruiker een resetlink (zelfde veilige flow als "wachtwoord vergeten").
+  sendPasswordReset: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.id, input.id),
+        columns: { email: true, naam: true, name: true, status: true },
+      });
+      if (!user?.email)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Gebruiker niet gevonden",
+        });
+      if (user.status === "suspended" || user.status === "banned")
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Dit account is geschorst of geblokkeerd.",
+        });
+      const token = await createResetToken(user.email);
+      const url = new URL(
+        "/wachtwoord-reset/nieuw",
+        process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      );
+      url.searchParams.set("email", user.email.toLowerCase());
+      url.searchParams.set("token", token);
+      await sendPasswordResetEmail({
+        to: user.email,
+        naam: user.naam ?? user.name,
+        url: url.toString(),
+      });
+      return { success: true };
+    }),
+
+  // Ondersteuning: e-mailadres handmatig als bevestigd markeren (bijv. bij een bounce).
+  markEmailVerified: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(users)
+        .set({ emailVerified: new Date(), updatedAt: new Date() })
+        .where(eq(users.id, input.id));
+      return { success: true };
+    }),
+
+  // Systeemstatus: geplande taken, recente fouten en wat er nu aandacht vraagt.
+  systemStatus: adminProcedure.query(async ({ ctx }) => {
+    const now = new Date();
+    const since = subDays(now, 9);
+    const runs = await ctx.db
+      .select({
+        job: jobRuns.job,
+        status: jobRuns.status,
+        startedAt: jobRuns.startedAt,
+        durationMs: jobRuns.durationMs,
+        error: jobRuns.error,
+      })
+      .from(jobRuns)
+      .where(gte(jobRuns.startedAt, since))
+      .orderBy(desc(jobRuns.startedAt));
+
+    const problems = evaluateJobHealth(runs, now);
+    const jobs = JOBS.map((j) => {
+      const last = runs.find((r) => r.job === j.name) ?? null;
+      return {
+        name: j.name,
+        maxAgeHours: j.maxAgeHours,
+        last,
+        problem: problems.find((p) => p.job === j.name) ?? null,
+      };
+    });
+    const failures = runs.filter((r) => r.status === "error").slice(0, 10);
+
+    const [pendingReports, pendingDeletion, pastDue] = await Promise.all([
+      ctx.db
+        .select({ n: count() })
+        .from(reportedContent)
+        .where(eq(reportedContent.status, "pending")),
+      ctx.db
+        .select({ n: count() })
+        .from(users)
+        .where(eq(users.status, "pending_deletion")),
+      ctx.db
+        .select({ n: count() })
+        .from(memberships)
+        .where(eq(memberships.status, "past_due")),
+    ]);
+
+    return {
+      generatedAt: now,
+      jobs,
+      problems,
+      failures,
+      queue: {
+        pendingReports: pendingReports[0]?.n ?? 0,
+        pendingDeletion: pendingDeletion[0]?.n ?? 0,
+        pastDueMemberships: pastDue[0]?.n ?? 0,
+      },
+    };
+  }),
+
   // Audit log
   auditLog: adminProcedure
     .input(z.object({ limit: z.number().default(50) }))
@@ -432,7 +568,9 @@ export const adminRouter = createTRPCRouter({
       return ctx.db.query.auditLog.findMany({
         orderBy: [desc(auditLog.createdAt)],
         limit: 50,
-        with: { admin: true },
+        with: {
+          admin: { columns: { id: true, name: true, naam: true, email: true } },
+        },
       });
     }),
 });

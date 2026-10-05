@@ -59,6 +59,13 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
     email: "",
     role: "docent",
   });
+  const [bulk, setBulk] = useState("");
+  const [bulkRole, setBulkRole] = useState<Role>("cursist");
+  const memberImport = trpc.programs.memberImport.useMutation({
+    onSuccess: () => {
+      refresh();
+    },
+  });
   const memberAdd = trpc.programs.memberAdd.useMutation({
     onSuccess: () => {
       setAdd((a) => ({ ...a, email: "" }));
@@ -382,6 +389,75 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
         <p className="text-body-sm text-secondary">
           De persoon moet al een account hebben.
         </p>
+      </section>
+
+      {/* Meerdere tegelijk */}
+      <section className={card}>
+        <h2 className="text-headline-sm text-on-surface">
+          Meerdere personen tegelijk
+        </h2>
+        <p className="text-body-sm text-secondary">
+          Plak adressen uit een mail of spreadsheet, gescheiden door komma,
+          spatie of regel.
+        </p>
+        <label className="flex flex-col gap-1.5">
+          <span className={labelClasses}>Rol</span>
+          <select
+            className={cn(fieldClasses, "w-auto")}
+            value={bulkRole}
+            onChange={(e) => setBulkRole(e.target.value as Role)}
+          >
+            {Object.entries(COHORT_ROLE_LABELS).map(([v, l]) => (
+              <option key={v} value={v}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </label>
+        <textarea
+          className={cn(fieldClasses, "min-h-28")}
+          value={bulk}
+          onChange={(e) => setBulk(e.target.value)}
+          placeholder="sara@bedrijf.nl, jan@bedrijf.nl, ..."
+        />
+        <Button
+          type="button"
+          disabled={memberImport.isPending || !bulk.trim()}
+          onClick={() =>
+            memberImport.mutate({
+              cohortId: cohort.id,
+              emails: bulk,
+              role: bulkRole,
+            })
+          }
+        >
+          {memberImport.isPending ? <Spinner size="sm" /> : "Importeren"}
+        </Button>
+        {memberImport.error && (
+          <p className="text-body-sm text-error">
+            {memberImport.error.message}
+          </p>
+        )}
+        {memberImport.data && (
+          <div className="text-body-sm text-on-surface flex flex-col gap-1">
+            <p>
+              {memberImport.data.added} toegevoegd,{" "}
+              {memberImport.data.alreadyMember} zaten er al in.
+            </p>
+            {memberImport.data.notFound.length > 0 && (
+              <p className="text-error">
+                Geen account gevonden voor:{" "}
+                {memberImport.data.notFound.join(", ")}. Deel de
+                uitnodigingscode met deze personen.
+              </p>
+            )}
+            {memberImport.data.truncated && (
+              <p className="text-secondary">
+                Alleen de eerste 200 adressen zijn verwerkt.
+              </p>
+            )}
+          </div>
+        )}
       </section>
     </div>
   );

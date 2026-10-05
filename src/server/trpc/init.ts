@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { auth } from "@/server/auth/config";
 import { db } from "@/server/db";
-import { users, cohortMembers } from "@/server/db/schema";
+import { users, cohortMembers, auditLog } from "@/server/db/schema";
 import { and, eq, inArray, ne } from "drizzle-orm";
 import superjson from "superjson";
 import { withinAccessWindow } from "@/lib/session-cycle";
@@ -122,7 +122,65 @@ const isAdmin = t.middleware(({ ctx, next }) => {
   });
 });
 
-export const adminProcedure = t.procedure.use(isAdmin);
+// Elke beheerhandeling (mutation) komt in de audit log, ook als de procedure zelf niets
+// vastlegt. Procedures die al met meer detail loggen staan hieronder en worden overgeslagen.
+const MANUALLY_AUDITED = new Set([
+  "admin.setPrices",
+  "admin.updateUser",
+  "admin.publishPost",
+  "admin.publishEvent",
+  "blog.create",
+  "blog.update",
+  "blog.setPublished",
+  "blog.remove",
+  "campaigns.send",
+  "coupons.create",
+  "coupons.remove",
+  "programs.create",
+  "programs.update",
+  "programs.delete",
+  "programs.moduleDelete",
+  "programs.lessonDelete",
+  "programs.cohortCreate",
+  "programs.cohortUpdate",
+  "programs.cohortDuplicate",
+  "programs.memberAdd",
+  "programs.memberImport",
+  "programs.memberUpdate",
+  "programs.memberRemove",
+]);
+
+const auditMutations = t.middleware(
+  async ({ ctx, path, type, getRawInput, next }) => {
+    const result = await next();
+    if (type !== "mutation" || !result.ok || MANUALLY_AUDITED.has(path))
+      return result;
+    try {
+      const raw = (await getRawInput()) as Record<string, unknown> | undefined;
+      const targetId =
+        typeof raw?.id === "string"
+          ? raw.id
+          : typeof raw?.cohortId === "string"
+            ? raw.cohortId
+            : null;
+      await db.insert(auditLog).values({
+        adminId: ctx.session!.user.id,
+        action: path,
+        targetType: path.split(".")[0] ?? null,
+        targetId,
+        // Lange velden (mailinhoud, artikeltekst) afkappen: de log is een spoor, geen archief.
+        details: JSON.stringify(raw ?? {}, (_k, v) =>
+          typeof v === "string" && v.length > 200 ? `${v.slice(0, 200)}…` : v,
+        ).slice(0, 2000),
+      });
+    } catch (e) {
+      console.error("[audit] vastleggen mislukt", path, e);
+    }
+    return result;
+  },
+);
+
+export const adminProcedure = t.procedure.use(isAdmin).use(auditMutations);
 
 // Helper: get current user's DB row (cached per request via React cache)
 export async function getCurrentUser(userId: string) {
