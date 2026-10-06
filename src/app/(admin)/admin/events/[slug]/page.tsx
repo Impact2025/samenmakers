@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { EventBeheer } from "./event-beheer";
+import { EventBeheer } from "@/app/(app)/events/[slug]/beheer/event-beheer";
 
 export const metadata: Metadata = {
-  title: "Event beheren",
+  title: "Admin — Event beheren",
   robots: { index: false },
 };
 
@@ -10,12 +10,12 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export default async function ManageEventPage({ params }: Props) {
+export default async function AdminEventPage({ params }: Props) {
   const { slug } = await params;
   return (
     <EventBeheer
       slug={slug}
-      terug={{ href: "/events/mijn", label: "Mijn events" }}
+      terug={{ href: "/admin/events", label: "Events" }}
     />
   );
 }
