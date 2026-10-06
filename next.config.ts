@@ -27,6 +27,44 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Oude URL's van weshapethefuture.nl → de nieuwe pagina's. Tijdelijk (307) zolang de
+  // site nog onder /wstf staat; maak ze permanent bij de verhuizing naar de hoofdroute.
+  async redirects() {
+    const old: Array<[string, string]> = [
+      ["/about.php", "/wstf/over-ons"],
+      ["/programs.php", "/wstf/programmas"],
+      [
+        "/social-entrepreneurship-course.php",
+        "/wstf/leergang-sociaal-ondernemen",
+      ],
+      [
+        "/social-intrapreneurship-course.php",
+        "/wstf/leergang-social-intrapreneurship",
+      ],
+      ["/reshaping-your-future.php", "/wstf/reshaping-your-future"],
+      ["/alumni.php", "/wstf/alumni"],
+      ["/community.php", "/wstf/community"],
+      ["/contact.php", "/wstf/contact"],
+      ["/privacy-policy.php", "/wstf/privacybeleid"],
+      [
+        "/cancellelation-policy-events.php",
+        "/wstf/annuleringsbeleid-evenementen",
+      ],
+      ["/terms-and-condition.php", "/wstf/algemene-voorwaarden"],
+    ];
+    return [
+      ...old.map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: false,
+      })),
+      {
+        source: "/interview-:slug.php",
+        destination: "/wstf/interview/:slug",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
