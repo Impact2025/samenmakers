@@ -1,4 +1,4 @@
-export type SiteFormKind = "samenwerken" | "interesse";
+export type SiteFormKind = "samenwerken" | "interesse" | "contact";
 
 export async function postSiteForm(
   kind: SiteFormKind,

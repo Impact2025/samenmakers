@@ -27,7 +27,18 @@ const interesse = z.object({
   message: z.string().trim().min(5).max(500),
 });
 
-const schema = z.discriminatedUnion("kind", [samenwerken, interesse]);
+const contact = z.object({
+  kind: z.literal("contact"),
+  firstName: z.string().trim().min(2).max(50),
+  lastName: z.string().trim().min(2).max(50),
+  email: z.string().trim().email(),
+  phone: z.string().trim().max(40).optional(),
+  organization: z.string().trim().max(200).optional(),
+  subject: z.string().trim().min(2).max(100),
+  message: z.string().trim().min(5).max(2000),
+});
+
+const schema = z.discriminatedUnion("kind", [samenwerken, interesse, contact]);
 
 export async function POST(req: Request) {
   if (!(await checkAuthLimit("siteForm", clientIp(req)))) {
@@ -57,6 +68,19 @@ export async function POST(req: Request) {
           Naam: d.name,
           "E-mail": d.email,
           Organisatie: d.organisation,
+          Bericht: d.message,
+        },
+      });
+    } else if (d.kind === "contact") {
+      await sendSiteFormEmail({
+        subject: `Contact: ${d.subject}`,
+        replyTo: d.email,
+        fields: {
+          Naam: `${d.firstName} ${d.lastName}`,
+          "E-mail": d.email,
+          Telefoon: d.phone,
+          Organisatie: d.organization,
+          Onderwerp: d.subject,
           Bericht: d.message,
         },
       });

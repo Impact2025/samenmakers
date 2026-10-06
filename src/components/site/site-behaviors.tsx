@@ -196,6 +196,40 @@ export function SiteBehaviors() {
       }
     }
 
+    /* ---------- Meer verhalen (alumni) ---------- */
+    const storiesGrid = document.querySelector<HTMLElement>(
+      ".more-stories__grid",
+    );
+    const storiesPrev = document.querySelector<HTMLButtonElement>(
+      ".more-stories__button--prev",
+    );
+    const storiesNext = document.querySelector<HTMLButtonElement>(
+      ".more-stories__button--next",
+    );
+    if (storiesGrid && storiesPrev && storiesNext) {
+      const step = () => {
+        const card =
+          storiesGrid.querySelector<HTMLElement>(".story-card-small");
+        const gap = parseFloat(getComputedStyle(storiesGrid).gap) || 32;
+        return card ? card.offsetWidth + gap : 312;
+      };
+      const sync = () => {
+        storiesPrev.disabled = storiesGrid.scrollLeft <= 0;
+        storiesNext.disabled =
+          storiesGrid.scrollLeft + storiesGrid.clientWidth >=
+          storiesGrid.scrollWidth - 2;
+      };
+      on(storiesNext, "click", () =>
+        storiesGrid.scrollBy({ left: step(), behavior: "smooth" }),
+      );
+      on(storiesPrev, "click", () =>
+        storiesGrid.scrollBy({ left: -step(), behavior: "smooth" }),
+      );
+      on(storiesGrid, "scroll", sync);
+      on(window, "resize", sync);
+      sync();
+    }
+
     /* ---------- Community-mail ---------- */
     const joinLink = document.querySelector<HTMLAnchorElement>(
       "[data-community-email]",
