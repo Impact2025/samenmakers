@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { derivePersona } from "./persona";
+import { derivePersona, isPlanner } from "./persona";
 import type { Membership, Person } from "./access";
 
 const m = (over: Partial<Membership>): Membership => ({
@@ -48,5 +48,22 @@ describe("derivePersona", () => {
     expect(
       derivePersona(person(m({ role: "docent", cohortStatus: "afgerond" }))),
     ).toBe("docent");
+  });
+});
+
+describe("isPlanner", () => {
+  it("facilitator en manager plannen, docent en cursist niet", () => {
+    expect(isPlanner(person(m({ role: "facilitator" })))).toBe(true);
+    expect(isPlanner(person(m({ role: "manager" })))).toBe(true);
+    expect(isPlanner(person(m({ role: "docent" })))).toBe(false);
+    expect(isPlanner(person(m({})))).toBe(false);
+  });
+  it("afgeronde edities en uitgeschreven telt niet", () => {
+    expect(
+      isPlanner(person(m({ role: "facilitator", cohortStatus: "afgerond" }))),
+    ).toBe(false);
+    expect(
+      isPlanner(person(m({ role: "facilitator", status: "uitgeschreven" }))),
+    ).toBe(false);
   });
 });

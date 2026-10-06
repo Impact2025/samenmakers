@@ -7,6 +7,16 @@ export type Persona = "docent" | "cursist" | "alumnus" | "lid";
 
 const STAFF_ROLES = ["docent", "facilitator", "manager"];
 
+/** Facilitator of manager in een lopende of komende editie: plant sessies en registreert aanwezigheid. */
+export function isPlanner(p: Person): boolean {
+  return p.memberships.some(
+    (m) =>
+      m.status !== "uitgeschreven" &&
+      m.cohortStatus !== "afgerond" &&
+      (m.role === "facilitator" || m.role === "manager"),
+  );
+}
+
 export function derivePersona(p: Person): Persona {
   const live = p.memberships.filter((m) => m.status !== "uitgeschreven");
   const isStaff = (m: (typeof live)[number]) => STAFF_ROLES.includes(m.role);

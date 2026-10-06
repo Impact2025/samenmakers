@@ -26,4 +26,15 @@ describe("docentmenu", () => {
     if (!all.includes("Kennisbank")) return;
     expect(all).not.toContain("Matching");
   });
+  it("Facilitators krijgen Sessies in het hoofdmenu en Netwerk onder Meer", () => {
+    const nav = navFor("docent", false, true);
+    const prim = nav.primary.map((i) => i.label);
+    if (!nav.secondary.some((i) => i.label === "Kennisbank")) return;
+    expect(prim).toContain("Sessies");
+    expect(prim).not.toContain("Netwerk");
+    expect(nav.secondary.map((i) => i.label)).toContain("Netwerk");
+    expect(navFor("docent").primary.map((i) => i.label)).not.toContain(
+      "Sessies",
+    );
+  });
 });

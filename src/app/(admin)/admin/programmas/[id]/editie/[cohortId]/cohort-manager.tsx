@@ -254,7 +254,7 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
             {update.isPending ? (
               <Spinner size="sm" />
             ) : saved ? (
-              "Opgeslagen ✓"
+              "Opgeslagen"
             ) : (
               "Opslaan"
             )}

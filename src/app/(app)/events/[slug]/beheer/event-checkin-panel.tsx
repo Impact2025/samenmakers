@@ -182,7 +182,7 @@ export function EventCheckinPanel({
               </div>
               {isCheckedIn ? (
                 <span className="text-primary shrink-0 text-xs font-medium">
-                  ✓ Ingecheckt
+                  Ingecheckt
                 </span>
               ) : (
                 <button

@@ -193,7 +193,7 @@ export function ProgramEditor({ program }: { program: Program }) {
             {update.isPending ? (
               <Spinner size="sm" />
             ) : saved ? (
-              "Opgeslagen ✓"
+              "Opgeslagen"
             ) : (
               "Opslaan"
             )}

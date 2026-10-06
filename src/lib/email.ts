@@ -199,7 +199,7 @@ export async function sendAlertEmail(opts: {
   await getResend().emails.send({
     from: FROM,
     to: opts.to ?? MANAGEMENT_EMAIL,
-    subject: `⚠️ ${opts.subject}`,
+    subject: `${opts.subject}`,
     html: `
       <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase;">WE SHAPE THE FUTURE · SYSTEEM</p>
@@ -213,7 +213,7 @@ export async function sendAlertEmail(opts: {
 function systemStatusHtml(problems: JobProblem[]) {
   const head = `<h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin:24px 0 8px;">Systeemstatus</h2>`;
   if (problems.length === 0)
-    return `${head}<p style="font-size:13px;color:#E6007E;background:#f0f7f3;padding:12px;">✅ Alle geplande taken draaien zoals verwacht.</p>`;
+    return `${head}<p style="font-size:13px;color:#E6007E;background:#f0f7f3;padding:12px;">Alle geplande taken draaien zoals verwacht.</p>`;
   return `${head}<div style="font-size:13px;color:#b91c1c;background:#fef2f2;padding:12px;">
     ${problems.map((p) => `<p style="margin:4px 0;"><strong>${escapeHtml(p.job)}</strong> (${p.kind}): ${escapeHtml(p.detail)}</p>`).join("")}
   </div>`;
@@ -244,7 +244,7 @@ export async function sendManagementDigest(opts: {
   const backlogFlag =
     m.pendingReports > 0 || m.unpublishedPosts > 0
       ? `<p style="font-size:13px;color:#b45309;background:#fffbeb;padding:12px;margin-top:16px;">
-           ⚠️ Openstaand: ${m.pendingReports} report(s), ${m.unpublishedPosts} post(s) wachten op review.
+           Openstaand: ${m.pendingReports} report(s), ${m.unpublishedPosts} post(s) wachten op review.
          </p>`
       : "";
 

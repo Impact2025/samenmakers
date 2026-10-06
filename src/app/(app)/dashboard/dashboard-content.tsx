@@ -185,7 +185,7 @@ export function DashboardContent({
             </span>
           </span>
           <h1 className="text-headline-lg text-on-surface">
-            {greeting}, {firstName} 👋
+            {greeting}, {firstName}
           </h1>
         </div>
         {me?.subscriptionStatus === "active" && (

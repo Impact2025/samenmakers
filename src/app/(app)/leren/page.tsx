@@ -34,12 +34,17 @@ export default async function LerenPage() {
     learning.find((e) => e.nextLesson && e.enrollmentStatus === "actief") ??
     learning[0];
 
+  // Wie alleen begeleidt, heeft niets aan een leerlingenscherm: edities eerst.
+  const staffOnly = learning.length === 0 && teaching.length > 0;
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         label={focus ? focus.cohort.name : "Leeromgeving"}
-        title="Mijn leertraject"
-        description={focus?.program.name}
+        title={staffOnly ? "Mijn edities" : "Mijn leertraject"}
+        description={
+          staffOnly ? "De groepen die je begeleidt" : focus?.program.name
+        }
         className="mb-0"
       />
 
@@ -131,7 +136,7 @@ export default async function LerenPage() {
         </section>
       )}
 
-      <section>
+      <section hidden={staffOnly}>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-headline-sm text-on-surface">
             Mijn programma&apos;s
@@ -208,7 +213,11 @@ export default async function LerenPage() {
 
       {teaching.length > 0 && (
         <section>
-          <h2 className="text-headline-sm text-on-surface mb-3">Begeleiding</h2>
+          {!staffOnly && (
+            <h2 className="text-headline-sm text-on-surface mb-3">
+              Begeleiding
+            </h2>
+          )}
           <div className="flex flex-col gap-2">
             {teaching.map((e) => (
               <div
@@ -229,6 +238,12 @@ export default async function LerenPage() {
                     className={buttonClasses("secondary", "sm")}
                   >
                     Leerpad
+                  </Link>
+                  <Link
+                    href={`/leren/${e.cohort.id}/sessies`}
+                    className={buttonClasses("secondary", "sm")}
+                  >
+                    Sessies
                   </Link>
                   <Link
                     href={`/leren/${e.cohort.id}/deelnemers`}

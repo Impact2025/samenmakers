@@ -220,7 +220,7 @@ export function ContactDetail({ id }: { id: string }) {
                     className="bg-surface-container hover:text-error border-surface-container bg-surface-container-lowest hover:border-error/30 inline-flex items-center justify-center gap-2 rounded-full border px-2 py-1 text-xs transition-colors"
                     title="Klik om te verwijderen"
                   >
-                    {t} ✕
+                    {t} ×
                   </button>
                 ))}
               </div>
