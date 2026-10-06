@@ -96,13 +96,13 @@ export default async function AbonnementPage({ searchParams }: Props) {
                 BASIS — GRATIS
               </h3>
               <ul className="text-body-md text-on-surface-variant space-y-2">
-                <li>✓ Profiel aanmaken</li>
-                <li>✓ 20 swipes per dag</li>
-                <li>✓ Matches bekijken</li>
-                <li>✓ Chatten met matches</li>
-                <li>✓ Events bekijken</li>
-                <li>✓ Kennisbank lezen</li>
-                <li>✓ Vragen stellen</li>
+                <li>Profiel aanmaken</li>
+                <li>20 swipes per dag</li>
+                <li>Matches bekijken</li>
+                <li>Chatten met matches</li>
+                <li>Events bekijken</li>
+                <li>Kennisbank lezen</li>
+                <li>Vragen stellen</li>
               </ul>
             </CardBody>
           </Card>
