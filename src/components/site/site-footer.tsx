@@ -5,6 +5,7 @@ import { PROGRAMS, siteHref } from "./site-config";
 const DISCOVER = [
   { href: "/over-ons", label: "Over ons" },
   { href: "/community", label: "Community" },
+  { href: "/events", label: "Events" },
   { href: "/alumni", label: "Alumni" },
   { href: "/contact", label: "Contact" },
 ];
