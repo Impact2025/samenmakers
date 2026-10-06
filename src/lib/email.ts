@@ -333,6 +333,28 @@ export async function sendPasswordResetEmail(opts: {
   });
 }
 
+/** Formulier van de publieke site (interesse / samenwerken) naar het team. */
+export async function sendSiteFormEmail(opts: {
+  subject: string;
+  replyTo: string;
+  fields: Record<string, string | undefined>;
+}) {
+  const rows = Object.entries(opts.fields)
+    .filter(([, v]) => v)
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:4px 12px 4px 0;color:#888;vertical-align:top">${escapeHtml(k)}</td><td style="padding:4px 0">${escapeHtml(v ?? "").replace(/\n/g, "<br>")}</td></tr>`,
+    )
+    .join("");
+  await getResend().emails.send({
+    from: FROM,
+    to: process.env.SITE_CONTACT_EMAIL ?? MANAGEMENT_EMAIL,
+    replyTo: opts.replyTo,
+    subject: opts.subject,
+    html: `<div style="font-family: 'Open Sans', Arial, sans-serif; color:#1a1a1a"><table>${rows}</table></div>`,
+  });
+}
+
 // =============================================
 // EVENTS (bevestiging, wachtlijst, herinnering, wijziging, annulering)
 // =============================================
