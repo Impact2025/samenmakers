@@ -18,31 +18,31 @@ import { PRO_FEATURES, SECTOREN } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "We Shape the Future — Vind je medemissie-ondernemer",
   description:
-    "Het platform waar purpose-driven ondernemers elkaar vinden, kennis delen en samenwerken aan een betere wereld.",
+    "Het platform van We Shape the Future: ontdek en match met andere impact-ondernemers, volg leertrajecten met docenten, meld je aan voor evenementen en deel kennis in de community.",
 };
 
 const steps = [
   {
     icon: UserPlus,
     title: "Maak je profiel",
-    body: "Vertel over je missie, sector, fase en wat je zoekt in een samenwerking.",
+    body: "Vertel over je missie, sector, regio en fase, en waar je naar zoekt: een co-founder, mentor, partner of klanten. Zo word je gevonden door de juiste mensen.",
   },
   {
     icon: Handshake,
-    title: "Match op missie",
-    body: "Swipe door profielen van gelijkgestemde ondernemers. Bij wederzijdse interesse: een match!",
+    title: "Ontmoet en match",
+    body: "Swipe door profielen en maak bij wederzijdse interesse een match. Chat met je matches, ontmoet elkaar op evenementen en meld je aan of bestel tickets. Zit een event vol, dan kom je op de wachtlijst.",
   },
   {
     icon: MessagesSquare,
-    title: "Bouw samen",
-    body: "Chat, ontmoet elkaar op events en deel kennis in de community.",
+    title: "Leer en groei samen",
+    body: "Volg een leertraject met lessen, opdrachten en feedback van je docent, en blijf in contact met je klas. Deel kennis in de feed en de kennisbank, vind een mentor en blijf als alumnus verbonden.",
   },
 ];
 
 const highlights = [
   { icon: Handshake, label: "Matching op missie" },
-  { icon: CalendarDays, label: "Evenementen & sessies" },
-  { icon: GraduationCap, label: "Leertrajecten" },
+  { icon: CalendarDays, label: "Evenementen & tickets" },
+  { icon: GraduationCap, label: "Leertrajecten & docenten" },
   { icon: MessagesSquare, label: "Community & kennisbank" },
 ];
 
@@ -66,9 +66,10 @@ export default function HomePage() {
               -ondernemer
             </h1>
             <p className="text-body-lg text-on-surface-variant max-w-lg">
-              We Shape the Future verbindt impact-ondernemers die samen meer
-              bereiken. Match op missie, deel kennis en bouw aan een betere
-              wereld.
+              We Shape the Future is het platform voor sociaal ondernemers en
+              changemakers. Ontdek en match met andere ondernemers, volg
+              leertrajecten met docenten en klasgenoten, meld je aan voor
+              evenementen en deel kennis in de community. Alles op één plek.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
@@ -109,7 +110,7 @@ export default function HomePage() {
             Hoe het werkt
           </p>
           <h2 className="text-headline-lg text-on-surface mb-8 max-w-md">
-            Drie stappen naar jouw medemissie-ondernemer
+            Zo werkt het platform
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
             {steps.map(({ icon: Icon, title, body }, i) => (
@@ -235,8 +236,8 @@ export default function HomePage() {
             Klaar om je medemissie-ondernemer te vinden?
           </h2>
           <p className="text-body-md text-on-primary/80 mx-auto mb-7 max-w-md">
-            Sluit je aan bij honderden impact-ondernemers die al samenwerken via
-            We Shape the Future.
+            Maak een gratis profiel en ontdek matches, evenementen,
+            leertrajecten en de community van We Shape the Future.
           </p>
           <Link
             href="/aanmelden"
