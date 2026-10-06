@@ -5,6 +5,7 @@ import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { fieldClasses } from "@/components/ui/field-styles";
+import { LedenTabs } from "../leden-tabs";
 import { UserActions } from "./user-actions";
 
 export const metadata: Metadata = { title: "Admin — Gebruikers" };
@@ -94,13 +95,14 @@ export default async function AdminUsersPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-headline-lg text-on-surface">Gebruikers</h1>
+        <h1 className="text-headline-lg text-on-surface">Leden</h1>
         <p className="text-secondary mt-1 text-sm">
           {filtersActief
             ? `${total} van de gebruikers gevonden`
             : `${total} gebruikers`}
         </p>
       </div>
+      <LedenTabs actief="accounts" />
 
       <form
         method="get"

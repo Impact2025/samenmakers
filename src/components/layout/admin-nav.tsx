@@ -14,7 +14,6 @@ import {
   ClipboardList,
   Sparkles,
   Ticket,
-  Contact,
   Mail,
   Library,
   Menu,
@@ -28,9 +27,13 @@ import { cn } from "@/lib/utils";
 
 const adminNav = [
   { href: "/admin", label: "Dashboard", icon: LayoutGrid },
-  { href: "/admin/crm", label: "CRM", icon: Contact },
+  {
+    href: "/admin/gebruikers",
+    label: "Leden",
+    icon: Users,
+    also: ["/admin/crm"],
+  },
   { href: "/admin/mail", label: "Mailings", icon: Mail },
-  { href: "/admin/gebruikers", label: "Gebruikers", icon: Users },
   { href: "/admin/blog", label: "Blog (AI)", icon: Sparkles },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/events", label: "Events", icon: Calendar },
@@ -47,11 +50,13 @@ const adminNav = [
 function NavList({ pathname }: { pathname: string }) {
   return (
     <nav className="flex flex-col gap-0.5">
-      {adminNav.map(({ href, label, icon: Icon }) => {
+      {adminNav.map(({ href, label, icon: Icon, also }) => {
+        const matches = (h: string) =>
+          pathname === h || pathname.startsWith(h + "/");
         const active =
           href === "/admin"
             ? pathname === href
-            : pathname === href || pathname.startsWith(href + "/");
+            : matches(href) || (also ?? []).some(matches);
         return (
           <Link
             key={href}
