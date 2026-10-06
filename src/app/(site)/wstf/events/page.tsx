@@ -9,6 +9,7 @@ import {
   eventWhere,
 } from "@/lib/event-format";
 import { siteHref } from "@/components/site/site-config";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Events | We Shape the Future",
@@ -110,7 +111,7 @@ export default async function SiteEventsPage({
                 role="tab"
                 aria-selected={upcoming}
                 href={href({ tab: undefined, cursor: undefined })}
-                className={`events-tab${upcoming ? "events-tab--active" : ""}`}
+                className={cn("events-tab", upcoming && "events-tab--active")}
               >
                 Aankomend
               </Link>
@@ -118,7 +119,7 @@ export default async function SiteEventsPage({
                 role="tab"
                 aria-selected={!upcoming}
                 href={href({ tab: "afgelopen", cursor: undefined })}
-                className={`events-tab${!upcoming ? "events-tab--active" : ""}`}
+                className={cn("events-tab", !upcoming && "events-tab--active")}
               >
                 Afgelopen
               </Link>
@@ -127,7 +128,7 @@ export default async function SiteEventsPage({
             <div className="events-chips">
               <Link
                 href={href({ format: undefined, cursor: undefined })}
-                className={`events-chip${!format ? "events-chip--active" : ""}`}
+                className={cn("events-chip", !format && "events-chip--active")}
               >
                 Alle
               </Link>
@@ -135,7 +136,10 @@ export default async function SiteEventsPage({
                 <Link
                   key={f}
                   href={href({ format: f, cursor: undefined })}
-                  className={`events-chip${format === f ? "events-chip--active" : ""}`}
+                  className={cn(
+                    "events-chip",
+                    format === f && "events-chip--active",
+                  )}
                 >
                   {FORMAT_LABEL[f]}
                 </Link>
@@ -147,7 +151,10 @@ export default async function SiteEventsPage({
                     thema: sp.thema === t ? undefined : t,
                     cursor: undefined,
                   })}
-                  className={`events-chip${sp.thema === t ? "events-chip--active" : ""}`}
+                  className={cn(
+                    "events-chip",
+                    sp.thema === t && "events-chip--active",
+                  )}
                 >
                   {t}
                 </Link>
@@ -194,7 +201,10 @@ export default async function SiteEventsPage({
                     className="event-tile"
                   >
                     <div
-                      className={`event-tile__media${e.coverImageUrl ? "" : "event-tile__media--empty"}`}
+                      className={cn(
+                        "event-tile__media",
+                        !e.coverImageUrl && "event-tile__media--empty",
+                      )}
                     >
                       {e.coverImageUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -205,7 +215,7 @@ export default async function SiteEventsPage({
                         <span className="event-tile__month">{month}</span>
                       </div>
                       {badge && (
-                        <span className={`event-tile__badge${badge.cls}`}>
+                        <span className={cn("event-tile__badge", badge.cls)}>
                           {badge.text}
                         </span>
                       )}

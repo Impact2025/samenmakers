@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export type HeroSlide = {
   image: string;
@@ -33,7 +34,7 @@ export function HeroSlider({
         {slides.map((s, i) => (
           <article
             key={i}
-            className={`hero__slide${i === index ? "hero__slide--active" : ""}`}
+            className={cn("hero__slide", i === index && "hero__slide--active")}
             style={
               {
                 "--hero-slide-image": `url("${s.image}")`,
@@ -58,7 +59,10 @@ export function HeroSlider({
             <button
               key={i}
               type="button"
-              className={`hero__pagination-dot${i === index ? "hero__pagination-dot--active" : ""}`}
+              className={cn(
+                "hero__pagination-dot",
+                i === index && "hero__pagination-dot--active",
+              )}
               aria-label={`Go to slide ${i + 1}`}
               aria-current={i === index}
               onClick={() => {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { postSiteForm } from "./post-form";
+import { cn } from "@/lib/utils";
 
 export function ApplyPopup({
   open,
@@ -39,7 +40,7 @@ export function ApplyPopup({
 
   return (
     <div
-      className={`modal-backdrop${open ? "active" : ""}`}
+      className={cn("modal-backdrop", open && "active")}
       id="modalBackdrop"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
