@@ -7,14 +7,19 @@ import { cn } from "@/lib/utils";
 export function LogoMark({
   size = 32,
   className,
+  tone = "color",
 }: {
   size?: number;
   className?: string;
+  /** "light" = wit vierkant met roze stippen, voor op een roze achtergrond. */
+  tone?: "color" | "light";
 }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/brand/wstf-mark.svg"
+      src={
+        tone === "light" ? "/brand/wstf-mark-white.svg" : "/brand/wstf-mark.svg"
+      }
       width={size}
       height={size}
       alt=""
@@ -30,16 +35,25 @@ interface LogoProps {
   /** Volledig logo (met woordmerk) tonen; "sm" = alleen beeldmerk op heel smalle schermen. */
   wordmark?: "always" | "sm" | "never";
   className?: string;
+  /** "light" = origineel witte logo, voor op een roze balk. */
+  tone?: "color" | "light";
 }
 
 // Verhouding van het volledige logo (357 × 60).
 const FULL_RATIO = 357 / 60;
 
-export function Logo({ size = 32, wordmark = "sm", className }: LogoProps) {
+export function Logo({
+  size = 32,
+  wordmark = "sm",
+  className,
+  tone = "color",
+}: LogoProps) {
   const full = (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/brand/wstf-logo.svg"
+      src={
+        tone === "light" ? "/brand/wstf-logo-white.svg" : "/brand/wstf-logo.svg"
+      }
       width={Math.round(size * FULL_RATIO)}
       height={size}
       alt="We Shape the Future"
@@ -52,6 +66,7 @@ export function Logo({ size = 32, wordmark = "sm", className }: LogoProps) {
       {wordmark !== "always" && (
         <LogoMark
           size={size}
+          tone={tone}
           className={cn(wordmark === "sm" && "sm:hidden")}
         />
       )}

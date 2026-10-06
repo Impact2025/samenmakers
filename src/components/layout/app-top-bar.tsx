@@ -32,7 +32,7 @@ interface AppTopBarProps {
 }
 
 const iconBtn =
-  "relative w-11 h-11 flex items-center justify-center rounded-full text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors";
+  "relative w-11 h-11 flex items-center justify-center rounded-full text-on-primary/90 hover:text-on-primary hover:bg-white/15 transition-colors";
 
 export function AppTopBar({
   user,
@@ -62,17 +62,17 @@ export function AppTopBar({
 
   return (
     <>
-      <header className="pt-safe bg-surface-container-lowest/90 shadow-bar fixed inset-x-0 top-0 z-50 backdrop-blur-xl">
+      <header className="pt-safe bg-primary-container shadow-bar fixed inset-x-0 top-0 z-50">
         <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-6">
           <Link
             href="/dashboard"
             aria-label="We Shape the Future — home"
             className="justify-self-start"
           >
-            <Logo />
+            <Logo size={40} tone="light" />
           </Link>
 
-          <h1 className="text-title-md text-on-surface max-w-[140px] truncate text-center lg:hidden">
+          <h1 className="text-title-md text-on-primary max-w-[140px] truncate text-center lg:hidden">
             {title}
           </h1>
           <span className="hidden lg:block" />
@@ -88,7 +88,7 @@ export function AppTopBar({
             >
               <MessageCircle size={22} />
               {unreadMessages > 0 && (
-                <span className="bg-primary-container text-on-primary text-label-sm absolute top-1.5 right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 font-bold">
+                <span className="text-primary-container text-label-sm absolute top-1.5 right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 font-bold">
                   {unreadMessages > 9 ? "9+" : unreadMessages}
                 </span>
               )}
@@ -100,7 +100,7 @@ export function AppTopBar({
             >
               <Bell size={22} />
               {unreadNotifications > 0 && (
-                <span className="bg-primary-container ring-surface-container-lowest absolute top-2.5 right-2.5 h-2 w-2 rounded-full ring-2" />
+                <span className="ring-primary-container absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-white ring-2" />
               )}
             </Link>
             {user && (
