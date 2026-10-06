@@ -11,6 +11,7 @@ const NAV = [
   { href: "/over-ons", label: "Over ons" },
   { href: "/alumni", label: "Alumni" },
   { href: "/community", label: "Community" },
+  { href: "/events", label: "Events" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
