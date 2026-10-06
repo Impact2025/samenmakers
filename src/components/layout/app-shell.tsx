@@ -3,6 +3,7 @@ import { AppTopBar } from "@/components/layout/app-top-bar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { api } from "@/trpc/server";
 import { getPersona, getPlanner } from "@/server/learning/persona";
+import { HelpLauncher } from "@/components/help/help-launcher";
 
 /** App-chrome voor ingelogde leden. Gedeeld door (app) en de hybride (events)-groep. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -46,6 +47,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+      {me?.id && <HelpLauncher audience={persona} userId={me.id} />}
       <BottomNav
         unreadCount={unreadMessages}
         persona={persona}
