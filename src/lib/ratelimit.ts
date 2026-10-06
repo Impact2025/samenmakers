@@ -56,12 +56,13 @@ export async function checkSwipeLimit(
 // Met Upstash: gedeeld over alle serverless-instanties. Zonder Upstash valt het terug
 // op een per-instantie geheugenteller: zwakker, maar nooit helemaal onbeschermd.
 
-type Bucket = "login" | "register" | "reset";
+type Bucket = "login" | "register" | "reset" | "siteForm";
 
 const AUTH_LIMITS: Record<Bucket, { max: number; windowSec: number }> = {
   login: { max: 10, windowSec: 15 * 60 },
   register: { max: 5, windowSec: 60 * 60 },
   reset: { max: 5, windowSec: 60 * 60 },
+  siteForm: { max: 5, windowSec: 60 * 60 },
 };
 
 const authLimiters = redis

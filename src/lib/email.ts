@@ -337,21 +337,28 @@ export async function sendPasswordResetEmail(opts: {
 export async function sendInviteEmail(opts: {
   to: string;
   naam?: string | null;
-  rol: string;
-  editie: string;
+  /** Zonder editie is het een gewone uitnodiging voor het platform. */
+  rol?: string;
+  editie?: string;
   url: string;
 }) {
   const naam = escapeHtml(opts.naam ?? "Maker");
   await getResend().emails.send({
     from: FROM,
     to: opts.to,
-    subject: `Je bent uitgenodigd voor ${opts.editie}`,
+    subject: opts.editie
+      ? `Je bent uitgenodigd voor ${opts.editie}`
+      : "Je bent uitgenodigd voor We Shape the Future",
     html: `
       <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Welkom, ${naam}!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
-          Je bent uitgenodigd als ${escapeHtml(opts.rol)} voor <strong>${escapeHtml(opts.editie)}</strong>. Kies een wachtwoord om je account te activeren. Deze link is 7 dagen geldig en werkt één keer.
+          ${
+            opts.editie
+              ? `Je bent uitgenodigd als ${escapeHtml(opts.rol ?? "deelnemer")} voor <strong>${escapeHtml(opts.editie)}</strong>.`
+              : "Je bent uitgenodigd voor het platform van We Shape the Future."
+          } Kies een wachtwoord om je account te activeren. Deze link is 7 dagen geldig en werkt één keer.
         </p>
         <a href="${escapeHtml(opts.url)}" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           ACCOUNT ACTIVEREN →
