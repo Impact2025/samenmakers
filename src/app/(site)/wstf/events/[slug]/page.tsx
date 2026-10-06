@@ -20,6 +20,7 @@ import { calendarLinks } from "@/server/events/ics";
 import { formatEuro } from "@/server/events/pricing";
 import { features } from "@/lib/features";
 import { siteHref } from "@/components/site/site-config";
+import { cn } from "@/lib/utils";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://samenmakers.nl";
 
@@ -179,7 +180,7 @@ export default async function SiteEventDetailPage({ params }: Props) {
       />
 
       <section
-        className={`event-hero${e.coverImageUrl ? "" : "event-hero--empty"}`}
+        className={cn("event-hero", !e.coverImageUrl && "event-hero--empty")}
       >
         {e.coverImageUrl && (
           // eslint-disable-next-line @next/next/no-img-element

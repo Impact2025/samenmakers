@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { PROGRAMS, siteHref } from "./site-config";
 import { useSitePopups } from "./site-popups";
+import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/over-ons", label: "Over ons" },
@@ -33,7 +34,7 @@ function LangMenu({ variant }: { variant: "desktop" | "mobile" }) {
   }, []);
 
   return (
-    <div ref={ref} className={`${prefix}-dropdown${open ? "is-open" : ""}`}>
+    <div ref={ref} className={cn(`${prefix}-dropdown`, open && "is-open")}>
       <button
         className={`${prefix}-switcher`}
         type="button"
@@ -200,7 +201,7 @@ export function SiteHeader() {
         </div>
 
         <button
-          className={`navbar__hamburger${menuOpen ? "is-active" : ""}`}
+          className={cn("navbar__hamburger", menuOpen && "is-active")}
           type="button"
           aria-label="Open menu"
           aria-expanded={menuOpen}
@@ -214,7 +215,11 @@ export function SiteHeader() {
       </nav>
 
       <div
-        className={`mobile-menu${menuOpen ? "is-open" : ""}${closing ? "is-closing" : ""}`}
+        className={cn(
+          "mobile-menu",
+          menuOpen && "is-open",
+          closing && "is-closing",
+        )}
         id="mobileMenu"
         aria-hidden={!menuOpen}
       >
@@ -222,7 +227,10 @@ export function SiteHeader() {
         <div className="mobile-menu__panel">
           <ul className="mobile-menu__list">
             <li
-              className={`mobile-menu__item mobile-menu__dropdown${mobileProgramsOpen ? "is-open" : ""}`}
+              className={cn(
+                "mobile-menu__item mobile-menu__dropdown",
+                mobileProgramsOpen && "is-open",
+              )}
             >
               <button
                 className="mobile-menu__dropdown-toggle"

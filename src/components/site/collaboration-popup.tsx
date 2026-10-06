@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { postSiteForm } from "./post-form";
+import { cn } from "@/lib/utils";
 
 export function CollaborationPopup({
   open,
@@ -33,7 +34,7 @@ export function CollaborationPopup({
 
   return (
     <div
-      className={`collaboration-popup${open ? "is-open" : ""}`}
+      className={cn("collaboration-popup", open && "is-open")}
       id="collaborationPopup"
       role="dialog"
       aria-modal="true"

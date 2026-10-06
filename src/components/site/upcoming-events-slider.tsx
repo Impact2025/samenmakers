@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export interface SliderEvent {
   id: string;
@@ -119,7 +120,10 @@ export function UpcomingEventsSlider({ events }: { events: SliderEvent[] }) {
             {events.map((e, i) => (
               <button
                 key={e.id}
-                className={`upcoming-events__dot${i === index ? "upcoming-events__dot--active" : ""}`}
+                className={cn(
+                  "upcoming-events__dot",
+                  i === index && "upcoming-events__dot--active",
+                )}
                 type="button"
                 aria-label={`Ga naar evenement ${i + 1}`}
                 aria-current={i === index}
