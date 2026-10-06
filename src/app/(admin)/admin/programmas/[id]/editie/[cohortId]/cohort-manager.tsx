@@ -55,10 +55,12 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
     onSuccess: (r) => setCode(r.inviteCode),
   });
 
-  const [add, setAdd] = useState<{ email: string; role: Role }>({
+  const [add, setAdd] = useState<{ email: string; naam: string; role: Role }>({
     email: "",
+    naam: "",
     role: "docent",
   });
+  const [invite, setInvite] = useState(true);
   const [bulk, setBulk] = useState("");
   const [bulkRole, setBulkRole] = useState<Role>("cursist");
   const memberImport = trpc.programs.memberImport.useMutation({
@@ -68,7 +70,7 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
   });
   const memberAdd = trpc.programs.memberAdd.useMutation({
     onSuccess: () => {
-      setAdd((a) => ({ ...a, email: "" }));
+      setAdd((a) => ({ ...a, email: "", naam: "" }));
       refresh();
     },
   });
@@ -335,16 +337,23 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
       <section className={card}>
         <h2 className="text-headline-sm text-on-surface">Persoon toevoegen</h2>
         <form
-          className="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end"
+          className="grid gap-3 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             memberAdd.mutate({
               cohortId: cohort.id,
               email: add.email,
+              ...(add.naam.trim() ? { naam: add.naam.trim() } : {}),
               role: add.role,
             });
           }}
         >
+          <Input
+            label="Naam (bij nieuw account)"
+            value={add.naam}
+            onChange={(e) => setAdd((a) => ({ ...a, naam: e.target.value }))}
+            placeholder="Voor- en achternaam"
+          />
           <Input
             label="E-mailadres"
             type="email"
@@ -386,8 +395,14 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
         {memberAdd.error && (
           <p className="text-body-sm text-error">{memberAdd.error.message}</p>
         )}
+        {memberAdd.data?.invited && (
+          <p className="text-body-sm text-on-surface">
+            Account aangemaakt en uitnodiging verstuurd.
+          </p>
+        )}
         <p className="text-body-sm text-secondary">
-          De persoon moet al een account hebben.
+          Heeft de persoon nog geen account? Dan maken we het aan en sturen we
+          een uitnodiging om zelf een wachtwoord te kiezen (7 dagen geldig).
         </p>
       </section>
 
@@ -400,6 +415,14 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
           Plak adressen uit een mail of spreadsheet, gescheiden door komma,
           spatie of regel.
         </p>
+        <label className="text-body-md text-on-surface flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={invite}
+            onChange={(e) => setInvite(e.target.checked)}
+          />
+          Nodig personen zonder account uit per e-mail
+        </label>
         <label className="flex flex-col gap-1.5">
           <span className={labelClasses}>Rol</span>
           <select
@@ -427,6 +450,7 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
             memberImport.mutate({
               cohortId: cohort.id,
               emails: bulk,
+              invite,
               role: bulkRole,
             })
           }
@@ -441,14 +465,20 @@ export function CohortManager({ cohort }: { cohort: Cohort }) {
         {memberImport.data && (
           <div className="text-body-sm text-on-surface flex flex-col gap-1">
             <p>
-              {memberImport.data.added} toegevoegd,{" "}
-              {memberImport.data.alreadyMember} zaten er al in.
+              {memberImport.data.added} toegevoegd
+              {memberImport.data.invited > 0 &&
+                `, ${memberImport.data.invited} uitgenodigd`}
+              , {memberImport.data.alreadyMember} zaten er al in.
             </p>
             {memberImport.data.notFound.length > 0 && (
               <p className="text-error">
-                Geen account gevonden voor:{" "}
-                {memberImport.data.notFound.join(", ")}. Deel de
-                uitnodigingscode met deze personen.
+                {invite
+                  ? "Uitnodigen mislukt voor"
+                  : "Geen account gevonden voor"}
+                : {memberImport.data.notFound.join(", ")}.{" "}
+                {invite
+                  ? "Probeer het later opnieuw."
+                  : "Zet het vinkje voor uitnodigen aan, of deel de uitnodigingscode."}
               </p>
             )}
             {memberImport.data.truncated && (

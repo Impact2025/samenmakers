@@ -24,13 +24,13 @@ export async function sendWelcomeEmail(user: {
     to: user.email,
     subject: "Welkom bij We Shape the Future!",
     html: `
-      <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Welkom, ${escapeHtml(naam)}!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
           Je account is aangemaakt. Vul je profiel in zodat andere impact-ondernemers jou kunnen vinden.
         </p>
-        <a href="${APP_URL}/onboarding" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+        <a href="${APP_URL}/onboarding" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           PROFIEL AANVULLEN →
         </a>
         <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
@@ -53,13 +53,13 @@ export async function sendMatchEmail(opts: {
     to: opts.to,
     subject: `Nieuwe match: ${opts.matchNaam}`,
     html: `
-      <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Je hebt een match!</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
           Hoi ${escapeHtml(opts.naam)}, jullie zijn allebei geïnteresseerd in samenwerken. Stuur ${escapeHtml(opts.matchNaam)} een berichtje.
         </p>
-        <a href="${APP_URL}/berichten/${opts.matchId}" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+        <a href="${APP_URL}/berichten/${opts.matchId}" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           BERICHT STUREN →
         </a>
       </div>
@@ -85,14 +85,14 @@ export async function sendWeeklyDigest(opts: {
   const postsHtml = opts.recentPosts
     .map(
       (p) =>
-        `<li style="margin-bottom:8px;"><a href="${APP_URL}/kennis/${p.slug}" style="color:#2D6A4F;">${escapeHtml(p.title)}</a></li>`,
+        `<li style="margin-bottom:8px;"><a href="${APP_URL}/kennis/${p.slug}" style="color:#E6007E;">${escapeHtml(p.title)}</a></li>`,
     )
     .join("");
 
   const eventsHtml = opts.upcomingEvents
     .map(
       (e) =>
-        `<li style="margin-bottom:8px;"><a href="${APP_URL}/events/${e.id}" style="color:#2D6A4F;">${escapeHtml(e.title)}</a></li>`,
+        `<li style="margin-bottom:8px;"><a href="${APP_URL}/events/${e.id}" style="color:#E6007E;">${escapeHtml(e.title)}</a></li>`,
     )
     .join("");
 
@@ -101,13 +101,13 @@ export async function sendWeeklyDigest(opts: {
     to: opts.to,
     subject: "Jouw wekelijkse We Shape the Future update",
     html: `
-      <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE DIGEST</p>
         <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 24px;">Hoi ${opts.naam}, dit week bij We Shape the Future</h1>
         ${opts.newMatches > 0 ? `<p style="margin-bottom:16px;"><strong>${opts.newMatches} nieuwe match${opts.newMatches > 1 ? "es" : ""}</strong> wachten op je reactie.</p>` : ""}
         ${opts.recentPosts.length > 0 ? `<h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:8px;">Nieuwe artikelen</h2><ul style="padding-left:16px;margin-bottom:24px;">${postsHtml}</ul>` : ""}
         ${opts.upcomingEvents.length > 0 ? `<h2 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:8px;">Aankomende events</h2><ul style="padding-left:16px;margin-bottom:24px;">${eventsHtml}</ul>` : ""}
-        <a href="${APP_URL}/dashboard" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+        <a href="${APP_URL}/dashboard" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           NAAR DASHBOARD →
         </a>
         <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
@@ -125,7 +125,7 @@ export async function sendWeeklyDigest(opts: {
 /** Wraps campaign Markdown in the We Shape the Future house style. */
 export function renderCampaignHtml(bodyMarkdown: string) {
   return `
-    <div style="font-family: Inter, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a; line-height:1.6;">
+    <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a; line-height:1.6;">
       <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 24px;">WE SHAPE THE FUTURE</p>
       <div style="font-size:15px;color:#333;">${renderMarkdown(bodyMarkdown)}</div>
       <p style="font-size: 12px; color: #aaa; margin-top: 40px; border-top:1px solid #eee; padding-top:16px;">
@@ -201,7 +201,7 @@ export async function sendAlertEmail(opts: {
     to: opts.to ?? MANAGEMENT_EMAIL,
     subject: `⚠️ ${opts.subject}`,
     html: `
-      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase;">WE SHAPE THE FUTURE · SYSTEEM</p>
         <h1 style="font-size: 20px; font-weight: 900;">${escapeHtml(opts.subject)}</h1>
         ${opts.lines.map((l) => `<p style="font-size:14px;line-height:1.5;color:#333;">${escapeHtml(l)}</p>`).join("")}
@@ -213,7 +213,7 @@ export async function sendAlertEmail(opts: {
 function systemStatusHtml(problems: JobProblem[]) {
   const head = `<h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin:24px 0 8px;">Systeemstatus</h2>`;
   if (problems.length === 0)
-    return `${head}<p style="font-size:13px;color:#2D6A4F;background:#f0f7f3;padding:12px;">✅ Alle geplande taken draaien zoals verwacht.</p>`;
+    return `${head}<p style="font-size:13px;color:#E6007E;background:#f0f7f3;padding:12px;">✅ Alle geplande taken draaien zoals verwacht.</p>`;
   return `${head}<div style="font-size:13px;color:#b91c1c;background:#fef2f2;padding:12px;">
     ${problems.map((p) => `<p style="margin:4px 0;"><strong>${escapeHtml(p.job)}</strong> (${p.kind}): ${escapeHtml(p.detail)}</p>`).join("")}
   </div>`;
@@ -238,7 +238,7 @@ export async function sendManagementDigest(opts: {
   const growthSign = m.userGrowthPct >= 0 ? "+" : "";
   const insightHtml = opts.insight
     ? `<h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;margin:32px 0 8px;">AI Systeemanalyse</h2>
-       <div style="font-size:14px;color:#333;line-height:1.6;white-space:pre-wrap;background:#f7f7f5;padding:16px;border-left:3px solid #2D6A4F;">${opts.insight}</div>`
+       <div style="font-size:14px;color:#333;line-height:1.6;white-space:pre-wrap;background:#f7f7f5;padding:16px;border-left:3px solid #E6007E;">${opts.insight}</div>`
     : `<p style="font-size:12px;color:#aaa;margin-top:24px;">AI-analyse niet beschikbaar (OPENROUTER_API_KEY ontbreekt).</p>`;
 
   const backlogFlag =
@@ -253,7 +253,7 @@ export async function sendManagementDigest(opts: {
     to: opts.to ?? MANAGEMENT_EMAIL,
     subject: `We Shape the Future ${title} Management Rapport — ${dateLabel}`,
     html: `
-      <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 8px;">WE SHAPE THE FUTURE · MANAGEMENT</p>
         <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 4px;">${title} rapport</h1>
         <p style="font-size: 13px; color: #999; margin-bottom: 24px;">${dateLabel} · ${m.windowLabel}</p>
@@ -290,7 +290,7 @@ export async function sendManagementDigest(opts: {
         ${opts.problems ? systemStatusHtml(opts.problems) : ""}
         ${insightHtml}
 
-        <a href="${APP_URL}/admin" style="display: inline-block; margin-top:32px; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+        <a href="${APP_URL}/admin" style="display: inline-block; margin-top:32px; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           NAAR ADMIN DASHBOARD →
         </a>
         <p style="font-size: 11px; color: #bbb; margin-top: 32px;">
@@ -316,17 +316,48 @@ export async function sendPasswordResetEmail(opts: {
     to: opts.to,
     subject: "Stel een nieuw wachtwoord in",
     html: `
-      <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
         <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
         <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Nieuw wachtwoord</h1>
         <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
           Hoi ${naam}, we kregen een verzoek om je wachtwoord opnieuw in te stellen. Deze link is 1 uur geldig en werkt één keer.
         </p>
-        <a href="${escapeHtml(opts.url)}" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+        <a href="${escapeHtml(opts.url)}" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
           WACHTWOORD INSTELLEN →
         </a>
         <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
           Heb je dit niet aangevraagd? Dan kun je deze e-mail negeren; je wachtwoord blijft ongewijzigd.
+        </p>
+      </div>
+    `,
+  });
+}
+
+/** Uitnodiging van een beheerder (docent, coach, cursist) met een link om zelf een wachtwoord te kiezen. */
+export async function sendInviteEmail(opts: {
+  to: string;
+  naam?: string | null;
+  rol: string;
+  editie: string;
+  url: string;
+}) {
+  const naam = escapeHtml(opts.naam ?? "Maker");
+  await getResend().emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: `Je bent uitgenodigd voor ${opts.editie}`,
+    html: `
+      <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+        <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">WE SHAPE THE FUTURE</p>
+        <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Welkom, ${naam}!</h1>
+        <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
+          Je bent uitgenodigd als ${escapeHtml(opts.rol)} voor <strong>${escapeHtml(opts.editie)}</strong>. Kies een wachtwoord om je account te activeren. Deze link is 7 dagen geldig en werkt één keer.
+        </p>
+        <a href="${escapeHtml(opts.url)}" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+          ACCOUNT ACTIVEREN →
+        </a>
+        <p style="font-size: 12px; color: #aaa; margin-top: 40px;">
+          Verwacht je deze uitnodiging niet? Dan kun je deze e-mail negeren.
         </p>
       </div>
     `,
@@ -343,6 +374,28 @@ function escapeHtml(s: string) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/** Formulier van de publieke site (interesse / samenwerken) naar het team. */
+export async function sendSiteFormEmail(opts: {
+  subject: string;
+  replyTo: string;
+  fields: Record<string, string | undefined>;
+}) {
+  const rows = Object.entries(opts.fields)
+    .filter(([, v]) => v)
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:4px 12px 4px 0;color:#888;vertical-align:top">${escapeHtml(k)}</td><td style="padding:4px 0">${escapeHtml(v ?? "").replace(/\n/g, "<br>")}</td></tr>`,
+    )
+    .join("");
+  await getResend().emails.send({
+    from: FROM,
+    to: process.env.SITE_CONTACT_EMAIL ?? MANAGEMENT_EMAIL,
+    replyTo: opts.replyTo,
+    subject: opts.subject,
+    html: `<div style="font-family: 'Open Sans', Arial, sans-serif; color:#1a1a1a"><table>${rows}</table></div>`,
+  });
 }
 
 export interface EventEmailInput {
@@ -365,7 +418,7 @@ export interface EventEmailInput {
 
 export async function sendEventEmail(opts: EventEmailInput) {
   const html = `
-    <div style="font-family: Inter, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
+    <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1a1a1a;">
       <p style="font-size: 11px; letter-spacing: 0.1em; color: #888; text-transform: uppercase; margin-bottom: 32px;">${escapeHtml(opts.brand ?? "WE SHAPE THE FUTURE EVENTS")}</p>
       <h1 style="font-size: 26px; font-weight: 900; margin-bottom: 12px;">${escapeHtml(opts.heading)}</h1>
       <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px;">${escapeHtml(opts.intro)}</p>
@@ -381,13 +434,13 @@ export async function sendEventEmail(opts: EventEmailInput) {
           ? `<ul style="padding-left:18px;margin:0 0 24px;font-size:14px;color:#333;line-height:1.7;">${opts.lines
               .map((l) =>
                 l.url
-                  ? `<li><a href="${l.url}" style="color:#2D6A4F;">${escapeHtml(l.text)}</a></li>`
+                  ? `<li><a href="${l.url}" style="color:#E6007E;">${escapeHtml(l.text)}</a></li>`
                   : `<li>${escapeHtml(l.text)}</li>`,
               )
               .join("")}</ul>`
           : ""
       }
-      <a href="${opts.cta.url}" style="display: inline-block; padding: 14px 28px; background: #2D6A4F; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
+      <a href="${opts.cta.url}" style="display: inline-block; padding: 14px 28px; background: #E6007E; color: #fff; font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;">
         ${escapeHtml(opts.cta.label)} &rarr;
       </a>
       <p style="font-size: 12px; color: #aaa; margin-top: 40px;">

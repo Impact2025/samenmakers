@@ -21,7 +21,7 @@ export default function GlobalError({ error, reset }: Props) {
         className="flex min-h-screen flex-col items-center justify-center px-6 font-sans antialiased"
       >
         <div className="max-w-sm text-center">
-          <p className="mb-4 text-sm font-bold" style={{ color: "#d8006e" }}>
+          <p className="mb-4 text-sm font-bold" style={{ color: "#e6007e" }}>
             We Shape the Future
           </p>
           <h1 className="text-on-surface mb-3 text-2xl font-extrabold">
@@ -40,7 +40,7 @@ export default function GlobalError({ error, reset }: Props) {
           <button
             onClick={reset}
             className="inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold text-white"
-            style={{ background: "#d8006e" }}
+            style={{ background: "#e6007e" }}
           >
             Opnieuw proberen
           </button>

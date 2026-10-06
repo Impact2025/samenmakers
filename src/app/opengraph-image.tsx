@@ -78,7 +78,7 @@ export default function OgImage() {
             gap: "12px",
           }}
         >
-          <svg width="48" height="48" viewBox="93 62.5 396 396" fill="#dd026a">
+          <svg width="48" height="48" viewBox="93 62.5 396 396" fill="#e6007e">
             <circle cx="221" cy="122.7" r="27.1" />
             <circle cx="292.5" cy="195.6" r="27.1" />
             <circle cx="361.1" cy="260.4" r="27.1" />
