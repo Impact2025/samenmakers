@@ -417,6 +417,50 @@ export const programsRouter = createTRPCRouter({
       return cohort!;
     }),
 
+  /** Docentenpagina: alle niet-afgeronde edities en wie daar docent/facilitator/manager is. */
+  staffOverview: adminProcedure.query(async ({ ctx }) => {
+    const rows = await ctx.db.query.cohorts.findMany({
+      where: sql`${cohorts.programId} IS NOT NULL AND ${cohorts.status} <> 'afgerond'`,
+      orderBy: [desc(cohorts.createdAt)],
+      with: {
+        program: { columns: { name: true } },
+        members: {
+          where: inArray(cohortMembers.role, [
+            "docent",
+            "manager",
+            "facilitator",
+          ]),
+          with: {
+            user: {
+              columns: {
+                id: true,
+                naam: true,
+                name: true,
+                email: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return rows.map((c) => ({
+      id: c.id,
+      name: c.name,
+      status: c.status,
+      programId: c.programId,
+      programName: c.program?.name ?? "Zonder programma",
+      staff: c.members.map((m) => ({
+        id: m.id,
+        role: m.role,
+        status: m.status,
+        naam: m.user.naam ?? m.user.name ?? m.user.email ?? "Gebruiker",
+        email: m.user.email,
+        avatarUrl: m.user.avatarUrl,
+      })),
+    }));
+  }),
+
   cohortById: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -538,6 +582,30 @@ export const programsRouter = createTRPCRouter({
   // ---------- Members ----------
   // Voegt iemand toe aan een editie. Bestaat het account nog niet, dan wordt het aangemaakt en
   // krijgt de persoon een uitnodiging om zelf een wachtwoord te kiezen.
+  /** Iemand uitnodigen voor het platform zonder editie: account zonder wachtwoord + activatiemail. */
+  userInvite: adminProcedure
+    .input(
+      z.object({
+        email: z.string().trim().email(),
+        naam: z.string().trim().max(80).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const email = input.email.toLowerCase();
+      const found = await ctx.db.query.users.findFirst({
+        where: eq(sql`lower(${users.email})`, email),
+        columns: { id: true },
+      });
+      if (found)
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Dit e-mailadres heeft al een account.",
+        });
+      const created = await inviteNewUser(ctx, { email, naam: input.naam });
+      await audit(ctx, "invite_user", "user", created.id, { email });
+      return { success: true };
+    }),
+
   memberAdd: adminProcedure
     .input(
       z.object({
@@ -743,8 +811,8 @@ async function inviteNewUser(
   opts: {
     email: string;
     naam?: string | undefined;
-    role: string;
-    cohort: { id: string; name: string };
+    role?: string;
+    cohort?: { id: string; name: string };
   },
 ) {
   const naam = opts.naam?.trim() || opts.email.split("@")[0]!;
@@ -776,8 +844,12 @@ async function inviteNewUser(
   await sendInviteEmail({
     to: opts.email,
     naam,
-    rol: (COHORT_ROLE_LABELS[opts.role] ?? opts.role).toLowerCase(),
-    editie: opts.cohort.name,
+    ...(opts.cohort && opts.role
+      ? {
+          rol: (COHORT_ROLE_LABELS[opts.role] ?? opts.role).toLowerCase(),
+          editie: opts.cohort.name,
+        }
+      : {}),
     url: url.toString(),
   });
   return created;

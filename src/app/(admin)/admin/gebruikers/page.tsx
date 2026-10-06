@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { GraduationCap, Search, UserPlus } from "lucide-react";
 import { api } from "@/trpc/server";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { buttonClasses } from "@/components/ui/button";
 import { fieldClasses } from "@/components/ui/field-styles";
 import { LedenTabs } from "../leden-tabs";
 import { UserActions } from "./user-actions";
@@ -94,13 +95,29 @@ export default async function AdminUsersPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-headline-lg text-on-surface">Leden</h1>
-        <p className="text-secondary mt-1 text-sm">
-          {filtersActief
-            ? `${total} van de gebruikers gevonden`
-            : `${total} gebruikers`}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-headline-lg text-on-surface">Leden</h1>
+          <p className="text-secondary mt-1 text-sm">
+            {filtersActief
+              ? `${total} van de gebruikers gevonden`
+              : `${total} gebruikers`}
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-wrap justify-end gap-2">
+          <Link
+            href="/admin/uitnodigen"
+            className={buttonClasses("primary", "sm")}
+          >
+            <UserPlus size={16} aria-hidden /> Persoon uitnodigen
+          </Link>
+          <Link
+            href="/admin/docenten"
+            className={buttonClasses("secondary", "sm")}
+          >
+            <GraduationCap size={16} aria-hidden /> Docent uitnodigen
+          </Link>
+        </div>
       </div>
       <LedenTabs actief="accounts" />
 
