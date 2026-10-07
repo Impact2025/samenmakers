@@ -1,20 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import { TRPCProvider } from "@/components/providers/trpc-provider";
 import { SwRegister } from "@/components/providers/sw-register";
 import "./globals.css";
 
-const inter = Inter({
+const openSans = Open_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-open-sans",
   display: "swap",
 });
 
@@ -51,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="nl" className={`${inter.variable} ${jakarta.variable}`}>
+    <html lang="nl" className={openSans.variable}>
       <body className="font-sans antialiased">
         <TRPCProvider>
           {children}

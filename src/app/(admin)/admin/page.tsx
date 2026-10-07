@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
+  ArrowRight,
+  CircleCheck,
   CalendarDays,
   Euro,
   FileText,
@@ -17,7 +20,46 @@ import { PageHeader } from "@/components/shared/page-header";
 export const metadata: Metadata = { title: "Beheer — dashboard" };
 
 export default async function AdminDashboardPage() {
-  const stats = await api.admin.analytics();
+  const [stats, system] = await Promise.all([
+    api.admin.analytics(),
+    api.admin.systemStatus(),
+  ]);
+
+  // Wat nu actie vraagt, bovenaan: een beheerder wil eerst weten wat er brandt.
+  const actions = [
+    ...(system.problems.length > 0
+      ? [
+          {
+            href: "/admin/systeem",
+            text: `${system.problems.length} geplande taak/taken met een probleem`,
+          },
+        ]
+      : []),
+    ...(system.queue.pendingReports > 0
+      ? [
+          {
+            href: "/admin/content",
+            text: `${system.queue.pendingReports} openstaande melding(en)`,
+          },
+        ]
+      : []),
+    ...(system.queue.pendingDeletion > 0
+      ? [
+          {
+            href: "/admin/gdpr",
+            text: `${system.queue.pendingDeletion} verwijderverzoek(en)`,
+          },
+        ]
+      : []),
+    ...(system.queue.pastDueMemberships > 0
+      ? [
+          {
+            href: "/admin/gebruikers",
+            text: `${system.queue.pastDueMemberships} lidmaatschap(pen) met achterstallige betaling`,
+          },
+        ]
+      : []),
+  ];
 
   const avgPerClub =
     stats.totalCohorts > 0
@@ -89,6 +131,24 @@ export default async function AdminDashboardPage() {
         description="De belangrijkste cijfers in één oogopslag"
         className="mb-0"
       />
+      {actions.length === 0 ? (
+        <p className="bg-tertiary/10 text-tertiary text-title-md flex items-center gap-2 rounded-2xl p-4">
+          <CircleCheck size={20} /> Niets wacht op je. Alles draait.
+        </p>
+      ) : (
+        <section aria-label="Vraagt actie" className="flex flex-col gap-2">
+          {actions.map((a) => (
+            <Link
+              key={a.href + a.text}
+              href={a.href}
+              className="bg-error-container text-on-error-container text-label-lg flex items-center justify-between gap-3 rounded-2xl p-4"
+            >
+              {a.text}
+              <ArrowRight size={16} />
+            </Link>
+          ))}
+        </section>
+      )}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {cards.map(({ label, value, icon, tone }) => (
           <StatCard

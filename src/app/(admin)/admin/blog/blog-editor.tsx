@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,12 +64,6 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
     aiGenerated: initial?.aiGenerated ?? false,
   });
 
-  const [topic, setTopic] = useState("");
-  const [suggestions, setSuggestions] = useState<{
-    internal: { anchor: string; slug: string }[];
-    external: { anchor: string; url: string }[];
-  } | null>(null);
-
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
@@ -87,31 +80,6 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
       }),
     [form],
   );
-
-  const generate = trpc.blog.generate.useMutation({
-    onSuccess: (draft) => {
-      let content = draft.content;
-      if (draft.faq.length) {
-        content +=
-          "\n\n## Veelgestelde vragen\n\n" +
-          draft.faq.map((f) => `### ${f.question}\n\n${f.answer}`).join("\n\n");
-      }
-      setForm((f) => ({
-        ...f,
-        title: draft.title,
-        metaTitle: draft.metaTitle,
-        metaDescription: draft.metaDescription,
-        excerpt: draft.excerpt,
-        keywords: draft.keywords.join(", "),
-        content,
-        aiGenerated: true,
-      }));
-      setSuggestions({
-        internal: draft.internalLinks,
-        external: draft.externalLinks,
-      });
-    },
-  });
 
   const create = trpc.blog.create.useMutation({
     onSuccess: (post) => {
@@ -166,20 +134,8 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
       {/* Main column */}
       <div className="space-y-6">
-        {/* AI generator */}
         <Card hover={false}>
-          <CardBody className="bg-primary/5 space-y-3 p-5">
-            <div className="flex items-center gap-2">
-              <Sparkles size={16} className="text-primary" />
-              <h2 className="text-on-surface text-label-sm uppercase">
-                AI-generator
-              </h2>
-            </div>
-            <Input
-              placeholder="Onderwerp (bijv. 'Subsidies voor sociale ondernemingen 2025')"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-            />
+          <CardBody className="space-y-3 p-5">
             <Input
               placeholder="Focus-keyword (bijv. 'subsidie sociale onderneming')"
               value={form.focusKeyword}
@@ -201,28 +157,6 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
                 </button>
               ))}
             </div>
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              disabled={
-                generate.isPending ||
-                topic.length < 3 ||
-                form.focusKeyword.length < 2
-              }
-              onClick={() =>
-                generate.mutate({
-                  topic,
-                  focusKeyword: form.focusKeyword,
-                  category: form.category,
-                })
-              }
-            >
-              {generate.isPending ? <Spinner /> : "Genereer artikel met AI"}
-            </Button>
-            {generate.error && (
-              <p className="text-error text-xs">{generate.error.message}</p>
-            )}
           </CardBody>
         </Card>
 
@@ -411,44 +345,6 @@ export function BlogEditor({ initial }: { initial?: BlogEditorInitial }) {
             </div>
           </CardBody>
         </Card>
-
-        {suggestions && (
-          <Card hover={false}>
-            <CardBody className="p-5">
-              <p className="text-secondary text-label-sm uppercase">
-                Link-suggesties (AI)
-              </p>
-              {suggestions.internal.length > 0 && (
-                <>
-                  <p className="text-on-surface mb-1 text-xs font-semibold">
-                    Intern
-                  </p>
-                  <ul className="mb-3 space-y-1">
-                    {suggestions.internal.map((l, i) => (
-                      <li key={i} className="text-secondary text-xs">
-                        {l.anchor} → <code>/kennis/{l.slug}</code>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-              {suggestions.external.length > 0 && (
-                <>
-                  <p className="text-on-surface mb-1 text-xs font-semibold">
-                    Extern
-                  </p>
-                  <ul className="space-y-1">
-                    {suggestions.external.map((l, i) => (
-                      <li key={i} className="text-secondary text-xs break-all">
-                        {l.anchor} → {l.url}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </CardBody>
-          </Card>
-        )}
       </div>
     </div>
   );

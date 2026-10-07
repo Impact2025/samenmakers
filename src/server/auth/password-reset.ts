@@ -14,7 +14,10 @@ const hash = (token: string) =>
  * Maakt een eenmalig resettoken aan en geeft de ruwe waarde terug (alleen voor in de mail).
  * In de database staat alleen de hash; eerdere tokens voor dit adres vervallen.
  */
-export async function createResetToken(email: string): Promise<string> {
+export async function createResetToken(
+  email: string,
+  ttlMs: number = TTL_MS,
+): Promise<string> {
   const identifier = identifierFor(email);
   const token = randomBytes(32).toString("base64url");
   await db
@@ -23,7 +26,7 @@ export async function createResetToken(email: string): Promise<string> {
   await db.insert(verificationTokens).values({
     identifier,
     token: hash(token),
-    expires: new Date(Date.now() + TTL_MS),
+    expires: new Date(Date.now() + ttlMs),
   });
   return token;
 }

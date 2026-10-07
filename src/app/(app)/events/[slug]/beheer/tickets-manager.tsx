@@ -788,7 +788,7 @@ function OrdersList({
                       </span>
                     ) : t.checkedInAt ? (
                       <span className="text-primary text-xs font-medium">
-                        ✓ Ingecheckt
+                        Ingecheckt
                       </span>
                     ) : (
                       <>

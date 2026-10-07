@@ -49,7 +49,7 @@ export default async function PayoutsPage({
         {status.state === "ready" ? (
           <>
             <p className="text-on-surface font-extrabold">
-              ✓ Je uitbetaalrekening is gekoppeld
+              Je uitbetaalrekening is gekoppeld
             </p>
             <p className="text-body-md text-on-surface-variant">
               Je kunt betaalde tickets verkopen. Uitbetalingen, bankgegevens en

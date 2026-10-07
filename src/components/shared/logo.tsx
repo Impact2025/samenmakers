@@ -1,52 +1,76 @@
 import { cn } from "@/lib/utils";
 
-/** Beeldmerk: vijf magenta stippen die samen een pijl/chevron vormen. */
+/**
+ * Beeldmerk van We Shape the Future: roze vierkant met vijf witte stippen.
+ * Bron: het logo van de publieke site (public/brand/wstf-mark.svg).
+ */
 export function LogoMark({
   size = 32,
   className,
+  tone = "color",
 }: {
   size?: number;
   className?: string;
+  /** "light" = wit vierkant met roze stippen, voor op een roze achtergrond. */
+  tone?: "color" | "light";
 }) {
   return (
-    <svg
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={
+        tone === "light" ? "/brand/wstf-mark-white.svg" : "/brand/wstf-mark.svg"
+      }
       width={size}
       height={size}
-      viewBox="93 62.5 396 396"
-      fill="#dd026a"
-      className={cn("shrink-0", className)}
+      alt=""
       aria-hidden
-    >
-      <circle cx="221" cy="122.7" r="27.1" />
-      <circle cx="292.5" cy="195.6" r="27.1" />
-      <circle cx="361.1" cy="260.4" r="27.1" />
-      <circle cx="292.6" cy="333.6" r="27.1" />
-      <circle cx="221.1" cy="398.3" r="27.1" />
-    </svg>
+      className={cn("shrink-0", className)}
+    />
   );
 }
 
 interface LogoProps {
+  /** Hoogte van het logo in px. */
   size?: number;
-  /** Woordmerk tonen; standaard verborgen op heel smalle schermen. */
+  /** Volledig logo (met woordmerk) tonen; "sm" = alleen beeldmerk op heel smalle schermen. */
   wordmark?: "always" | "sm" | "never";
   className?: string;
+  /** "light" = origineel witte logo, voor op een roze balk. */
+  tone?: "color" | "light";
 }
 
-export function Logo({ size = 32, wordmark = "sm", className }: LogoProps) {
+// Verhouding van het volledige logo (357 × 60).
+const FULL_RATIO = 357 / 60;
+
+export function Logo({
+  size = 32,
+  wordmark = "sm",
+  className,
+  tone = "color",
+}: LogoProps) {
+  const full = (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={
+        tone === "light" ? "/brand/wstf-logo-white.svg" : "/brand/wstf-logo.svg"
+      }
+      width={Math.round(size * FULL_RATIO)}
+      height={size}
+      alt="We Shape the Future"
+      className={cn("shrink-0", wordmark === "sm" && "hidden sm:block")}
+    />
+  );
+
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
-      <LogoMark size={size} />
-      {wordmark !== "never" && (
-        <span
-          className={cn(
-            "font-display text-on-surface text-[17px] leading-none font-bold tracking-tight whitespace-nowrap",
-            wordmark === "sm" && "hidden sm:inline",
-          )}
-        >
-          We Shape the <span className="text-primary-container">Future</span>
-        </span>
+    <span className={cn("inline-flex items-center", className)}>
+      {wordmark !== "always" && (
+        <LogoMark
+          size={size}
+          tone={tone}
+          className={cn(wordmark === "sm" && "sm:hidden")}
+        />
       )}
+      {wordmark !== "never" && full}
     </span>
   );
 }

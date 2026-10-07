@@ -10,13 +10,15 @@ export function Sidebar({
   unreadMessages = 0,
   persona = "lid",
   mentor = false,
+  planner = false,
 }: {
   unreadMessages?: number;
   persona?: Persona;
   mentor?: boolean;
+  planner?: boolean;
 }) {
   const pathname = usePathname();
-  const nav = navFor(persona, mentor);
+  const nav = navFor(persona, mentor, planner);
 
   return (
     <aside className="bg-surface fixed top-0 left-0 z-40 hidden h-screen w-64 flex-col px-3 pt-20 pb-6 lg:flex">

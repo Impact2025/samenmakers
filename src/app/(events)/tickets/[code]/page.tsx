@@ -69,7 +69,7 @@ export default async function TicketPage({
             {t.holderName}
           </p>
           {t.checkedInAt && (
-            <p className="text-label-md text-primary">✓ Ingecheckt</p>
+            <p className="text-label-md text-primary">Ingecheckt</p>
           )}
         </div>
       </article>

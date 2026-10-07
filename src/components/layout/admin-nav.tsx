@@ -14,42 +14,51 @@ import {
   ClipboardList,
   Sparkles,
   Ticket,
-  Contact,
   Mail,
   Library,
   Menu,
   X,
   ArrowLeft,
   Euro,
+  Activity,
+  GraduationCap,
 } from "lucide-react";
 import { LogoMark } from "@/components/shared/logo";
 import { cn } from "@/lib/utils";
 
 const adminNav = [
   { href: "/admin", label: "Dashboard", icon: LayoutGrid },
-  { href: "/admin/crm", label: "CRM", icon: Contact },
+  {
+    href: "/admin/gebruikers",
+    label: "Leden",
+    icon: Users,
+    also: ["/admin/crm"],
+  },
   { href: "/admin/mail", label: "Mailings", icon: Mail },
-  { href: "/admin/gebruikers", label: "Gebruikers", icon: Users },
-  { href: "/admin/blog", label: "Blog (AI)", icon: Sparkles },
+  { href: "/admin/blog", label: "Blog", icon: Sparkles },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/events", label: "Events", icon: Calendar },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/prijzen", label: "Prijzen", icon: Euro },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/programmas", label: "Onderwijs", icon: Library },
+  { href: "/admin/docenten", label: "Docenten", icon: GraduationCap },
   { href: "/admin/cohorten", label: "Cohorten", icon: Settings },
   { href: "/admin/gdpr", label: "GDPR", icon: Shield },
+  { href: "/admin/systeem", label: "Systeem", icon: Activity },
   { href: "/admin/audit-log", label: "Audit log", icon: ClipboardList },
 ];
 
 function NavList({ pathname }: { pathname: string }) {
   return (
     <nav className="flex flex-col gap-0.5">
-      {adminNav.map(({ href, label, icon: Icon }) => {
+      {adminNav.map(({ href, label, icon: Icon, also }) => {
+        const matches = (h: string) =>
+          pathname === h || pathname.startsWith(h + "/");
         const active =
           href === "/admin"
             ? pathname === href
-            : pathname === href || pathname.startsWith(href + "/");
+            : matches(href) || (also ?? []).some(matches);
         return (
           <Link
             key={href}

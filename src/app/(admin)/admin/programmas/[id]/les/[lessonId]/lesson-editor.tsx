@@ -205,7 +205,7 @@ export function LessonEditor({
           {update.isPending ? (
             <Spinner size="sm" />
           ) : saved ? (
-            "Opgeslagen ✓"
+            "Opgeslagen"
           ) : (
             "Opslaan"
           )}

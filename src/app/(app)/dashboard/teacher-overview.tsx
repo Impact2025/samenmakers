@@ -211,6 +211,20 @@ export function TeacherOverview({ editions }: { editions: TeachingEditions }) {
                 >
                   Leerpad
                 </Link>
+                <Link
+                  href={`/leren/${e.cohort.id}/sessies`}
+                  className={buttonClasses("secondary", "md")}
+                >
+                  {e.role === "facilitator" || e.role === "manager"
+                    ? "Sessies en aanwezigheid"
+                    : "Sessies"}
+                </Link>
+                <Link
+                  href={`/leren/${e.cohort.id}/materiaal`}
+                  className={buttonClasses("secondary", "md")}
+                >
+                  Lesmateriaal
+                </Link>
               </footer>
             </article>
           );

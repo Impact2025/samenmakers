@@ -264,7 +264,7 @@ export default async function AdminEventsPage({
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   <Link
-                    href={`/events/${e.slug}/beheer`}
+                    href={`/admin/events/${e.slug}`}
                     className="text-primary text-xs hover:underline"
                   >
                     Beheren →

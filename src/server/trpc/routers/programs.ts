@@ -1,6 +1,18 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { and, asc, count, desc, eq, gt, lt, max } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gt,
+  inArray,
+  lt,
+  max,
+  sql,
+} from "drizzle-orm";
+import { parseEmailList } from "@/lib/email-list";
 import { createTRPCRouter, adminProcedure } from "@/server/trpc/init";
 import {
   auditLog,
@@ -11,7 +23,14 @@ import {
   programs,
   users,
 } from "@/server/db/schema";
-import { generateInviteCode, shiftEditionDates } from "@/lib/learning";
+import {
+  COHORT_ROLE_LABELS,
+  generateInviteCode,
+  shiftEditionDates,
+} from "@/lib/learning";
+import { sendInviteEmail } from "@/lib/email";
+import { createResetToken } from "@/server/auth/password-reset";
+import { generateReferralCode } from "@/server/auth/config";
 import { slugify } from "@/lib/utils";
 import type { db as DbClient } from "@/server/db";
 
@@ -398,6 +417,50 @@ export const programsRouter = createTRPCRouter({
       return cohort!;
     }),
 
+  /** Docentenpagina: alle niet-afgeronde edities en wie daar docent/facilitator/manager is. */
+  staffOverview: adminProcedure.query(async ({ ctx }) => {
+    const rows = await ctx.db.query.cohorts.findMany({
+      where: sql`${cohorts.programId} IS NOT NULL AND ${cohorts.status} <> 'afgerond'`,
+      orderBy: [desc(cohorts.createdAt)],
+      with: {
+        program: { columns: { name: true } },
+        members: {
+          where: inArray(cohortMembers.role, [
+            "docent",
+            "manager",
+            "facilitator",
+          ]),
+          with: {
+            user: {
+              columns: {
+                id: true,
+                naam: true,
+                name: true,
+                email: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return rows.map((c) => ({
+      id: c.id,
+      name: c.name,
+      status: c.status,
+      programId: c.programId,
+      programName: c.program?.name ?? "Zonder programma",
+      staff: c.members.map((m) => ({
+        id: m.id,
+        role: m.role,
+        status: m.status,
+        naam: m.user.naam ?? m.user.name ?? m.user.email ?? "Gebruiker",
+        email: m.user.email,
+        avatarUrl: m.user.avatarUrl,
+      })),
+    }));
+  }),
+
   cohortById: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -517,39 +580,178 @@ export const programsRouter = createTRPCRouter({
     }),
 
   // ---------- Members ----------
+  // Voegt iemand toe aan een editie. Bestaat het account nog niet, dan wordt het aangemaakt en
+  // krijgt de persoon een uitnodiging om zelf een wachtwoord te kiezen.
+  /** Iemand uitnodigen voor het platform zonder editie: account zonder wachtwoord + activatiemail. */
+  userInvite: adminProcedure
+    .input(
+      z.object({
+        email: z.string().trim().email(),
+        naam: z.string().trim().max(80).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const email = input.email.toLowerCase();
+      const found = await ctx.db.query.users.findFirst({
+        where: eq(sql`lower(${users.email})`, email),
+        columns: { id: true },
+      });
+      if (found)
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Dit e-mailadres heeft al een account.",
+        });
+      const created = await inviteNewUser(ctx, { email, naam: input.naam });
+      await audit(ctx, "invite_user", "user", created.id, { email });
+      return { success: true };
+    }),
+
   memberAdd: adminProcedure
     .input(
       z.object({
         cohortId: z.string(),
         email: z.string().trim().email(),
+        naam: z.string().trim().max(80).optional(),
         role: z
           .enum(["cursist", "docent", "manager", "facilitator", "alumnus"])
           .default("cursist"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.query.users.findFirst({
-        where: eq(users.email, input.email.toLowerCase()),
+      const cohort = await ctx.db.query.cohorts.findFirst({
+        where: eq(cohorts.id, input.cohortId),
+        columns: { id: true, name: true },
       });
-      if (!user) {
+      if (!cohort)
         throw new TRPCError({
           code: "NOT_FOUND",
-          message:
-            "Geen account met dit e-mailadres. Laat de persoon eerst een account aanmaken of deel de uitnodigingscode.",
+          message: "Editie niet gevonden",
         });
-      }
+      const email = input.email.toLowerCase();
+      const found = await ctx.db.query.users.findFirst({
+        where: eq(sql`lower(${users.email})`, email),
+        columns: { id: true, status: true },
+      });
+      if (found && found.status !== "active")
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Dit account is geschorst of geblokkeerd.",
+        });
+      const invited = found
+        ? null
+        : await inviteNewUser(ctx, {
+            email,
+            naam: input.naam,
+            role: input.role,
+            cohort,
+          });
+      const userId = found?.id ?? invited!.id;
       await ctx.db
         .insert(cohortMembers)
-        .values({ cohortId: input.cohortId, userId: user.id, role: input.role })
+        .values({ cohortId: input.cohortId, userId, role: input.role })
         .onConflictDoUpdate({
           target: [cohortMembers.cohortId, cohortMembers.userId],
           set: { role: input.role, status: "actief" },
         });
       await audit(ctx, "add_cohort_member", "cohort", input.cohortId, {
-        userId: user.id,
+        userId,
         role: input.role,
+        invited: !found,
       });
-      return { success: true };
+      return { success: true, invited: !found };
+    }),
+
+  // Meerdere bestaande gebruikers in één keer aan een editie koppelen (geplakte lijst).
+  // Bestaande leden blijven ongemoeid; onbekende adressen komen terug om uit te nodigen.
+  memberImport: adminProcedure
+    .input(
+      z.object({
+        cohortId: z.string(),
+        emails: z.string().max(20_000),
+        // Maak onbekende adressen aan en nodig ze uit.
+        invite: z.boolean().default(false),
+        role: z
+          .enum(["cursist", "docent", "manager", "facilitator", "alumnus"])
+          .default("cursist"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { emails, truncated } = parseEmailList(input.emails);
+      if (emails.length === 0)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Geen e-mailadressen gevonden in de tekst.",
+        });
+      const found = await ctx.db.query.users.findMany({
+        where: inArray(sql`lower(${users.email})`, emails),
+        columns: { id: true, email: true },
+      });
+      const existing = await ctx.db.query.cohortMembers.findMany({
+        where: eq(cohortMembers.cohortId, input.cohortId),
+        columns: { userId: true },
+      });
+      const already = new Set(existing.map((m) => m.userId));
+      const toAdd = found.filter((u) => !already.has(u.id));
+      if (toAdd.length > 0)
+        await ctx.db
+          .insert(cohortMembers)
+          .values(
+            toAdd.map((u) => ({
+              cohortId: input.cohortId,
+              userId: u.id,
+              role: input.role,
+            })),
+          )
+          .onConflictDoNothing();
+      const foundEmails = new Set(found.map((u) => u.email?.toLowerCase()));
+      let notFound = emails.filter((e) => !foundEmails.has(e));
+      let invitedCount = 0;
+      if (input.invite && notFound.length > 0) {
+        const cohort = await ctx.db.query.cohorts.findFirst({
+          where: eq(cohorts.id, input.cohortId),
+          columns: { id: true, name: true },
+        });
+        if (!cohort)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Editie niet gevonden",
+          });
+        const failed: string[] = [];
+        for (const email of notFound) {
+          try {
+            const created = await inviteNewUser(ctx, {
+              email,
+              role: input.role,
+              cohort,
+            });
+            await ctx.db
+              .insert(cohortMembers)
+              .values({
+                cohortId: input.cohortId,
+                userId: created.id,
+                role: input.role,
+              })
+              .onConflictDoNothing();
+            invitedCount++;
+          } catch {
+            failed.push(email);
+          }
+        }
+        notFound = failed;
+      }
+      const result = {
+        added: toAdd.length,
+        invited: invitedCount,
+        alreadyMember: found.length - toAdd.length,
+        notFound,
+        truncated,
+      };
+      await audit(ctx, "import_cohort_members", "cohort", input.cohortId, {
+        role: input.role,
+        ...result,
+        notFound: result.notFound.length,
+      });
+      return result;
     }),
 
   memberUpdate: adminProcedure
@@ -601,6 +803,56 @@ async function uniqueSlug(
     if (!hit || hit.id === excludeId) return candidate;
   }
   return `${root}-${Date.now().toString(36)}`;
+}
+
+/** Maakt een account zonder wachtwoord aan en mailt een activatielink (7 dagen geldig). */
+async function inviteNewUser(
+  ctx: { db: typeof DbClient },
+  opts: {
+    email: string;
+    naam?: string | undefined;
+    role?: string;
+    cohort?: { id: string; name: string };
+  },
+) {
+  const naam = opts.naam?.trim() || opts.email.split("@")[0]!;
+  const [created] = await ctx.db
+    .insert(users)
+    .values({
+      name: naam,
+      naam,
+      email: opts.email,
+      referralCode: generateReferralCode(),
+      // Zonder wachtwoord kan niemand inloggen. De link in de uitnodiging zet het
+      // wachtwoord en markeert het adres dan als geverifieerd (password-reset/confirm).
+    })
+    .onConflictDoNothing({ target: users.email })
+    .returning({ id: users.id });
+  if (!created)
+    throw new TRPCError({
+      code: "CONFLICT",
+      message: "Dit e-mailadres is al in gebruik",
+    });
+
+  const token = await createResetToken(opts.email, 7 * 24 * 60 * 60 * 1000);
+  const url = new URL(
+    "/wachtwoord-reset/nieuw",
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  );
+  url.searchParams.set("email", opts.email);
+  url.searchParams.set("token", token);
+  await sendInviteEmail({
+    to: opts.email,
+    naam,
+    ...(opts.cohort && opts.role
+      ? {
+          rol: (COHORT_ROLE_LABELS[opts.role] ?? opts.role).toLowerCase(),
+          editie: opts.cohort.name,
+        }
+      : {}),
+    url: url.toString(),
+  });
+  return created;
 }
 
 async function audit(

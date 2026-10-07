@@ -6,6 +6,7 @@ import { sendEventEmail } from "@/lib/email";
 import { dueMailings, sessionCycle } from "@/lib/session-cycle";
 import { formatDate, formatDateTime } from "@/lib/date-utils";
 import { withJobRun } from "@/server/monitoring/job-run";
+import { isCronAuthorized } from "@/lib/cron-auth";
 
 // Vercel Cron: dagelijks (vercel.json). Per komende sessie:
 //  - 3 weken vooraf: briefing met de docent (docent + facilitators)
@@ -45,9 +46,7 @@ async function recipients(
 }
 
 async function run(request: Request) {
-  if (
-    request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -81,16 +81,12 @@ export default function AdminGdprPage() {
           </h2>
         </CardHeader>
         <CardBody className="text-body-md text-on-surface-variant space-y-3">
-          <p>✓ Wachtwoorden worden gehashed met bcrypt (12 rounds)</p>
-          <p>✓ Sessies verlopen na inactiviteit</p>
-          <p>✓ Profielzichtbaarheid configureerbaar per gebruiker</p>
-          <p>
-            ✓ Geblokkeerde gebruikers worden uitgesloten van alle interacties
-          </p>
-          <p>✓ Audit log bijgehouden voor admin-acties</p>
-          <p>
-            ✓ Afbeeldingen opgeslagen op Vercel Blob (geen externe trackers)
-          </p>
+          <p>Wachtwoorden worden gehashed met bcrypt (12 rounds)</p>
+          <p>Sessies verlopen na inactiviteit</p>
+          <p>Profielzichtbaarheid configureerbaar per gebruiker</p>
+          <p>Geblokkeerde gebruikers worden uitgesloten van alle interacties</p>
+          <p>Audit log bijgehouden voor admin-acties</p>
+          <p>Afbeeldingen opgeslagen op Vercel Blob (geen externe trackers)</p>
         </CardBody>
       </Card>
     </div>

@@ -2,15 +2,14 @@
 
 /* ============================================================
    We Shape the Future — "Vibrant Changemaker" design system
-   Bron: DESIGNER/.../vibrant_changemaker/DESIGN.md
+   Merkkleuren en lettertype overgenomen van weshapethefuture.nl (roze #E6007E, Open Sans)
    ============================================================ */
 
 @theme {
   /* ===== FONTS ===== */
-  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
-  --font-display:
-    var(--font-jakarta), "Plus Jakarta Sans", var(--font-inter), system-ui,
-    sans-serif;
+  /* Zelfde lettertype als de publieke site (Open Sans) */
+  --font-sans: var(--font-open-sans), "Open Sans", system-ui, sans-serif;
+  --font-display: var(--font-open-sans), "Open Sans", system-ui, sans-serif;
 
   /* ===== COLORS ===== */
   --color-surface: #f9f9ff;
@@ -27,16 +26,16 @@
   --color-inverse-on-surface: #edf0ff;
   --color-outline: #8e6f76;
   --color-outline-variant: #e2bdc5;
-  --color-surface-tint: #ba005e;
-  --color-primary: #ab0056;
+  --color-surface-tint: #b80065;
+  --color-primary: #b80065;
   --color-on-primary: #ffffff;
-  --color-primary-container: #d8006e;
-  --color-on-primary-container: #ffeff1;
-  --color-inverse-primary: #ffb1c6;
-  --color-primary-fixed: #ffd9e1;
-  --color-primary-fixed-dim: #ffb1c6;
-  --color-on-primary-fixed: #3f001b;
-  --color-on-primary-fixed-variant: #8e0046;
+  --color-primary-container: #e6007e;
+  --color-on-primary-container: #ffffff;
+  --color-inverse-primary: #f599cb;
+  --color-primary-fixed: #fce5f2;
+  --color-primary-fixed-dim: #f7b2d8;
+  --color-on-primary-fixed: #2e0019;
+  --color-on-primary-fixed-variant: #8a004c;
   --color-secondary: #555f6d;
   --color-on-secondary: #ffffff;
   --color-secondary-container: #d6e0f1;
@@ -74,7 +73,7 @@
   --shadow-floating:
     0 12px 32px -4px rgba(20, 27, 43, 0.12),
     0 4px 8px -2px rgba(20, 27, 43, 0.04);
-  --shadow-cta: 0 4px 12px rgba(216, 0, 110, 0.24);
+  --shadow-cta: 0 4px 12px rgba(230, 0, 126, 0.24);
   --shadow-bar: 0 1px 8px rgba(0, 0, 0, 0.04);
   --shadow-bar-up: 0 -2px 12px rgba(0, 0, 0, 0.05);
 
@@ -90,7 +89,7 @@
   --spacing-section-padding: 6rem;
 }
 
-/* ===== TYPOGRAFIE — koppen/labels: Plus Jakarta Sans · tekst: Inter ===== */
+/* ===== TYPOGRAFIE — Open Sans voor koppen, labels en tekst ===== */
 @utility text-display-lg {
   font-family: var(--font-display);
   font-size: 36px;

@@ -23,7 +23,7 @@ export default async function AdminBlogPage() {
         <div>
           <h1 className="text-headline-lg text-on-surface">Blog</h1>
           <p className="text-secondary mt-1 text-sm">
-            AI-gegenereerde, SEO-geoptimaliseerde artikelen
+            SEO-geoptimaliseerde artikelen
           </p>
         </div>
         <Link
@@ -74,11 +74,6 @@ export default async function AdminBlogPage() {
                         <Badge variant="default" size="sm">
                           {p.category}
                         </Badge>
-                        {p.aiGenerated && (
-                          <Badge variant="primary" size="sm">
-                            AI
-                          </Badge>
-                        )}
                       </div>
                     </td>
                     <td className="p-4">

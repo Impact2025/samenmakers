@@ -4,6 +4,7 @@ import { generateManagementInsight } from "@/lib/ai/management-insight";
 import { sendManagementDigest } from "@/lib/email";
 import { getJobProblems } from "@/server/monitoring/job-status";
 import { withJobRun } from "@/server/monitoring/job-run";
+import { isCronAuthorized } from "@/lib/cron-auth";
 
 // Called by Vercel Cron: every day at 07:00
 export const runtime = "nodejs";
@@ -11,8 +12,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 async function run(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

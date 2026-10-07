@@ -13,6 +13,7 @@ import {
   UserCircle,
   Award,
   ClipboardCheck,
+  CalendarClock,
   type LucideIcon,
 } from "lucide-react";
 import { features } from "@/lib/features";
@@ -118,7 +119,7 @@ export interface Nav {
  * zelf mentor of mentee is. Alle routes blijven bereikbaar,
  * dit bepaalt alleen wat er in het menu staat. Zonder leeromgeving geldt het standaardmenu.
  */
-export function navFor(persona: Persona, mentor = false): Nav {
+export function navFor(persona: Persona, mentor = false, planner = false): Nav {
   const standard: Nav = {
     primary: primaryNav,
     secondary: secondaryNav,
@@ -128,6 +129,40 @@ export function navFor(persona: Persona, mentor = false): Nav {
 
   switch (persona) {
     case "docent":
+      // Facilitators en managers plannen de programmadagen: Sessies krijgt een vaste plek
+      // en Netwerk schuift naar "Meer".
+      if (planner)
+        return {
+          primary: [
+            home,
+            {
+              href: "/leren",
+              label: "Mijn edities",
+              icon: GraduationCap,
+              exclude: ["/leren/beoordelen", "/leren/sessies"],
+            },
+            {
+              href: "/leren/sessies",
+              label: "Sessies",
+              icon: CalendarClock,
+            },
+            {
+              href: "/leren/beoordelen",
+              label: "Beoordelen",
+              icon: ClipboardCheck,
+            },
+            messages,
+          ],
+          secondary: [
+            network,
+            events,
+            feed,
+            knowledge,
+            ...(mentor ? [mentorship] : []),
+            saved,
+          ],
+          account: accountNav,
+        };
       return {
         primary: [
           home,
@@ -212,6 +247,7 @@ const titles: [string, string][] = [
   ["/events", "Evenementen"],
   ["/tickets", "Ticket"],
   ["/leren/beoordelen", "Beoordelen"],
+  ["/leren/sessies", "Sessies"],
   ["/leren", "Leertraject"],
   ["/alumni", "Alumni"],
   ["/berichten", "Berichten"],
