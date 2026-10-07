@@ -2,18 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  Check,
   GraduationCap,
   Handshake,
   MessagesSquare,
-  Sparkles,
   UserPlus,
   CalendarDays,
 } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
 import { TopBar } from "@/components/layout/top-bar";
 import { Footer } from "@/components/layout/footer";
-import { PRO_FEATURES, SECTOREN } from "@/lib/constants";
+import { SECTOREN } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "We Shape the Future — Vind je medemissie-ondernemer",
@@ -150,81 +148,6 @@ export default function HomePage() {
                 {s}
               </span>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Prijzen */}
-      <section className="bg-surface-container-low px-5 py-16">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-label-sm text-primary mb-2 uppercase">
-            Abonnementen
-          </p>
-          <h2 className="text-headline-lg text-on-surface mb-8">
-            Transparante prijzen
-          </h2>
-          <div className="grid max-w-3xl gap-4 md:grid-cols-2">
-            <div className="bg-surface-container-lowest shadow-card flex flex-col rounded-3xl p-6">
-              <p className="text-label-sm text-secondary uppercase">Basis</p>
-              <p className="text-display-lg text-on-surface mt-1">Gratis</p>
-              <p className="text-body-md text-secondary mb-5">Altijd</p>
-              <ul className="mb-6 flex flex-col gap-2.5">
-                {[
-                  "Profiel aanmaken",
-                  "20 swipes per dag",
-                  "Chatten met matches",
-                  "Evenementen bekijken",
-                  "Kennisbank lezen",
-                ].map((f) => (
-                  <li
-                    key={f}
-                    className="text-body-md text-on-surface flex items-center gap-2"
-                  >
-                    <Check size={16} className="text-secondary shrink-0" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/aanmelden"
-                className={buttonClasses("secondary", "lg", "mt-auto w-full")}
-              >
-                Begin gratis
-              </Link>
-            </div>
-
-            <div className="bg-surface-container-lowest shadow-elevated ring-primary-container relative flex flex-col rounded-3xl p-6 ring-2">
-              <span className="bg-primary-container text-label-sm text-on-primary absolute top-5 right-5 flex items-center gap-1 rounded-full px-2.5 py-1 uppercase">
-                <Sparkles size={12} /> Aanbevolen
-              </span>
-              <p className="text-label-sm text-primary uppercase">Pro</p>
-              <div className="mt-1 flex items-baseline gap-1">
-                <p className="text-display-lg text-on-surface">€9</p>
-                <p className="text-body-md text-on-surface-variant">/maand</p>
-              </div>
-              <p className="text-body-md text-secondary mb-5">
-                Maandelijks opzegbaar
-              </p>
-              <ul className="mb-6 flex flex-col gap-2.5">
-                {PRO_FEATURES.map((f) => (
-                  <li
-                    key={f}
-                    className="text-body-md text-on-surface flex items-center gap-2"
-                  >
-                    <Check
-                      size={16}
-                      className="text-primary-container shrink-0"
-                    />{" "}
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/aanmelden"
-                className={buttonClasses("primary", "lg", "mt-auto w-full")}
-              >
-                Start Pro
-              </Link>
-            </div>
           </div>
         </div>
       </section>
