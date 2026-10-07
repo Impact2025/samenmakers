@@ -35,7 +35,7 @@ const adminNav = [
     also: ["/admin/crm"],
   },
   { href: "/admin/mail", label: "Mailings", icon: Mail },
-  { href: "/admin/blog", label: "Blog (AI)", icon: Sparkles },
+  { href: "/admin/blog", label: "Blog", icon: Sparkles },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/events", label: "Events", icon: Calendar },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
