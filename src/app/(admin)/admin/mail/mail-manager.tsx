@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Card, CardBody } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,12 +18,7 @@ type Segment = {
   subscriptionStatus?: "none" | "active" | "past_due" | "canceled" | undefined;
   stage?: "lead" | "engaged" | "customer" | "churned" | undefined;
   cohortRole?:
-    | "cursist"
-    | "docent"
-    | "manager"
-    | "facilitator"
-    | "alumnus"
-    | undefined;
+    "cursist" | "docent" | "manager" | "facilitator" | "alumnus" | undefined;
   cohortId?: string | undefined;
 };
 
@@ -41,7 +35,6 @@ export function MailManager() {
 
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
-  const [topic, setTopic] = useState("");
   const [segment, setSegment] = useState<Segment>({});
 
   const cohortOptions = trpc.campaigns.cohortOptions.useQuery();
@@ -50,18 +43,11 @@ export function MailManager() {
   const setSeg = (patch: Partial<Segment>) =>
     setSegment((s) => ({ ...s, ...patch }));
 
-  const generate = trpc.campaigns.generate.useMutation({
-    onSuccess: (d) => {
-      setSubject(d.subject);
-      setBody(d.body);
-    },
-  });
   const create = trpc.campaigns.create.useMutation({
     onSuccess: () => {
       void utils.campaigns.list.invalidate();
       setSubject("");
       setBody("");
-      setTopic("");
     },
   });
   const send = trpc.campaigns.send.useMutation({
@@ -79,33 +65,6 @@ export function MailManager() {
           <h2 className="text-on-surface text-label-sm uppercase">
             Nieuwe mailing
           </h2>
-
-          {/* AI */}
-          <div className="bg-primary/5 flex items-end gap-2 p-4">
-            <div className="flex-1">
-              <label className="text-label-md text-secondary mb-2 flex items-center gap-1">
-                <Sparkles size={12} className="text-primary" /> AI — schrijf
-                nieuwsbrief over
-              </label>
-              <Input
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                placeholder="bijv. 'nieuwe matching-functie en zomerevent'"
-              />
-            </div>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={generate.isPending || topic.length < 3}
-              onClick={() => generate.mutate({ topic })}
-            >
-              {generate.isPending ? <Spinner /> : "Genereer"}
-            </Button>
-          </div>
-          {generate.error && (
-            <p className="text-error text-xs">{generate.error.message}</p>
-          )}
 
           <div>
             <label className="text-label-lg text-on-surface mb-1.5 block">

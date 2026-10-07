@@ -9,7 +9,7 @@ export default function AdminMailPage() {
       <div>
         <h1 className="text-headline-lg text-on-surface">Mailings</h1>
         <p className="text-secondary mt-1 text-sm">
-          E-mailcampagnes naar segmenten — met AI-tekst en live bereik
+          E-mailcampagnes naar segmenten — met live bereik
         </p>
       </div>
       <MailManager />
